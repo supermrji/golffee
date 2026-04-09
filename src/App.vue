@@ -196,7 +196,7 @@ const scrollToContent = () => {
               <!-- Favorites Toggle (Mobile: Next to Region, Desktop: End of row) -->
               <div class="flex items-end md:hidden">
                 <button @click="showFavoritesOnly = !showFavoritesOnly" 
-                        :class="['flex items-center justify-center gap-2 px-4 rounded-full border transition-all duration-200 active:scale-95 h-[38px] w-[38px]', 
+                        :class="['flex items-center justify-center rounded-full border transition-all duration-200 active:scale-95 h-[38px] w-[38px]', 
                                  showFavoritesOnly ? 'bg-red-500/20 border-red-500/60 text-red-100 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'bg-emerald-400/5 border-emerald-400/40 text-emerald-400']">
                   <Heart :class="['w-4 h-4 transition-transform duration-300', showFavoritesOnly ? 'fill-emerald-400 scale-110' : '']" />
                 </button>
@@ -378,7 +378,7 @@ const scrollToContent = () => {
 
       <!-- Persistent Footer -->
       <footer class="relative z-30 py-16 border-t border-white/5 bg-[#050505] text-center">
-        <p class="text-white/20 text-[10px] md:text-[11px] tracking-[0.3em] uppercase font-light">
+        <p class="text-white text-[10px] md:text-[11px] tracking-[0.3em] uppercase font-light opacity-50">
           © 2026 KingsleyZheng. All Rights Reserved.
         </p>
       </footer>
