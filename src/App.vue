@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import golfDataJson from './data/golf_courses.json'
-import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink } from 'lucide-vue-next'
+import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart } from 'lucide-vue-next'
 
 const locale = ref('zh-TW')
 
@@ -23,7 +23,9 @@ const dict = {
     remarks: '備註',
     search: '搜尋球場',
     update: '更新',
-    noData: '無資料'
+    noData: '無資料',
+    favorites: '我的最愛',
+    favOnly: '僅顯示最愛'
   },
   'en': {
     title: 'Golf Fees.',
@@ -42,7 +44,9 @@ const dict = {
     remarks: 'Remarks',
     search: 'Search Course',
     update: 'Updated',
-    noData: '-'
+    noData: '-',
+    favorites: 'Favorites',
+    favOnly: 'Fav Only'
   }
 }
 
@@ -98,11 +102,27 @@ const regionCounts = computed(() => {
   return counts
 })
 
+const favorites = ref(JSON.parse(localStorage.getItem('golffee_favorites') || '[]'))
+const showFavoritesOnly = ref(false)
+
+const toggleFavorite = (name) => {
+  const idx = favorites.value.indexOf(name)
+  if (idx > -1) {
+    favorites.value.splice(idx, 1)
+  } else {
+    favorites.value.push(name)
+  }
+  localStorage.setItem('golffee_favorites', JSON.stringify(favorites.value))
+}
+
+const isFavorite = (name) => favorites.value.includes(name)
+
 const filteredCourses = computed(() => {
   return courses.value.filter(c => {
     const regionMatch = selectedRegion.value === '全部' || c.region === selectedRegion.value
     const searchMatch = !searchQuery.value || c.name.toLowerCase().includes(searchQuery.value.trim().toLowerCase())
-    return regionMatch && searchMatch
+    const favoriteMatch = !showFavoritesOnly.value || isFavorite(c.name)
+    return regionMatch && searchMatch && favoriteMatch
   })
 })
 
@@ -156,26 +176,52 @@ const scrollToContent = () => {
       <div class="max-w-7xl mx-auto px-6 md:px-12">
         
         <!-- Filter Controls (Sticky) -->
-        <div class="sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md flex flex-col md:flex-row gap-4 md:gap-8 mb-4 border-b border-white/10 px-6 -mx-6 md:px-12 md:-mx-12 pt-4 md:pt-8 pb-3 md:pb-6 shadow-sm">
+        <div class="sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 md:px-12 md:-mx-12 pt-4 md:pt-8 pb-3 md:pb-6 shadow-sm overflow-hidden">
           
-          <div class="flex flex-col gap-1.5 md:gap-3 flex-1 max-w-xs">
-            <label class="text-xs tracking-[0.1em] text-[#888] uppercase">{{ t.region }}</label>
-            <div class="relative group">
-              <select v-model="selectedRegion" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
-                <option v-for="r in regions" :key="r" :value="r" class="bg-[#1a1a1a] text-white text-base py-2">
-                  {{ getRegionName(r) }} ({{ regionCounts[r] }})
-                </option>
-              </select>
-            </div>
-          </div>
+          <div class="flex flex-col gap-3 md:gap-8 md:flex-row">
+            
+            <!-- Row 1 (Mobile): Region + Favorites -->
+            <div class="flex items-center gap-3 w-full md:w-auto md:flex-1 md:max-w-xs">
+              <div class="flex flex-col gap-1.5 md:gap-3 flex-1">
+                <label class="text-xs tracking-[0.1em] text-[#888] uppercase hidden md:block">{{ t.region }}</label>
+                <div class="relative group">
+                  <select v-model="selectedRegion" class="w-full appearance-none bg-transparent border-none pb-1.5 md:pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
+                    <option v-for="r in regions" :key="r" :value="r" class="bg-[#1a1a1a] text-white text-base py-2">
+                      {{ getRegionName(r) }} ({{ regionCounts[r] }})
+                    </option>
+                  </select>
+                </div>
+              </div>
 
-          <div class="flex flex-col gap-1.5 md:gap-3 flex-1 max-w-xs md:border-l border-white/10 md:pl-8">
-            <label class="text-xs tracking-[0.1em] text-[#888] uppercase">{{ t.search }}</label>
-            <div class="relative group flex items-center h-[40px] overflow-hidden">
-              <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
-              <input type="text" v-model="searchQuery" :placeholder="t.search" 
-                     class="w-full bg-transparent border-none p-0 text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[40px] flex-1" />
-              <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
+              <!-- Favorites Toggle (Mobile: Next to Region, Desktop: End of row) -->
+              <div class="flex items-end md:hidden">
+                <button @click="showFavoritesOnly = !showFavoritesOnly" 
+                        :class="['flex items-center justify-center gap-2 px-4 rounded-full border transition-all duration-200 active:scale-95 h-[38px] w-[38px]', 
+                                 showFavoritesOnly ? 'bg-red-500/20 border-red-500/60 text-red-100 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'bg-emerald-400/5 border-emerald-400/40 text-emerald-400']">
+                  <Heart :class="['w-4 h-4 transition-transform duration-300', showFavoritesOnly ? 'fill-emerald-400 scale-110' : '']" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 2 (Mobile): Search -->
+            <div class="flex flex-col gap-1.5 md:gap-3 flex-1 md:max-w-xs md:border-l border-white/10 md:pl-8">
+              <label class="text-xs tracking-[0.1em] text-[#888] uppercase hidden md:block">{{ t.search }}</label>
+              <div class="relative group flex items-center h-[38px] md:h-[40px] overflow-hidden">
+                <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
+                <input type="text" v-model="searchQuery" :placeholder="t.search" 
+                       class="w-full bg-transparent border-none p-0 text-xl md:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[40px] flex-1" />
+                <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
+              </div>
+            </div>
+
+            <!-- Row 1 (Desktop): Favorites Toggle at the end -->
+            <div class="hidden md:flex items-end md:pb-1">
+              <button @click="showFavoritesOnly = !showFavoritesOnly" 
+                      :class="['flex items-center gap-2.5 px-6 py-2.5 rounded-full border transition-all duration-200 active:scale-95 h-[40px]', 
+                               showFavoritesOnly ? 'bg-emerald-400/20 border-emerald-400/60 text-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.2)]' : 'bg-emerald-400/5 border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 hover:border-emerald-400/60']">
+                <Heart :class="['w-4 h-4 transition-transform duration-300', showFavoritesOnly ? 'fill-emerald-400 scale-110' : '']" />
+                <span class="text-[10px] tracking-[0.2em] uppercase font-bold">{{ t.favorites }}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -200,6 +246,9 @@ const scrollToContent = () => {
                   <div class="flex justify-between items-start pr-2">
                     <div>
                       <div class="flex items-center gap-3">
+                        <button @click="toggleFavorite(c.name)" class="focus:outline-none group/fav" :title="t.favorites">
+                          <Heart :class="['w-4 h-4 transition-all duration-300', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10 group-hover/fav:text-white/40']" />
+                        </button>
                         <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer" 
                            class="group-hover:text-emerald-300 text-emerald-400 transition-colors inline-block relative text-base tracking-wide font-medium">
                           {{ c.name }}
@@ -264,10 +313,15 @@ const scrollToContent = () => {
             <div class="mb-6 pb-4 border-b border-white/[0.05] flex justify-between items-start">
               <div>
                 <div class="flex items-center justify-between mb-1">
-                  <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer" 
-                     class="block text-2xl font-light tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors">
-                    {{ c.name }}
-                  </a>
+                  <div class="flex items-center gap-4">
+                    <button @click="toggleFavorite(c.name)" class="focus:outline-none" :title="t.favorites">
+                      <Heart :class="['w-6 h-6 transition-all', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10']" />
+                    </button>
+                    <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer" 
+                       class="block text-2xl font-light tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors">
+                      {{ c.name }}
+                    </a>
+                  </div>
                   <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer" 
                      class="bg-white/5 p-2 rounded-full text-[#666] hover:text-emerald-400 transition-colors">
                     <ExternalLink class="w-4 h-4" />
@@ -321,6 +375,13 @@ const scrollToContent = () => {
         </div>
 
       </div>
+
+      <!-- Persistent Footer -->
+      <footer class="relative z-30 py-16 border-t border-white/5 bg-[#050505] text-center">
+        <p class="text-white/20 text-[10px] md:text-[11px] tracking-[0.3em] uppercase font-light">
+          © 2026 KingsleyZheng. All Rights Reserved.
+        </p>
+      </footer>
     </div>
 
   </div>
