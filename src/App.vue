@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import golfDataJson from './data/golf_courses.json'
-import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search } from 'lucide-vue-next'
+import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink } from 'lucide-vue-next'
 
 const locale = ref('zh-TW')
 
@@ -90,6 +90,14 @@ const regions = computed(() => ['全部', ...new Set(golfDataJson.map(c => c.reg
 const selectedRegion = ref('全部')
 const searchQuery = ref('')
 
+const regionCounts = computed(() => {
+  const counts = { '全部': courses.value.length }
+  courses.value.forEach(c => {
+    counts[c.region] = (counts[c.region] || 0) + 1
+  })
+  return counts
+})
+
 const filteredCourses = computed(() => {
   return courses.value.filter(c => {
     const regionMatch = selectedRegion.value === '全部' || c.region === selectedRegion.value
@@ -153,17 +161,21 @@ const scrollToContent = () => {
           <div class="flex flex-col gap-1.5 md:gap-3 flex-1 max-w-xs">
             <label class="text-xs tracking-[0.1em] text-[#888] uppercase">{{ t.region }}</label>
             <div class="relative group">
-              <select v-model="selectedRegion" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all">
-                <option v-for="r in regions" :key="r" :value="r" class="bg-[#1a1a1a] text-white text-base py-2">{{ getRegionName(r) }}</option>
+              <select v-model="selectedRegion" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
+                <option v-for="r in regions" :key="r" :value="r" class="bg-[#1a1a1a] text-white text-base py-2">
+                  {{ getRegionName(r) }} ({{ regionCounts[r] }})
+                </option>
               </select>
             </div>
           </div>
 
           <div class="flex flex-col gap-1.5 md:gap-3 flex-1 max-w-xs md:border-l border-white/10 md:pl-8">
             <label class="text-xs tracking-[0.1em] text-[#888] uppercase">{{ t.search }}</label>
-            <div class="relative group flex items-center">
-              <Search class="absolute left-0 w-4 h-4 text-[#888] pointer-events-none" />
-              <input type="text" v-model="searchQuery" :placeholder="t.search" class="w-full appearance-none bg-transparent border-none pl-7 pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none border-b border-transparent hover:border-white/20 transition-all placeholder:text-[#333]" />
+            <div class="relative group flex items-center h-[40px] overflow-hidden">
+              <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
+              <input type="text" v-model="searchQuery" :placeholder="t.search" 
+                     class="w-full bg-transparent border-none p-0 text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[40px] flex-1" />
+              <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
             </div>
           </div>
         </div>
@@ -187,15 +199,27 @@ const scrollToContent = () => {
                 <td class="py-5 px-4 align-top">
                   <div class="flex justify-between items-start pr-2">
                     <div>
-                      <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer" 
-                         class="group-hover:text-emerald-300 text-emerald-400 transition-colors inline-block relative text-base tracking-wide font-medium">
-                        {{ c.name }}
-                        <span class="absolute -bottom-1 left-0 w-full h-[1px] bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                      </a>
-                      <div class="mt-2 text-[#999] text-xs tracking-wider uppercase">{{ getRegionName(c.region) }}</div>
+                      <div class="flex items-center gap-3">
+                        <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer" 
+                           class="group-hover:text-emerald-300 text-emerald-400 transition-colors inline-block relative text-base tracking-wide font-medium">
+                          {{ c.name }}
+                          <span class="absolute -bottom-1 left-0 w-full h-[1px] bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        </a>
+                        <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer" 
+                           class="text-[#444] hover:text-emerald-400 transition-colors" title="Website">
+                          <ExternalLink class="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                      <div class="mt-2 flex flex-col gap-0.5">
+                        <div class="text-[#ccc] text-[11px] tracking-wider uppercase font-normal">{{ getRegionName(c.region) }}</div>
+                        <div v-if="c.phone" class="text-[#666] text-[11px] flex items-center gap-1.5">
+                          <Phone class="w-2.5 h-2.5" />
+                          <span>{{ c.phone }}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div v-if="c.updateDate" class="text-[10px] text-[#555] tracking-[0.1em] uppercase text-right ml-4">
-                      {{ t.update }}<br/><span class="text-[#777]">{{ c.updateDate }}</span>
+                    <div v-if="c.updateDate" class="text-[10px] text-[#999] tracking-[0.1em] uppercase text-right ml-4 font-light">
+                      {{ t.update }}<br/><span class="text-[#eee]">{{ c.updateDate }}</span>
                     </div>
                   </div>
                 </td>
@@ -239,15 +263,27 @@ const scrollToContent = () => {
             
             <div class="mb-6 pb-4 border-b border-white/[0.05] flex justify-between items-start">
               <div>
-                <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer" 
-                   class="block text-2xl font-light tracking-wide text-emerald-400 mb-1 hover:text-emerald-300 transition-colors">
-                  {{ c.name }}
-                </a>
-                <p class="text-xs text-[#999] uppercase tracking-wider">{{ getRegionName(c.region) }}</p>
+                <div class="flex items-center justify-between mb-1">
+                  <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer" 
+                     class="block text-2xl font-light tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors">
+                    {{ c.name }}
+                  </a>
+                  <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer" 
+                     class="bg-white/5 p-2 rounded-full text-[#666] hover:text-emerald-400 transition-colors">
+                    <ExternalLink class="w-4 h-4" />
+                  </a>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <p class="text-xs text-[#ccc] uppercase tracking-wider font-normal">{{ getRegionName(c.region) }}</p>
+                  <p v-if="c.phone" class="text-xs text-[#666] flex items-center gap-2">
+                    <Phone class="w-3 h-3" />
+                    {{ c.phone }}
+                  </p>
+                </div>
               </div>
-              <div v-if="c.updateDate" class="text-[10px] text-[#555] tracking-[0.1em] uppercase text-right mt-1.5 flex flex-col items-end">
+              <div v-if="c.updateDate" class="text-[10px] text-[#FFF] tracking-[0.1em] uppercase text-right mt-1.5 flex flex-col items-end font-light">
                 <span>{{ t.update }}</span>
-                <span class="text-[#777]">{{ c.updateDate }}</span>
+                <span class="text-[#eee]">{{ c.updateDate }}</span>
               </div>
             </div>
 
