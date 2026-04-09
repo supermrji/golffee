@@ -197,7 +197,7 @@ const scrollToContent = () => {
               <div class="flex items-end md:hidden">
                 <button @click="showFavoritesOnly = !showFavoritesOnly" 
                         :class="['flex items-center justify-center rounded-full border transition-all duration-200 active:scale-95 h-[38px] w-[38px]', 
-                                 showFavoritesOnly ? 'bg-red-500/20 border-red-500/60 text-red-100 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'bg-emerald-400/5 border-emerald-400/40 text-emerald-400']">
+                                 showFavoritesOnly ? 'bg-emerald-400/20 border-emerald-400/60 text-emerald-100 shadow-[0_0_15px_rgba(52,211,153,0.2)]' : 'bg-emerald-400/5 border-emerald-400/40 text-emerald-400']">
                   <Heart :class="['w-4 h-4 transition-transform duration-300', showFavoritesOnly ? 'fill-emerald-400 scale-110' : '']" />
                 </button>
               </div>
@@ -261,13 +261,13 @@ const scrollToContent = () => {
                       </div>
                       <div class="mt-2 flex flex-col gap-0.5">
                         <div class="text-[#ccc] text-[11px] tracking-wider uppercase font-normal">{{ getRegionName(c.region) }}</div>
-                        <div v-if="c.phone" class="text-[#666] text-[11px] flex items-center gap-1.5">
+                        <div v-if="c.phone" class="text-[#f4f4f4] text-[11px] flex items-center gap-1.5">
                           <Phone class="w-2.5 h-2.5" />
                           <span>{{ c.phone }}</span>
                         </div>
                       </div>
                     </div>
-                    <div v-if="c.updateDate" class="text-[10px] text-[#999] tracking-[0.1em] uppercase text-right ml-4 font-light">
+                    <div v-if="c.updateDate" class="text-[10px] text-[#f4f4f4] tracking-[0.1em] uppercase text-right ml-4 font-light">
                       {{ t.update }}<br/><span class="text-[#eee]">{{ c.updateDate }}</span>
                     </div>
                   </div>
@@ -295,7 +295,7 @@ const scrollToContent = () => {
                   <CreditCard v-if="c.hasCard" class="w-[15px] h-[15px]" title="Card" />
                 </td>
                 
-                <td class="py-5 px-4 align-top text-[#bbb] whitespace-normal leading-relaxed text-xs">
+                <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-xs">
                   <ul v-if="parseRemarks(c.remarks).length" class="list-disc pl-3 space-y-1.5 marker:text-[#444]">
                     <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
                   </ul>
@@ -329,14 +329,14 @@ const scrollToContent = () => {
                 </div>
                 <div class="flex flex-col gap-1">
                   <p class="text-xs text-[#ccc] uppercase tracking-wider font-normal">{{ getRegionName(c.region) }}</p>
-                  <p v-if="c.phone" class="text-xs text-[#666] flex items-center gap-2">
+                  <p v-if="c.phone" class="text-xs text-[#f4f4f4] flex items-center gap-2">
                     <Phone class="w-3 h-3" />
                     {{ c.phone }}
                   </p>
                 </div>
               </div>
               <div v-if="c.updateDate" class="text-[10px] text-[#FFF] tracking-[0.1em] uppercase text-right mt-1.5 flex flex-col items-end font-light">
-                <span>{{ t.update }}</span>
+                <span >{{ t.update }}</span>
                 <span class="text-[#eee]">{{ c.updateDate }}</span>
               </div>
             </div>
@@ -366,7 +366,7 @@ const scrollToContent = () => {
 
             <div v-if="parseRemarks(c.remarks).length" class="pt-4 border-t border-white/[0.05]">
               <p class="text-xs text-[#888] uppercase tracking-wider mb-3">{{ t.remarks }}</p>
-              <ul class="list-disc pl-3 space-y-2 text-xs text-[#bbb] leading-relaxed marker:text-[#444]">
+              <ul class="list-disc pl-3 space-y-2 text-xs text-[#f4f4f4] leading-relaxed marker:text-[#444]">
                 <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
               </ul>
             </div>
