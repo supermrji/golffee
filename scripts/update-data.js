@@ -20,10 +20,11 @@ function fetchData(url) {
             return fetchData(res.headers.location);
         }
 
-        let data = '';
-        res.on('data', (chunk) => { data += chunk; });
+        let chunks = [];
+        res.on('data', (chunk) => { chunks.push(chunk); });
         res.on('end', () => {
             try {
+                const data = Buffer.concat(chunks).toString('utf8');
                 const parsed = JSON.parse(data);
                 fs.writeFileSync('./src/data/golf_courses.json', JSON.stringify(parsed, null, 2));
                 console.log('✅ 資料更新成功！共抓取 ' + (Array.isArray(parsed) ? parsed.length : 1) + ' 筆球場資料。');
