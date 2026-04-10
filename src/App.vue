@@ -183,7 +183,7 @@ const scrollToContent = () => {
             <!-- Row 1 (Mobile): Region + Favorites -->
             <div class="flex items-center gap-3 w-full md:w-auto md:flex-1 md:max-w-xs">
               <div class="flex flex-col gap-1.5 md:gap-3 flex-1">
-                <label class="text-xs tracking-[0.1em] text-[#888] uppercase hidden md:block">{{ t.region }}</label>
+                <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.region }}</label>
                 <div class="relative group">
                   <select v-model="selectedRegion" class="w-full appearance-none bg-transparent border-none pb-1.5 md:pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
                     <option v-for="r in regions" :key="r" :value="r" class="bg-[#1a1a1a] text-white text-base py-2">
@@ -205,7 +205,7 @@ const scrollToContent = () => {
 
             <!-- Row 2 (Mobile): Search -->
             <div class="flex flex-col gap-1.5 md:gap-3 flex-1 md:max-w-xs md:border-l border-white/10 md:pl-8">
-              <label class="text-xs tracking-[0.1em] text-[#888] uppercase hidden md:block">{{ t.search }}</label>
+              <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
               <div class="relative group flex items-center h-[38px] md:h-[40px] overflow-hidden">
                 <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
                 <input type="text" v-model="searchQuery" :placeholder="t.search" 
