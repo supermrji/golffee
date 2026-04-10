@@ -201,8 +201,8 @@ const scrollToContent = () => {
         <div class="sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 md:px-12 md:-mx-12 pt-4 md:pt-8 pb-3 md:pb-6 shadow-sm overflow-hidden">
           
           <div class="flex flex-col gap-3 md:gap-8 md:flex-row">
-            
-            <!-- Row 1 (Mobile): Region + Favorites -->
+
+            <!-- Mobile Row 1: Region + Sort + Favorites / Desktop: Region -->
             <div class="flex items-center gap-3 w-full md:w-auto md:flex-1 md:max-w-xs">
               <div class="flex flex-col gap-1.5 md:gap-3 flex-1">
                 <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.region }}</label>
@@ -215,32 +215,43 @@ const scrollToContent = () => {
                 </div>
               </div>
 
-              <!-- Favorites Toggle (Mobile: Next to Region, Desktop: End of row) -->
+              <!-- Mobile: Sort (beside Region) -->
+              <div class="flex flex-col gap-1.5 flex-1 md:hidden">
+                <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none">{{ t.sort }}</label>
+                <select v-model="sortBy" class="w-full appearance-none bg-transparent border-none pb-1.5 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
+                  <option value="default" class="bg-[#1a1a1a] text-white text-base">{{ t.sortDefault }}</option>
+                  <option value="guestWk" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestWk }}</option>
+                  <option value="guestHol" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestHol }}</option>
+                  <option value="member" class="bg-[#1a1a1a] text-white text-base">{{ t.sortMember }}</option>
+                </select>
+              </div>
+
+              <!-- Favorites Toggle (Mobile only) -->
               <div class="flex items-end md:hidden">
-                <button @click="showFavoritesOnly = !showFavoritesOnly" 
-                        :class="['flex items-center justify-center rounded-full border transition-all duration-200 active:scale-95 h-[38px] w-[38px]', 
+                <button @click="showFavoritesOnly = !showFavoritesOnly"
+                        :class="['flex items-center justify-center rounded-full border transition-all duration-200 active:scale-95 h-[38px] w-[38px]',
                                  showFavoritesOnly ? 'bg-emerald-400/20 border-emerald-400/60 text-emerald-100 shadow-[0_0_15px_rgba(52,211,153,0.2)]' : 'bg-emerald-400/5 border-emerald-400/40 text-emerald-400']">
                   <Heart :class="['w-4 h-4 transition-transform duration-300', showFavoritesOnly ? 'fill-emerald-400 scale-110' : '']" />
                 </button>
               </div>
             </div>
 
-            <!-- Row 2 (Mobile): Search -->
+            <!-- Row 2 (Mobile) / Desktop: Search -->
             <div class="flex flex-col gap-1.5 md:gap-3 flex-1 md:max-w-xs md:border-l border-white/10 md:pl-8">
               <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
               <div class="relative group flex items-center h-[38px] md:h-[40px] overflow-hidden">
                 <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
-                <input type="text" v-model="searchQuery" :placeholder="t.search" 
+                <input type="text" v-model="searchQuery" :placeholder="t.search"
                        class="w-full bg-transparent border-none p-0 text-xl md:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[40px] flex-1" />
                 <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
               </div>
             </div>
 
-            <!-- Sort -->
-            <div class="flex flex-col gap-1.5 md:gap-3 w-full md:w-auto md:max-w-[140px] md:border-l border-white/10 md:pl-8">
-              <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.sort }}</label>
+            <!-- Desktop only: Sort -->
+            <div class="hidden md:flex flex-col gap-3 w-auto max-w-[140px] border-l border-white/10 pl-8">
+              <label class="text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.sort }}</label>
               <div class="relative group">
-                <select v-model="sortBy" class="w-full appearance-none bg-transparent border-none pb-1.5 md:pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
+                <select v-model="sortBy" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
                   <option value="default" class="bg-[#1a1a1a] text-white text-base">{{ t.sortDefault }}</option>
                   <option value="guestWk" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestWk }}</option>
                   <option value="guestHol" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestHol }}</option>
@@ -249,7 +260,7 @@ const scrollToContent = () => {
               </div>
             </div>
 
-            <!-- Row 1 (Desktop): Favorites Toggle at the end -->
+            <!-- Desktop only: Favorites Toggle -->
             <div class="hidden md:flex items-end md:pb-1">
               <button @click="showFavoritesOnly = !showFavoritesOnly" 
                       :class="['flex items-center gap-2.5 px-6 py-2.5 rounded-full border transition-all duration-200 active:scale-95 h-[40px]', 
