@@ -31,7 +31,11 @@ const dict = {
     sortDefault: '預設',
     sortGuestWk: '來賓平日 低→高',
     sortGuestHol: '來賓假日 低→高',
-    sortMember: '會員 低→高'
+    sortMember: '會員 低→高',
+    golfDay: '球場日',
+    golfDayAll: '全部',
+    golfDayToday: '今天',
+    noGolfDay: '無固定'
   },
   'en': {
     title: 'Golf Fees.',
@@ -58,7 +62,11 @@ const dict = {
     sortDefault: 'Default',
     sortGuestWk: 'Guest Wk ↓',
     sortGuestHol: 'Guest Hol ↓',
-    sortMember: 'Member ↓'
+    sortMember: 'Member ↓',
+    golfDay: 'Golf Day',
+    golfDayAll: 'All',
+    golfDayToday: 'Today',
+    noGolfDay: 'Varies'
   }
 }
 
@@ -107,6 +115,10 @@ const selectedRegion = ref('全部')
 const searchQuery = ref('')
 const sortBy = ref('default')
 
+const weekdays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六']
+const todayWeekday = weekdays[new Date().getDay()]
+const selectedGolfDay = ref('全部')
+
 const parseNum = (v) => {
   const n = parseInt(v)
   return isNaN(n) ? Infinity : n
@@ -140,12 +152,22 @@ const filteredCourses = computed(() => {
     const regionMatch = selectedRegion.value === '全部' || c.region === selectedRegion.value
     const searchMatch = !searchQuery.value || c.name.toLowerCase().includes(searchQuery.value.trim().toLowerCase())
     const favoriteMatch = !showFavoritesOnly.value || isFavorite(c.name)
-    return regionMatch && searchMatch && favoriteMatch
+    const golfDayMatch = selectedGolfDay.value === '全部' || c.golfDay === selectedGolfDay.value
+    return regionMatch && searchMatch && favoriteMatch && golfDayMatch
   })
   if (sortBy.value === 'guestWk')  return [...list].sort((a, b) => parseNum(a.guestWeekday) - parseNum(b.guestWeekday))
   if (sortBy.value === 'guestHol') return [...list].sort((a, b) => parseNum(a.guestHoliday) - parseNum(b.guestHoliday))
   if (sortBy.value === 'member')   return [...list].sort((a, b) => parseNum(a.member) - parseNum(b.member))
   return list
+})
+
+const showFilterPanel = ref(false)
+
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (sortBy.value !== 'default') count++
+  if (selectedGolfDay.value !== '全部') count++
+  return count
 })
 
 const getMapUrl = (name) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' 高爾夫')}`
@@ -202,7 +224,7 @@ const scrollToContent = () => {
           
           <div class="flex flex-col gap-3 md:gap-8 md:flex-row">
 
-            <!-- Mobile Row 1: Region + Sort + Favorites / Desktop: Region -->
+            <!-- Row 1: Region + Favorites (Mobile) / Region (Desktop) -->
             <div class="flex items-center gap-3 w-full md:w-auto md:flex-1 md:max-w-xs">
               <div class="flex flex-col gap-1.5 md:gap-3 flex-1">
                 <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.region }}</label>
@@ -215,18 +237,7 @@ const scrollToContent = () => {
                 </div>
               </div>
 
-              <!-- Mobile: Sort (beside Region) -->
-              <div class="flex flex-col gap-1.5 flex-1 md:hidden">
-                <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none">{{ t.sort }}</label>
-                <select v-model="sortBy" class="w-full appearance-none bg-transparent border-none pb-1.5 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
-                  <option value="default" class="bg-[#1a1a1a] text-white text-base">{{ t.sortDefault }}</option>
-                  <option value="guestWk" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestWk }}</option>
-                  <option value="guestHol" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestHol }}</option>
-                  <option value="member" class="bg-[#1a1a1a] text-white text-base">{{ t.sortMember }}</option>
-                </select>
-              </div>
-
-              <!-- Favorites Toggle (Mobile only) -->
+              <!-- Mobile only: Favorites -->
               <div class="flex items-end md:hidden">
                 <button @click="showFavoritesOnly = !showFavoritesOnly"
                         :class="['flex items-center justify-center rounded-full border transition-all duration-200 active:scale-95 h-[38px] w-[38px]',
@@ -236,14 +247,71 @@ const scrollToContent = () => {
               </div>
             </div>
 
-            <!-- Row 2 (Mobile) / Desktop: Search -->
-            <div class="flex flex-col gap-1.5 md:gap-3 flex-1 md:max-w-xs md:border-l border-white/10 md:pl-8">
-              <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
-              <div class="relative group flex items-center h-[38px] md:h-[40px] overflow-hidden">
-                <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
-                <input type="text" v-model="searchQuery" :placeholder="t.search"
-                       class="w-full bg-transparent border-none p-0 text-xl md:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[40px] flex-1" />
-                <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
+            <!-- Row 2 (Mobile): Search + 篩選 button / Desktop: Search -->
+            <div class="flex items-end gap-3 md:gap-0 flex-1 md:max-w-xs md:border-l border-white/10 md:pl-8">
+              <div class="flex flex-col gap-1.5 md:gap-3 flex-1">
+                <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
+                <div class="relative group flex items-center h-[38px] md:h-[40px] overflow-hidden">
+                  <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
+                  <input type="text" v-model="searchQuery" :placeholder="t.search"
+                         class="w-full bg-transparent border-none p-0 text-xl md:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[40px] flex-1" />
+                  <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
+                </div>
+              </div>
+
+              <!-- Mobile only: 篩選 button -->
+              <div class="flex items-end md:hidden pb-1.5">
+                <button @click="showFilterPanel = !showFilterPanel"
+                        :class="['relative flex items-center gap-1.5 px-3 h-[34px] border text-[11px] tracking-widest uppercase transition-all duration-200',
+                                 showFilterPanel || activeFilterCount > 0 ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/20 text-[#888]']">
+                  <span>篩選</span>
+                  <span v-if="activeFilterCount > 0" class="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-400 text-black text-[10px] font-bold leading-none">{{ activeFilterCount }}</span>
+                  <ChevronDown :class="['w-3 h-3 transition-transform duration-200', showFilterPanel ? 'rotate-180' : '']" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Mobile only: 篩選 Panel -->
+            <div v-if="showFilterPanel" class="md:hidden flex flex-col gap-4 pt-1 pb-2 border-t border-white/10">
+              <!-- Golf Day Chips -->
+              <div>
+                <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none block mb-2">{{ t.golfDay }}</label>
+                <div class="flex flex-wrap gap-2">
+                  <button @click="selectedGolfDay = '全部'"
+                          :class="['px-3 py-1 text-xs border tracking-wider transition-all', selectedGolfDay === '全部' ? 'border-white/40 text-white bg-white/10' : 'border-white/10 text-[#666]']">
+                    {{ t.golfDayAll }}
+                  </button>
+                  <button v-for="d in weekdays.slice(1).concat([weekdays[0]])" :key="d"
+                          @click="selectedGolfDay = d"
+                          :class="['px-3 py-1 text-xs border tracking-wider transition-all',
+                                   selectedGolfDay === d ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/10 text-[#666]']">
+                    {{ d }}{{ d === todayWeekday ? ' ★' : '' }}
+                  </button>
+                </div>
+              </div>
+              <!-- Sort Chips -->
+              <div>
+                <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none block mb-2">{{ t.sort }}</label>
+                <div class="flex flex-wrap gap-2">
+                  <button v-for="(label, val) in { default: t.sortDefault, guestWk: t.sortGuestWk, guestHol: t.sortGuestHol, member: t.sortMember }" :key="val"
+                          @click="sortBy = val"
+                          :class="['px-3 py-1 text-xs border tracking-wider transition-all', sortBy === val ? 'border-white/40 text-white bg-white/10' : 'border-white/10 text-[#666]']">
+                    {{ label }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Desktop only: Golf Day -->
+            <div class="hidden md:flex flex-col gap-3 w-auto max-w-[120px] border-l border-white/10 pl-8">
+              <label class="text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.golfDay }}</label>
+              <div class="relative group">
+                <select v-model="selectedGolfDay" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
+                  <option value="全部" class="bg-[#1a1a1a] text-white text-base">{{ t.golfDayAll }}</option>
+                  <option v-for="d in weekdays.slice(1).concat([weekdays[0]])" :key="d" :value="d" class="bg-[#1a1a1a] text-white text-base">
+                    {{ d }}{{ d === todayWeekday ? ' ★' : '' }}
+                  </option>
+                </select>
               </div>
             </div>
 
@@ -291,19 +359,20 @@ const scrollToContent = () => {
                 <td class="py-5 px-4 align-top">
                   <div class="flex justify-between items-start pr-2">
                     <div>
-                      <div class="flex items-center gap-3">
-                        <button @click="toggleFavorite(c.name)" class="focus:outline-none group/fav" :title="t.favorites">
+                      <div class="flex items-center gap-2 min-w-0">
+                        <button @click="toggleFavorite(c.name)" class="focus:outline-none group/fav flex-shrink-0" :title="t.favorites">
                           <Heart :class="['w-4 h-4 transition-all duration-300', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10 group-hover/fav:text-white/40']" />
                         </button>
-                        <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer" 
-                           class="group-hover:text-emerald-300 text-emerald-400 transition-colors inline-block relative text-base tracking-wide font-medium">
+                        <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer"
+                           class="group-hover:text-emerald-300 text-emerald-400 transition-colors relative text-base tracking-wide font-medium truncate min-w-0">
                           {{ c.name }}
                           <span class="absolute -bottom-1 left-0 w-full h-[1px] bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                         </a>
-                        <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer" 
-                           class="text-[#444] hover:text-emerald-400 transition-colors" title="Website">
+                        <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer"
+                           class="text-[#444] hover:text-emerald-400 transition-colors flex-shrink-0" title="Website">
                           <ExternalLink class="w-3.5 h-3.5" />
                         </a>
+                        <span v-if="c.golfDay" :class="['flex-shrink-0 text-[10px] px-1.5 py-0.5 leading-none tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#666] border-white/10']">⛳ {{ c.golfDay }}</span>
                       </div>
                       <div class="mt-2 flex flex-col gap-0.5">
                         <div class="flex items-center gap-2">
@@ -377,9 +446,10 @@ const scrollToContent = () => {
                   </a>
                 </div>
                 <div class="flex flex-col gap-1">
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 flex-wrap">
                     <p class="text-xs text-[#ccc] uppercase tracking-wider font-normal">{{ getRegionName(c.region) }}</p>
-                    <span v-if="c.holes" class="text-[10px] text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider">{{ c.holes }}H</span>
+                    <span v-if="c.holes" class="text-[10px] text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider whitespace-nowrap">{{ c.holes }}H</span>
+                    <span v-if="c.golfDay" :class="['text-[10px] px-1.5 py-0.5 leading-none tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#888] border-white/10']">⛳ {{ c.golfDay }}</span>
                   </div>
                   <p v-if="c.phone" class="text-xs text-[#f4f4f4] flex items-center gap-2">
                     <Phone class="w-3 h-3" />
