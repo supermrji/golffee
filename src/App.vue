@@ -35,7 +35,10 @@ const dict = {
     golfDay: '球場日',
     golfDayAll: '全部',
     golfDayToday: '今天',
-    noGolfDay: '無固定'
+    noGolfDay: '無固定',
+    closed: '已停業',
+    noResult: '找不到符合條件的球場',
+    noResultSub: '試試調整篩選條件'
   },
   'en': {
     title: 'Golf Fees.',
@@ -66,7 +69,10 @@ const dict = {
     golfDay: 'Golf Day',
     golfDayAll: 'All',
     golfDayToday: 'Today',
-    noGolfDay: 'Varies'
+    noGolfDay: 'Varies',
+    closed: 'Closed',
+    noResult: 'No courses found',
+    noResultSub: 'Try adjusting your filters'
   }
 }
 
@@ -355,7 +361,13 @@ const scrollToContent = () => {
               </tr>
             </thead>
             <tbody class="text-sm font-light">
-              <tr v-for="c in filteredCourses" :key="c.name" class="border-b border-white/[0.08] even:bg-[#1a1a1a] odd:bg-[#111111] hover:bg-[#262626] transition-colors group">
+              <tr v-if="filteredCourses.length === 0">
+                <td colspan="7" class="py-24 text-center">
+                  <p class="text-white/40 text-base">{{ t.noResult }}</p>
+                  <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
+                </td>
+              </tr>
+              <tr v-for="c in filteredCourses" :key="c.name" :class="['border-b border-white/[0.08] transition-colors group', c.status === 'closed' ? 'opacity-60 even:bg-[#1a1a1a] odd:bg-[#111111]' : 'even:bg-[#1a1a1a] odd:bg-[#111111] hover:bg-[#262626]']">
                 <td class="py-5 px-4 align-top">
                   <div class="flex justify-between items-start pr-2">
                     <div>
@@ -385,8 +397,11 @@ const scrollToContent = () => {
                         </div>
                       </div>
                     </div>
-                    <div v-if="c.updateDate" class="text-[10px] text-[#f4f4f4] tracking-[0.1em] uppercase text-right ml-4 font-light">
-                      {{ t.update }}<br/><span class="text-[#eee]">{{ c.updateDate }}</span>
+                    <div class="text-right ml-4 flex flex-col items-end gap-2">
+                      <span v-if="c.status === 'closed'" class="text-[10px] px-2 py-1 leading-none tracking-wider bg-red-500/80 text-white whitespace-nowrap font-medium">{{ t.closed }}</span>
+                      <div v-if="c.updateDate" class="text-[10px] text-[#f4f4f4] tracking-[0.1em] uppercase font-light">
+                        {{ t.update }}<br/><span class="text-[#eee]">{{ c.updateDate }}</span>
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -425,8 +440,12 @@ const scrollToContent = () => {
         </div>
 
         <!-- Mobile Architecture (Hidden on large screens) -->
+        <div v-if="filteredCourses.length === 0" class="lg:hidden py-24 text-center">
+          <p class="text-white/40 text-base">{{ t.noResult }}</p>
+          <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:hidden">
-          <div v-for="c in filteredCourses" :key="c.name" class="p-6 bg-[#0a0a0a] border border-white/[0.05] group">
+          <div v-for="c in filteredCourses" :key="c.name" :class="['p-6 border border-white/[0.05] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
             
             <div class="mb-6 pb-4 border-b border-white/[0.05] flex justify-between items-start">
               <div>
@@ -457,9 +476,12 @@ const scrollToContent = () => {
                   </p>
                 </div>
               </div>
-              <div v-if="c.updateDate" class="text-[10px] text-[#FFF] tracking-[0.1em] uppercase text-right mt-1.5 flex flex-col items-end font-light">
-                <span >{{ t.update }}</span>
-                <span class="text-[#eee]">{{ c.updateDate }}</span>
+              <div class="text-right mt-1.5 flex flex-col items-end gap-2 flex-shrink-0 ml-3">
+                <span v-if="c.status === 'closed'" class="text-[10px] px-2 py-1 leading-none tracking-wider bg-red-500/80 text-white whitespace-nowrap font-medium">{{ t.closed }}</span>
+                <div v-if="c.updateDate && c.status !== 'closed'" class="text-[10px] text-[#FFF] tracking-[0.1em] uppercase flex flex-col items-end font-light">
+                  <span>{{ t.update }}</span>
+                  <span class="text-[#eee]">{{ c.updateDate }}</span>
+                </div>
               </div>
             </div>
 
