@@ -25,7 +25,8 @@ const dict = {
     update: '更新',
     noData: '無資料',
     favorites: '我的最愛',
-    favOnly: '僅顯示最愛'
+    favOnly: '僅顯示最愛',
+    holes: '洞數'
   },
   'en': {
     title: 'Golf Fees.',
@@ -46,7 +47,8 @@ const dict = {
     update: 'Updated',
     noData: '-',
     favorites: 'Favorites',
-    favOnly: 'Fav Only'
+    favOnly: 'Fav Only',
+    holes: 'Holes'
   }
 }
 
@@ -260,7 +262,10 @@ const scrollToContent = () => {
                         </a>
                       </div>
                       <div class="mt-2 flex flex-col gap-0.5">
-                        <div class="text-[#ccc] text-[11px] tracking-wider uppercase font-normal">{{ getRegionName(c.region) }}</div>
+                        <div class="flex items-center gap-2">
+                          <div class="text-[#ccc] text-[11px] tracking-wider uppercase font-normal">{{ getRegionName(c.region) }}</div>
+                          <span v-if="c.holes" class="text-[10px] text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider">{{ c.holes }}H</span>
+                        </div>
                         <div v-if="c.phone" class="text-[#f4f4f4] text-[11px] flex items-center gap-1.5">
                           <Phone class="w-2.5 h-2.5" />
                           <span>{{ c.phone }}</span>
@@ -328,7 +333,10 @@ const scrollToContent = () => {
                   </a>
                 </div>
                 <div class="flex flex-col gap-1">
-                  <p class="text-xs text-[#ccc] uppercase tracking-wider font-normal">{{ getRegionName(c.region) }}</p>
+                  <div class="flex items-center gap-2">
+                    <p class="text-xs text-[#ccc] uppercase tracking-wider font-normal">{{ getRegionName(c.region) }}</p>
+                    <span v-if="c.holes" class="text-[10px] text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider">{{ c.holes }}H</span>
+                  </div>
                   <p v-if="c.phone" class="text-xs text-[#f4f4f4] flex items-center gap-2">
                     <Phone class="w-3 h-3" />
                     {{ c.phone }}
