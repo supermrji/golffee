@@ -359,15 +359,21 @@ const scrollToContent = () => {
                 <p class="text-base text-white tracking-wide">{{ formatPrice(c.member) }}</p>
               </div>
               <div>
+                <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.mGuest }}</p>
+                <p class="text-sm text-[#eee]">{{ formatPrice(c.memberGuestWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.memberGuestHoliday) }}</p>
+              </div>
+              <div>
                 <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.team }}</p>
                 <p class="text-sm text-[#eee]">{{ formatPrice(c.teamWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.teamHoliday) }}</p>
               </div>
-              <div class="col-span-1">
-                <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.amenities }}</p>
-                <div class="flex gap-4 text-[#888] mt-1">
-                  <Utensils v-if="c.hasRestaurant" class="w-4 h-4" />
-                  <Droplets v-if="c.hasWater" class="w-4 h-4" />
-                  <CreditCard v-if="c.hasCard" class="w-4 h-4" />
+              <div class="col-span-2 flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.amenities }}</p>
+                  <div class="flex gap-4 text-[#888] mt-1">
+                    <Utensils v-if="c.hasRestaurant" class="w-4 h-4" />
+                    <Droplets v-if="c.hasWater" class="w-4 h-4" />
+                    <CreditCard v-if="c.hasCard" class="w-4 h-4" />
+                  </div>
                 </div>
               </div>
             </div>
