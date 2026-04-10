@@ -26,7 +26,12 @@ const dict = {
     noData: '無資料',
     favorites: '我的最愛',
     favOnly: '僅顯示最愛',
-    holes: '洞數'
+    holes: '洞數',
+    sort: '排序',
+    sortDefault: '預設',
+    sortGuestWk: '來賓平日 低→高',
+    sortGuestHol: '來賓假日 低→高',
+    sortMember: '會員 低→高'
   },
   'en': {
     title: 'Golf Fees.',
@@ -48,7 +53,12 @@ const dict = {
     noData: '-',
     favorites: 'Favorites',
     favOnly: 'Fav Only',
-    holes: 'Holes'
+    holes: 'Holes',
+    sort: 'Sort',
+    sortDefault: 'Default',
+    sortGuestWk: 'Guest Wk ↓',
+    sortGuestHol: 'Guest Hol ↓',
+    sortMember: 'Member ↓'
   }
 }
 
@@ -95,6 +105,12 @@ const regions = computed(() => ['全部', ...new Set(golfDataJson.map(c => c.reg
 
 const selectedRegion = ref('全部')
 const searchQuery = ref('')
+const sortBy = ref('default')
+
+const parseNum = (v) => {
+  const n = parseInt(v)
+  return isNaN(n) ? Infinity : n
+}
 
 const regionCounts = computed(() => {
   const counts = { '全部': courses.value.length }
@@ -120,12 +136,16 @@ const toggleFavorite = (name) => {
 const isFavorite = (name) => favorites.value.includes(name)
 
 const filteredCourses = computed(() => {
-  return courses.value.filter(c => {
+  const list = courses.value.filter(c => {
     const regionMatch = selectedRegion.value === '全部' || c.region === selectedRegion.value
     const searchMatch = !searchQuery.value || c.name.toLowerCase().includes(searchQuery.value.trim().toLowerCase())
     const favoriteMatch = !showFavoritesOnly.value || isFavorite(c.name)
     return regionMatch && searchMatch && favoriteMatch
   })
+  if (sortBy.value === 'guestWk')  return [...list].sort((a, b) => parseNum(a.guestWeekday) - parseNum(b.guestWeekday))
+  if (sortBy.value === 'guestHol') return [...list].sort((a, b) => parseNum(a.guestHoliday) - parseNum(b.guestHoliday))
+  if (sortBy.value === 'member')   return [...list].sort((a, b) => parseNum(a.member) - parseNum(b.member))
+  return list
 })
 
 const getMapUrl = (name) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' 高爾夫')}`
@@ -213,6 +233,19 @@ const scrollToContent = () => {
                 <input type="text" v-model="searchQuery" :placeholder="t.search" 
                        class="w-full bg-transparent border-none p-0 text-xl md:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[40px] flex-1" />
                 <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
+              </div>
+            </div>
+
+            <!-- Sort -->
+            <div class="flex flex-col gap-1.5 md:gap-3 w-full md:w-auto md:max-w-[140px] md:border-l border-white/10 md:pl-8">
+              <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.sort }}</label>
+              <div class="relative group">
+                <select v-model="sortBy" class="w-full appearance-none bg-transparent border-none pb-1.5 md:pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
+                  <option value="default" class="bg-[#1a1a1a] text-white text-base">{{ t.sortDefault }}</option>
+                  <option value="guestWk" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestWk }}</option>
+                  <option value="guestHol" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestHol }}</option>
+                  <option value="member" class="bg-[#1a1a1a] text-white text-base">{{ t.sortMember }}</option>
+                </select>
               </div>
             </div>
 
