@@ -665,6 +665,25 @@
     "remarks": "平日8:30前會員1640，來賓2375。 20人以上平日2500、假日3175，優惠一位平日2040、假日2240。 會員3人一組擊球，早球8:30前1840,平假日均1940。 會員2人一組擊球，早球8:30前1940,平日2040、假日2190。"
   },
   {
+    "name": "全國",
+    "phone": "037-741166#3262",
+    "region": "新竹、苗栗",
+    "holes": "18",
+    "website": "",
+    "hasCard": true,
+    "hasWater": false,
+    "hasRestaurant": false,
+    "member": "1870",
+    "guestWeekday": "4000",
+    "guestHoliday": "4700",
+    "memberGuestWeekday": "3000",
+    "memberGuestHoliday": "3355",
+    "teamWeekday": "2620",
+    "teamHoliday": "2620",
+    "updateDate": "115.1.7",
+    "remarks": "平日7:30前2450(假日無早球優惠)。20人以上來電預約有優惠。會員生日當月享免果嶺費優惠劵。會員滿70歲享優惠。上述擊球收費含果嶺、桿弟、球車、什費..等。"
+  },
+  {
     "name": "清泉崗(CCK)",
     "phone": "04-26200134#31",
     "region": "台中、彰化、南投",
