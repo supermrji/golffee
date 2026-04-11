@@ -597,7 +597,7 @@ onUnmounted(() => {
             <p class="text-white/40 text-base">{{ t.noResult }}</p>
             <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 items-start">
           <div v-for="c in filteredCourses" :key="c.name" :class="['p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
             
             <div class="mb-6 pb-4 border-b border-white/[0.12] flex justify-between items-start">
@@ -666,9 +666,16 @@ onUnmounted(() => {
             </div>
 
             <div v-if="parseRemarks(c.remarks).length" class="pt-4 border-t border-white/[0.12]">
-              <p class="text-xs text-[#888] uppercase tracking-wider mb-3">{{ t.remarks }}</p>
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-xs text-[#888] uppercase tracking-wider">{{ t.remarks }}</p>
+                <button v-if="parseRemarks(c.remarks).length > 3"
+                        @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
+                        class="px-2 py-0.5 text-xs border border-white/20 text-[#888] hover:border-emerald-400/60 hover:text-emerald-400 transition-all tracking-wide">
+                  {{ expandedRemarks.has(c.name) ? '▲ 收起' : `▼ +${parseRemarks(c.remarks).length - 3} 更多` }}
+                </button>
+              </div>
               <ul class="list-disc pl-3 space-y-2 text-sm text-[#f4f4f4] leading-relaxed marker:text-[#444]">
-                <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
+                <li v-for="(rm, idx) in (expandedRemarks.has(c.name) ? parseRemarks(c.remarks) : parseRemarks(c.remarks).slice(0, 3))" :key="idx" v-html="highlightMoney(rm)"></li>
               </ul>
             </div>
 
