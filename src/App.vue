@@ -575,13 +575,15 @@ onUnmounted(() => {
                 
                 <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
                   <template v-if="parseRemarks(c.remarks).length">
-                    <ul class="list-disc pl-3 space-y-1.5 marker:text-[#444]">
-                      <li v-for="(rm, idx) in (expandedRemarks.has(c.name) ? parseRemarks(c.remarks) : parseRemarks(c.remarks).slice(0, 3))" :key="idx" v-html="highlightMoney(rm)"></li>
-                    </ul>
-                    <button v-if="parseRemarks(c.remarks).length > 3"
+                    <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'">
+                      <ul class="list-disc pl-3 space-y-1.5 marker:text-[#444]">
+                        <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
+                      </ul>
+                    </div>
+                    <button v-if="parseRemarks(c.remarks).length > 2"
                             @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
                             class="mt-3 px-2.5 py-1 text-xs border border-white/20 text-[#888] hover:border-emerald-400/60 hover:text-emerald-400 transition-all tracking-wide">
-                      {{ expandedRemarks.has(c.name) ? '▲ 收起' : `▼ +${parseRemarks(c.remarks).length - 3} 更多` }}
+                      {{ expandedRemarks.has(c.name) ? '▲ 收起' : '▼ 展開' }}
                     </button>
                   </template>
                   <span v-else>{{ t.noData }}</span>
@@ -668,15 +670,17 @@ onUnmounted(() => {
             <div v-if="parseRemarks(c.remarks).length" class="pt-4 border-t border-white/[0.12]">
               <div class="flex items-center justify-between mb-3">
                 <p class="text-xs text-[#888] uppercase tracking-wider">{{ t.remarks }}</p>
-                <button v-if="parseRemarks(c.remarks).length > 3"
+                <button v-if="parseRemarks(c.remarks).length > 2"
                         @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
                         class="px-2 py-0.5 text-xs border border-white/20 text-[#888] hover:border-emerald-400/60 hover:text-emerald-400 transition-all tracking-wide">
-                  {{ expandedRemarks.has(c.name) ? '▲ 收起' : `▼ +${parseRemarks(c.remarks).length - 3} 更多` }}
+                  {{ expandedRemarks.has(c.name) ? '▲ 收起' : '▼ 展開' }}
                 </button>
               </div>
-              <ul class="list-disc pl-3 space-y-2 text-sm text-[#f4f4f4] leading-relaxed marker:text-[#444]">
-                <li v-for="(rm, idx) in (expandedRemarks.has(c.name) ? parseRemarks(c.remarks) : parseRemarks(c.remarks).slice(0, 3))" :key="idx" v-html="highlightMoney(rm)"></li>
-              </ul>
+              <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'">
+                <ul class="list-disc pl-3 space-y-2 text-sm text-[#f4f4f4] leading-relaxed marker:text-[#444]">
+                  <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
+                </ul>
+              </div>
             </div>
 
           </div>
