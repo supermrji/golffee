@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import golfDataJson from './data/golf_courses.json'
 import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart } from 'lucide-vue-next'
 
@@ -231,6 +231,7 @@ const regionCounts = computed(() => {
 
 const favorites = ref(JSON.parse(localStorage.getItem('golffee_favorites') || '[]'))
 const showFavoritesOnly = ref(false)
+const expandedRemarks = reactive(new Set())
 
 const toggleFavorite = (name) => {
   const idx = favorites.value.indexOf(name)
@@ -573,9 +574,16 @@ onUnmounted(() => {
                 </td>
                 
                 <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
-                  <ul v-if="parseRemarks(c.remarks).length" class="list-disc pl-3 space-y-1.5 marker:text-[#444]">
-                    <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
-                  </ul>
+                  <template v-if="parseRemarks(c.remarks).length">
+                    <ul class="list-disc pl-3 space-y-1.5 marker:text-[#444]">
+                      <li v-for="(rm, idx) in (expandedRemarks.has(c.name) ? parseRemarks(c.remarks) : parseRemarks(c.remarks).slice(0, 3))" :key="idx" v-html="highlightMoney(rm)"></li>
+                    </ul>
+                    <button v-if="parseRemarks(c.remarks).length > 3"
+                            @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
+                            class="mt-2 text-xs text-[#666] hover:text-emerald-400 transition-colors tracking-wide">
+                      {{ expandedRemarks.has(c.name) ? '收起' : `+${parseRemarks(c.remarks).length - 3} 更多` }}
+                    </button>
+                  </template>
                   <span v-else>{{ t.noData }}</span>
                 </td>
               </tr>
