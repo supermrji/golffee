@@ -333,7 +333,7 @@ onUnmounted(() => {
 
 <template>
   <div class="relative flex flex-col min-h-screen bg-[#050505] text-[#f4f4f4] font-sans selection:bg-emerald-500 selection:text-white">
-    
+
     <!-- Top-Left Install Button (Mobile, non-standalone only) -->
     <button v-if="!isStandalone"
             @click="showInstallGuide = true"
@@ -358,7 +358,7 @@ onUnmounted(() => {
 
     <!-- Hero Section (Compressed to 70vh) -->
     <div class="relative h-[70vh] w-full flex flex-col items-center justify-center pb-12 pt-24">
-      
+
       <!-- Background Image Layer -->
       <div class="absolute inset-0 z-0">
         <img src="./assets/hero-bg.png" alt="Golf Course Hero" class="w-full h-full object-cover object-center opacity-70" />
@@ -383,8 +383,8 @@ onUnmounted(() => {
 
     <!-- Content Section (Floating Over Hero via -mt-32) -->
     <div id="content-layer" class="relative z-20 flex flex-col flex-1 -mt-24 pt-0 bg-[#050505] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
-      <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 pb-32 min-h-screen">
-        
+      <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 pb-12 min-h-screen">
+
         <!-- Filter Controls (Sticky) -->
         <div id="filter-bar" :class="['sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 lg:px-12 lg:-mx-12 pt-4 lg:pt-8 pb-3 lg:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full lg:translate-y-0' : '']">
 
@@ -582,13 +582,13 @@ onUnmounted(() => {
                 <td class="py-5 px-4 align-top text-[#eee] text-base">
                   {{ formatPrice(c.teamWeekday) }} <span class="text-[#666] px-1 font-mono">/</span> {{ formatPrice(c.teamHoliday) }}
                 </td>
-                
+
                 <td class="py-5 px-4 align-top flex justify-end gap-3 text-[#999]">
                   <Utensils v-if="c.hasRestaurant" class="w-4 h-4" title="Restaurant" />
                   <Droplets v-if="c.hasWater" class="w-4 h-4" title="Water" />
                   <CreditCard v-if="c.hasCard" class="w-4 h-4" title="Card" />
                 </td>
-                
+
                 <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
                   <template v-if="parseRemarks(c.remarks).length">
                     <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'">
@@ -617,7 +617,7 @@ onUnmounted(() => {
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
           <div v-for="c in filteredCourses" :key="c.name" :class="['flex flex-col p-4 md:p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
-            
+
             <div class="mb-6 pb-4 border-b border-white/[0.12] flex justify-between items-start">
               <div>
                 <div class="flex items-center gap-3 mb-1">
@@ -706,12 +706,10 @@ onUnmounted(() => {
       </div>
 
       <!-- Persistent Footer -->
-      <footer class="relative z-30 py-8 lg:py-16 border-t border-white/5 bg-[#050505] text-center">
-        <p class="text-white text-[10px] md:text-xs tracking-[0.3em] uppercase font-light opacity-50">
-          © 2026 KingsleyZheng. All Rights Reserved.
+      <footer class="fixed bottom-0 left-0 right-0 z-30 py-2 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md text-center">
+        <p class="text-white text-[10px] tracking-[0.25em] font-light opacity-40">
+          © 2026 KingsleyZheng · v2026.4.11
         </p>
-        <p class="text-white/50 text-[10px] md:text-xs tracking-[0.2em] font-light mt-2">v 2026.4.11</p>
-
       </footer>
     </div>
 
