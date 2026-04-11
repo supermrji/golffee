@@ -726,7 +726,7 @@ onUnmounted(() => {
           <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/10">
             <div>
               <h2 class="text-white text-base font-medium tracking-wide">加入主畫面</h2>
-              <p class="text-white/40 text-xs mt-0.5 tracking-wide">將此網頁安裝為 App</p>
+              <p class="text-white/40 text-sm mt-0.5 tracking-wide">將此網頁安裝為 App</p>
             </div>
             <button @click="showInstallGuide = false" class="text-white/40 hover:text-white transition-colors p-1">
               <X class="w-5 h-5" />
@@ -740,8 +740,8 @@ onUnmounted(() => {
             <div class="flex gap-4">
               <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">1</div>
               <div class="flex-1">
-                <p class="text-white text-sm font-medium mb-1">使用 Safari 開啟網頁</p>
-                <p class="text-white/50 text-xs leading-relaxed mb-3">確認你使用的是 iPhone 內建的 Safari 瀏覽器</p>
+                <p class="text-white text-base font-medium mb-1">使用 Safari 開啟網頁</p>
+                <p class="text-white/50 text-sm leading-relaxed mb-3">確認你使用的是 iPhone 內建的 Safari 瀏覽器</p>
                 <!-- Mockup -->
                 <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a]">
                   <svg viewBox="0 0 320 80" class="w-full">
@@ -777,8 +777,8 @@ onUnmounted(() => {
             <div class="flex gap-4">
               <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">2</div>
               <div class="flex-1">
-                <p class="text-white text-sm font-medium mb-1">點選下方「分享」按鈕</p>
-                <p class="text-white/50 text-xs leading-relaxed mb-3">畫面底部中間的 <span class="text-white/70">⬆</span> 圖示</p>
+                <p class="text-white text-base font-medium mb-1">點選下方「分享」按鈕</p>
+                <p class="text-white/50 text-sm leading-relaxed mb-3">畫面底部中間的 <span class="text-white/70">⬆</span> 圖示</p>
                 <!-- Mockup: share sheet -->
                 <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a]">
                   <svg viewBox="0 0 320 130" class="w-full">
@@ -814,8 +814,8 @@ onUnmounted(() => {
             <div class="flex gap-4">
               <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">3</div>
               <div class="flex-1">
-                <p class="text-white text-sm font-medium mb-1">選擇「加入主畫面」</p>
-                <p class="text-white/50 text-xs leading-relaxed mb-3">在分享選單中向下滑找到此選項</p>
+                <p class="text-white text-base font-medium mb-1">選擇「加入主畫面」</p>
+                <p class="text-white/50 text-sm leading-relaxed mb-3">在分享選單中向下滑找到此選項</p>
               </div>
             </div>
 
@@ -823,8 +823,8 @@ onUnmounted(() => {
             <div class="flex gap-4">
               <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">4</div>
               <div class="flex-1">
-                <p class="text-white text-sm font-medium mb-1">點選右上角「新增」</p>
-                <p class="text-white/50 text-xs leading-relaxed mb-3">確認名稱後點選新增完成安裝</p>
+                <p class="text-white text-base font-medium mb-1">點選右上角「新增」</p>
+                <p class="text-white/50 text-sm leading-relaxed mb-3">確認名稱後點選新增完成安裝</p>
                 <!-- Mockup: Add dialog -->
                 <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a]">
                   <svg viewBox="0 0 320 90" class="w-full">
@@ -838,8 +838,7 @@ onUnmounted(() => {
                     <rect x="270" y="12" width="40" height="22" rx="5" fill="none" stroke="#10b981" stroke-width="1.2"/>
                     <text x="290" y="27" text-anchor="middle" fill="#10b981" font-size="13" font-family="system-ui" font-weight="600">新增</text>
                     <!-- App icon preview -->
-                    <rect x="16" y="50" width="30" height="30" rx="7" fill="#050505" stroke="#333" stroke-width="1"/>
-                    <text x="31" y="70" text-anchor="middle" font-size="14">⛳</text>
+                    <image href="/apple-touch-icon.png" x="16" y="50" width="30" height="30" clip-path="inset(0 round 7px)"/>
                     <!-- Name field -->
                     <rect x="54" y="52" width="210" height="26" rx="6" fill="#3a3a3c"/>
                     <text x="66" y="69" fill="white" font-size="12" font-family="system-ui">高爾夫收費指南</text>
@@ -851,7 +850,7 @@ onUnmounted(() => {
             <!-- Done note -->
             <div class="flex items-center gap-3 bg-emerald-400/5 border border-emerald-400/20 rounded-xl px-4 py-3 mb-2">
               <span class="text-xl">✅</span>
-              <p class="text-white/70 text-xs leading-relaxed">完成後桌面會出現 App 圖示，下次直接點開就是全螢幕體驗！</p>
+              <p class="text-white/70 text-sm leading-relaxed">完成後桌面會出現 App 圖示，下次直接點開就是全螢幕體驗！</p>
             </div>
 
           </div>
