@@ -263,7 +263,7 @@ const showFilterPanel = ref(false)
 const filterVisible = ref(true)
 let lastScrollY = 0
 let scrollUpAccum = 0
-const SHOW_THRESHOLD = 80  // 需要向上捲超過 80px 才顯示 filter
+const SHOW_THRESHOLD = 200  // 需要向上捲超過 200px 才顯示 filter
 
 const handleScroll = () => {
   const currentScrollY = window.scrollY
@@ -491,10 +491,10 @@ onUnmounted(() => {
         </div>
 
         <!-- Desktop Table Architecture -->
-        <div class="hidden xl:block">
+        <div class="hidden xl:block pt-6">
           <table class="w-full text-left whitespace-nowrap">
             <thead>
-              <tr class="text-base uppercase tracking-widest text-[#f4f4f4] font-semibold bg-[#111111] shadow-lg pointer-events-none sticky top-[108px] z-30">
+              <tr class="text-base uppercase tracking-widest text-[#f4f4f4] font-semibold bg-[#111111] shadow-lg pointer-events-none sticky top-[130px] z-30">
                 <th class="py-5 font-semibold w-[20%] px-4 rounded-tl-sm">{{ t.course }}</th>
                 <th class="py-5 font-semibold px-4">{{ t.guest }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
                 <th class="py-5 font-semibold px-4">{{ t.member }}</th>
@@ -588,10 +588,10 @@ onUnmounted(() => {
           <p class="text-white/40 text-base">{{ t.noResult }}</p>
           <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:hidden">
-          <div v-for="c in filteredCourses" :key="c.name" :class="['p-6 border border-white/[0.05] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:hidden pt-6">
+          <div v-for="c in filteredCourses" :key="c.name" :class="['p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
             
-            <div class="mb-6 pb-4 border-b border-white/[0.05] flex justify-between items-start">
+            <div class="mb-6 pb-4 border-b border-white/[0.12] flex justify-between items-start">
               <div>
                 <div class="flex items-center gap-3 mb-1">
                   <button @click="toggleFavorite(c.name)" class="focus:outline-none flex-shrink-0" :title="t.favorites">
@@ -656,7 +656,7 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <div v-if="parseRemarks(c.remarks).length" class="pt-4 border-t border-white/[0.05]">
+            <div v-if="parseRemarks(c.remarks).length" class="pt-4 border-t border-white/[0.12]">
               <p class="text-xs text-[#888] uppercase tracking-wider mb-3">{{ t.remarks }}</p>
               <ul class="list-disc pl-3 space-y-2 text-sm text-[#f4f4f4] leading-relaxed marker:text-[#444]">
                 <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
