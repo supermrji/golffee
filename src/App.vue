@@ -330,7 +330,7 @@ onUnmounted(() => {
   <div class="relative flex flex-col min-h-screen bg-[#050505] text-[#f4f4f4] font-sans selection:bg-emerald-500 selection:text-white">
     
     <!-- Top-Right Language Switcher -->
-    <div class="absolute top-6 right-6 z-50 flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1.5 border border-white/10 text-xs tracking-wider">
+    <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 flex items-center gap-2 bg-black/30 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 border border-white/10 text-xs tracking-wider">
       <Globe class="w-3.5 h-3.5 text-white/70" />
       <select v-model="locale" class="bg-transparent text-white focus:outline-none cursor-pointer appearance-none pr-2">
         <option value="zh-TW" class="bg-black text-base">繁體中文</option>
@@ -351,7 +351,7 @@ onUnmounted(() => {
 
       <!-- Hero Header -->
       <header class="z-10 text-center flex flex-col items-center">
-        <h1 class="text-3xl md:text-5xl lg:text-[4.5rem] font-medium tracking-wide text-white drop-shadow-lg px-4" style="letter-spacing: -0.02em;">{{ t.title }}</h1>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-[4.5rem] font-medium tracking-wide text-white drop-shadow-lg px-4" style="letter-spacing: -0.02em;">{{ t.title }}</h1>
         <p class="text-white/80 mt-4 text-xs md:text-sm font-light tracking-[0.2em] uppercase">
           {{ t.subtitle }}
         </p>
@@ -372,7 +372,7 @@ onUnmounted(() => {
         <!-- Filter Controls (Sticky) -->
         <div id="filter-bar" :class="['sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 lg:px-12 lg:-mx-12 pt-4 lg:pt-8 pb-3 lg:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full lg:translate-y-0' : '']">
 
-          <div class="flex flex-col gap-3 lg:gap-8 lg:flex-row">
+          <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 lg:flex-row">
 
             <!-- Row 1: Region + Favorites (Mobile) / Region (Desktop) -->
             <div class="flex items-center gap-3 w-full lg:w-auto lg:flex-1 lg:max-w-xs">
@@ -402,10 +402,10 @@ onUnmounted(() => {
             <div class="flex items-end gap-3 lg:gap-0 flex-1 lg:max-w-xs lg:border-l border-white/10 lg:pl-8">
               <div class="flex flex-col gap-1.5 lg:gap-3 flex-1">
                 <label class="text-[10px] md:text-xs lg:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
-                <div class="relative group flex items-center h-[38px] lg:h-[40px] overflow-hidden">
+                <div class="relative group flex items-center h-[38px] overflow-hidden">
                   <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
                   <input type="text" v-model="searchQuery" :placeholder="t.searchPlaceholder"
-                         class="w-full bg-transparent border-none p-0 text-xl lg:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[40px] flex-1" />
+                         class="w-full bg-transparent border-none p-0 text-xl lg:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[38px] flex-1" />
                   <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
                 </div>
               </div>
@@ -413,7 +413,7 @@ onUnmounted(() => {
               <!-- Mobile only: 篩選 button -->
               <div class="flex items-end lg:hidden pb-1.5">
                 <button @click="showFilterPanel = !showFilterPanel"
-                        :class="['relative flex items-center gap-1.5 px-3 h-[34px] border text-[11px] tracking-widest uppercase transition-all duration-200',
+                        :class="['relative flex items-center gap-1.5 px-3 h-[38px] border text-[11px] tracking-widest uppercase transition-all duration-200',
                                  showFilterPanel || activeFilterCount > 0 ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/20 text-[#888]']">
                   <span>篩選</span>
                   <span v-if="activeFilterCount > 0" class="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-400 text-black text-[10px] font-bold leading-none">{{ activeFilterCount }}</span>
@@ -568,9 +568,9 @@ onUnmounted(() => {
                 </td>
                 
                 <td class="py-5 px-4 align-top flex justify-end gap-3 text-[#999]">
-                  <Utensils v-if="c.hasRestaurant" class="w-[15px] h-[15px]" title="Restaurant" />
-                  <Droplets v-if="c.hasWater" class="w-[15px] h-[15px]" title="Water" />
-                  <CreditCard v-if="c.hasCard" class="w-[15px] h-[15px]" title="Card" />
+                  <Utensils v-if="c.hasRestaurant" class="w-4 h-4" title="Restaurant" />
+                  <Droplets v-if="c.hasWater" class="w-4 h-4" title="Water" />
+                  <CreditCard v-if="c.hasCard" class="w-4 h-4" title="Card" />
                 </td>
                 
                 <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
@@ -600,7 +600,7 @@ onUnmounted(() => {
             <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
-          <div v-for="c in filteredCourses" :key="c.name" :class="['flex flex-col p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
+          <div v-for="c in filteredCourses" :key="c.name" :class="['flex flex-col p-4 md:p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
             
             <div class="mb-6 pb-4 border-b border-white/[0.12] flex justify-between items-start">
               <div>
@@ -690,7 +690,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Persistent Footer -->
-      <footer class="relative z-30 py-16 border-t border-white/5 bg-[#050505] text-center">
+      <footer class="relative z-30 py-8 lg:py-16 border-t border-white/5 bg-[#050505] text-center">
         <p class="text-white text-[10px] md:text-xs tracking-[0.3em] uppercase font-light opacity-50">
           © 2026 KingsleyZheng. All Rights Reserved.
         </p>
