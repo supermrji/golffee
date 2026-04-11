@@ -580,6 +580,7 @@ onUnmounted(() => {
         <p class="text-white text-[10px] md:text-[11px] tracking-[0.3em] uppercase font-light opacity-50">
           © 2026 KingsleyZheng. All Rights Reserved.
         </p>
+        <p class="text-white/50 text-[9px] tracking-[0.2em] font-light mt-2">v 2026.4.11</p>
       </footer>
     </div>
 
