@@ -376,7 +376,7 @@ onUnmounted(() => {
             <!-- Row 1: Region + Favorites (Mobile) / Region (Desktop) -->
             <div class="flex items-center gap-3 w-full lg:w-auto lg:flex-1 lg:max-w-xs">
               <div class="flex flex-col gap-1.5 lg:gap-3 flex-1">
-                <label class="text-[10px] lg:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.region }}</label>
+                <label class="text-[10px] md:text-xs lg:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.region }}</label>
                 <div class="relative group">
                   <select v-model="selectedRegion" @change="onRegionChange" class="w-full appearance-none bg-transparent border-none pb-1.5 lg:pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
                     <option v-for="r in regions" :key="r" :value="r" class="bg-[#1a1a1a] text-white text-base py-2">
@@ -400,7 +400,7 @@ onUnmounted(() => {
             <!-- Row 2 (Mobile): Search + 篩選 button / Desktop: Search -->
             <div class="flex items-end gap-3 lg:gap-0 flex-1 lg:max-w-xs lg:border-l border-white/10 lg:pl-8">
               <div class="flex flex-col gap-1.5 lg:gap-3 flex-1">
-                <label class="text-[10px] lg:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
+                <label class="text-[10px] md:text-xs lg:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
                 <div class="relative group flex items-center h-[38px] lg:h-[40px] overflow-hidden">
                   <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
                   <input type="text" v-model="searchQuery" :placeholder="t.searchPlaceholder"
@@ -484,7 +484,7 @@ onUnmounted(() => {
                       :class="['flex items-center gap-2.5 px-6 py-2.5 rounded-full border transition-all duration-200 active:scale-95 h-[40px]',
                                showFavoritesOnly ? 'bg-emerald-400/20 border-emerald-400/60 text-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.2)]' : 'bg-emerald-400/5 border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 hover:border-emerald-400/60']">
                 <Heart :class="['w-4 h-4 transition-transform duration-300', showFavoritesOnly ? 'fill-emerald-400 scale-110' : '']" />
-                <span class="text-[10px] tracking-[0.2em] uppercase font-bold">{{ t.favorites }}</span>
+                <span class="text-xs tracking-[0.2em] uppercase font-bold">{{ t.favorites }}</span>
               </button>
             </div>
           </div>
@@ -528,7 +528,7 @@ onUnmounted(() => {
                            class="text-[#444] hover:text-emerald-400 transition-colors flex-shrink-0" title="Website">
                           <ExternalLink class="w-3.5 h-3.5" />
                         </a>
-                        <span v-if="c.golfDay" :class="['flex-shrink-0 text-[10px] px-1.5 py-0.5 leading-none tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#666] border-white/10']">⛳ {{ c.golfDay }}</span>
+                        <span v-if="c.golfDay" :class="['flex-shrink-0 text-xs px-1.5 py-0.5 leading-none tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#666] border-white/10']">⛳ {{ c.golfDay }}</span>
                       </div>
                       <div class="mt-2 flex flex-col gap-0.5">
                         <div class="flex items-center gap-2">
@@ -609,8 +609,8 @@ onUnmounted(() => {
                 <div class="flex flex-col gap-1">
                   <div class="flex items-center gap-2 flex-wrap">
                     <p class="text-xs text-[#ccc] uppercase tracking-wider font-normal">{{ getRegionName(c.region) }}</p>
-                    <span v-if="c.holes" class="text-[10px] text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider whitespace-nowrap">{{ c.holes }}H</span>
-                    <span v-if="c.golfDay" :class="['text-[10px] px-1.5 py-0.5 leading-none tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#888] border-white/10']">⛳ {{ c.golfDay }}</span>
+                    <span v-if="c.holes" class="text-[10px] md:text-xs text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider whitespace-nowrap">{{ c.holes }}H</span>
+                    <span v-if="c.golfDay" :class="['text-[10px] md:text-xs px-1.5 py-0.5 leading-none tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#888] border-white/10']">⛳ {{ c.golfDay }}</span>
                   </div>
                   <p v-if="c.phone" class="text-xs text-[#f4f4f4] flex items-center gap-2">
                     <Phone class="w-3 h-3" />
@@ -619,8 +619,8 @@ onUnmounted(() => {
                 </div>
               </div>
               <div class="text-right mt-1.5 flex flex-col items-end gap-2 flex-shrink-0 ml-3">
-                <span v-if="c.status === 'closed'" class="text-[10px] px-2 py-1 leading-none tracking-wider bg-red-500/80 text-white whitespace-nowrap font-medium">{{ t.closed }}</span>
-                <div v-if="c.updateDate && c.status !== 'closed'" class="text-[10px] text-[#FFF] tracking-[0.1em] uppercase flex flex-col items-end font-light">
+                <span v-if="c.status === 'closed'" class="text-[10px] md:text-xs px-2 py-1 leading-none tracking-wider bg-red-500/80 text-white whitespace-nowrap font-medium">{{ t.closed }}</span>
+                <div v-if="c.updateDate && c.status !== 'closed'" class="text-[10px] md:text-xs text-[#FFF] tracking-[0.1em] uppercase flex flex-col items-end font-light">
                   <span>{{ t.update }}</span>
                   <span class="text-[#eee]">{{ c.updateDate }}</span>
                 </div>
@@ -670,10 +670,10 @@ onUnmounted(() => {
 
       <!-- Persistent Footer -->
       <footer class="relative z-30 py-16 border-t border-white/5 bg-[#050505] text-center">
-        <p class="text-white text-[10px] md:text-[11px] tracking-[0.3em] uppercase font-light opacity-50">
+        <p class="text-white text-[10px] md:text-xs tracking-[0.3em] uppercase font-light opacity-50">
           © 2026 KingsleyZheng. All Rights Reserved.
         </p>
-        <p class="text-white/50 text-[9px] tracking-[0.2em] font-light mt-2">v 2026.4.11</p>
+        <p class="text-white/50 text-[10px] md:text-xs tracking-[0.2em] font-light mt-2">v 2026.4.11</p>
       </footer>
     </div>
 
