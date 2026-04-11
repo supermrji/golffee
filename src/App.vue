@@ -741,35 +741,8 @@ onUnmounted(() => {
               <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">1</div>
               <div class="flex-1">
                 <p class="text-white text-base font-medium mb-1">使用 Safari 開啟網頁</p>
-                <p class="text-white/50 text-sm leading-relaxed mb-3">確認你使用的是 iPhone 內建的 Safari 瀏覽器</p>
-                <!-- Mockup -->
-                <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a]">
-                  <svg viewBox="0 0 320 80" class="w-full">
-                    <!-- Safari top bar -->
-                    <rect width="320" height="80" fill="#1c1c1e"/>
-                    <!-- Address bar -->
-                    <rect x="12" y="14" width="230" height="28" rx="8" fill="#2c2c2e"/>
-                    <text x="34" y="33" fill="#a0a0a0" font-size="11" font-family="system-ui">golffee.vercel.app</text>
-                    <!-- Lock icon -->
-                    <rect x="18" y="22" width="10" height="10" rx="2" fill="none" stroke="#888" stroke-width="1.2"/>
-                    <rect x="20" y="25" width="6" height="7" rx="1" fill="#888"/>
-                    <!-- Refresh -->
-                    <text x="252" y="33" fill="#888" font-size="14">↻</text>
-                    <!-- Bottom bar bg -->
-                    <rect y="50" width="320" height="30" fill="#1c1c1e"/>
-                    <!-- Bottom icons: back, forward, share, bookmarks, tabs -->
-                    <text x="16" y="70" fill="#888" font-size="16">‹</text>
-                    <text x="48" y="70" fill="#444" font-size="16">›</text>
-                    <!-- Share highlighted -->
-                    <rect x="130" y="53" width="26" height="22" rx="5" fill="#10b98120"/>
-                    <rect x="130" y="53" width="26" height="22" rx="5" fill="none" stroke="#10b981" stroke-width="1.2"/>
-                    <text x="143" y="68" text-anchor="middle" fill="#10b981" font-size="13">⬆</text>
-                    <text x="196" y="70" fill="#888" font-size="13">□</text>
-                    <text x="240" y="70" fill="#888" font-size="13">⊞</text>
-                    <!-- Pulse ring -->
-                    <circle cx="143" cy="64" r="16" fill="none" stroke="#10b981" stroke-width="1" opacity="0.4"/>
-                  </svg>
-                </div>
+                <p class="text-white/50 text-sm leading-relaxed mb-3">確認你使用的是 iPhone 內建的 Safari 瀏覽器，點選底部中間的 ⬆ 分享按鈕</p>
+                <img src="/guide-step1.jpg" class="w-full rounded-xl border border-white/10" alt="Safari 分享按鈕示意" />
               </div>
             </div>
 
@@ -777,36 +750,9 @@ onUnmounted(() => {
             <div class="flex gap-4">
               <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">2</div>
               <div class="flex-1">
-                <p class="text-white text-base font-medium mb-1">點選下方「分享」按鈕</p>
-                <p class="text-white/50 text-sm leading-relaxed mb-3">畫面底部中間的 <span class="text-white/70">⬆</span> 圖示</p>
-                <!-- Mockup: share sheet -->
-                <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a]">
-                  <svg viewBox="0 0 320 130" class="w-full">
-                    <rect width="320" height="130" fill="#1c1c1e"/>
-                    <!-- Share sheet background -->
-                    <rect x="0" y="10" width="320" height="120" rx="16" fill="#2c2c2e"/>
-                    <!-- Handle -->
-                    <rect x="140" y="18" width="40" height="4" rx="2" fill="#444"/>
-                    <!-- First row icons (AirDrop, Messages, etc.) -->
-                    <circle cx="40" cy="65" r="22" fill="#3a3a3c"/>
-                    <text x="40" y="70" text-anchor="middle" fill="white" font-size="16">📡</text>
-                    <circle cx="100" cy="65" r="22" fill="#3a3a3c"/>
-                    <text x="100" y="70" text-anchor="middle" fill="white" font-size="16">💬</text>
-                    <circle cx="160" cy="65" r="22" fill="#3a3a3c"/>
-                    <text x="160" y="70" text-anchor="middle" fill="white" font-size="16">📋</text>
-                    <circle cx="220" cy="65" r="22" fill="#3a3a3c"/>
-                    <text x="220" y="70" text-anchor="middle" fill="white" font-size="16">📌</text>
-                    <circle cx="280" cy="65" r="22" fill="#3a3a3c"/>
-                    <text x="280" y="70" text-anchor="middle" fill="white" font-size="16">⋯</text>
-                    <!-- Highlighted row: 加入主畫面 -->
-                    <rect x="8" y="95" width="304" height="28" rx="8" fill="#10b98115"/>
-                    <rect x="8" y="95" width="304" height="28" rx="8" fill="none" stroke="#10b981" stroke-width="1"/>
-                    <text x="44" y="114" fill="#10b981" font-size="12" font-family="system-ui" font-weight="500">加入主畫面</text>
-                    <!-- Icon -->
-                    <rect x="14" y="100" width="18" height="18" rx="4" fill="#10b98120" stroke="#10b981" stroke-width="0.8"/>
-                    <text x="23" y="113" text-anchor="middle" fill="#10b981" font-size="11">+</text>
-                  </svg>
-                </div>
+                <p class="text-white text-base font-medium mb-1">選擇「加入主畫面」</p>
+                <p class="text-white/50 text-sm leading-relaxed mb-3">在分享選單中找到「加入主畫面」並點選</p>
+                <img src="/guide-step2.jpg" class="w-full rounded-xl border border-white/10" alt="加入主畫面選項示意" />
               </div>
             </div>
 
@@ -814,36 +760,9 @@ onUnmounted(() => {
             <div class="flex gap-4">
               <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">3</div>
               <div class="flex-1">
-                <p class="text-white text-base font-medium mb-1">選擇「加入主畫面」</p>
-                <p class="text-white/50 text-sm leading-relaxed mb-3">在分享選單中向下滑找到此選項</p>
-              </div>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="flex gap-4">
-              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">4</div>
-              <div class="flex-1">
-                <p class="text-white text-base font-medium mb-1">點選右上角「新增」</p>
-                <p class="text-white/50 text-sm leading-relaxed mb-3">確認名稱後點選新增完成安裝</p>
-                <!-- Mockup: Add dialog -->
-                <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a]">
-                  <svg viewBox="0 0 320 90" class="w-full">
-                    <rect width="320" height="90" fill="#1c1c1e"/>
-                    <!-- Dialog bar -->
-                    <rect x="0" y="0" width="320" height="40" fill="#2c2c2e"/>
-                    <text x="16" y="26" fill="#007aff" font-size="13" font-family="system-ui">取消</text>
-                    <text x="160" y="26" text-anchor="middle" fill="white" font-size="13" font-family="system-ui" font-weight="600">加入主畫面</text>
-                    <!-- 新增 button highlighted -->
-                    <rect x="270" y="12" width="40" height="22" rx="5" fill="#10b98120"/>
-                    <rect x="270" y="12" width="40" height="22" rx="5" fill="none" stroke="#10b981" stroke-width="1.2"/>
-                    <text x="290" y="27" text-anchor="middle" fill="#10b981" font-size="13" font-family="system-ui" font-weight="600">新增</text>
-                    <!-- App icon preview -->
-                    <image href="/apple-touch-icon.png" x="16" y="50" width="30" height="30" clip-path="inset(0 round 7px)"/>
-                    <!-- Name field -->
-                    <rect x="54" y="52" width="210" height="26" rx="6" fill="#3a3a3c"/>
-                    <text x="66" y="69" fill="white" font-size="12" font-family="system-ui">高爾夫收費指南</text>
-                  </svg>
-                </div>
+                <p class="text-white text-base font-medium mb-1">點選右上角「加入」</p>
+                <p class="text-white/50 text-sm leading-relaxed mb-3">確認名稱後點選加入，完成安裝</p>
+                <img src="/guide-step3.jpg" class="w-full rounded-xl border border-white/10" alt="確認加入主畫面示意" />
               </div>
             </div>
 
