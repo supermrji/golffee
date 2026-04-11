@@ -706,7 +706,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Persistent Footer -->
-      <footer class="fixed bottom-0 left-0 right-0 z-30 py-2 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md text-center">
+      <footer class="fixed bottom-0 left-0 right-0 z-30 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md text-center" style="padding-top: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));">
         <p class="text-white text-[10px] tracking-[0.25em] font-light opacity-40">
           © 2026 KingsleyZheng · v2026.4.11
         </p>
