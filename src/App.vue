@@ -367,7 +367,7 @@ onUnmounted(() => {
 
     <!-- Content Section (Floating Over Hero via -mt-32) -->
     <div id="content-layer" class="relative z-20 flex flex-col flex-1 -mt-24 pt-0 bg-[#050505] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
-      <div class="max-w-7xl mx-auto px-6 lg:px-12 flex-1 pb-32">
+      <div class="max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 pb-32">
         
         <!-- Filter Controls (Sticky) -->
         <div id="filter-bar" :class="['sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 lg:px-12 lg:-mx-12 pt-4 lg:pt-8 pb-3 lg:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full lg:translate-y-0' : '']">
@@ -496,13 +496,13 @@ onUnmounted(() => {
           <table class="w-full text-left whitespace-nowrap">
             <thead>
               <tr class="text-base uppercase tracking-widest text-[#f4f4f4] font-semibold bg-[#111111] shadow-lg pointer-events-none sticky top-[130px] z-30">
-                <th class="py-5 font-semibold w-[20%] px-4 rounded-tl-sm">{{ t.course }}</th>
+                <th class="py-5 font-semibold w-[16%] px-4 rounded-tl-sm">{{ t.course }}</th>
                 <th class="py-5 font-semibold px-4">{{ t.guest }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
                 <th class="py-5 font-semibold px-4">{{ t.member }}</th>
                 <th class="py-5 font-semibold px-4">{{ t.mGuest }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
                 <th class="py-5 font-semibold px-4">{{ t.team }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
                 <th class="py-5 font-semibold text-right px-4">{{ t.amenities }}</th>
-                <th class="py-5 font-semibold w-[25%] px-4 rounded-tr-sm">{{ t.remarks }}</th>
+                <th class="py-5 font-semibold w-[33%] px-4 rounded-tr-sm">{{ t.remarks }}</th>
               </tr>
             </thead>
             <tbody class="text-base font-light">
