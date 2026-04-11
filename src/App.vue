@@ -599,8 +599,8 @@ onUnmounted(() => {
             <p class="text-white/40 text-base">{{ t.noResult }}</p>
             <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 items-start">
-          <div v-for="c in filteredCourses" :key="c.name" :class="['p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+          <div v-for="c in filteredCourses" :key="c.name" :class="['flex flex-col p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
             
             <div class="mb-6 pb-4 border-b border-white/[0.12] flex justify-between items-start">
               <div>
@@ -667,7 +667,7 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <div v-if="parseRemarks(c.remarks).length" class="pt-4 border-t border-white/[0.12]">
+            <div v-if="parseRemarks(c.remarks).length" class="mt-auto pt-4 border-t border-white/[0.12]">
               <div class="flex items-center justify-between mb-3">
                 <p class="text-xs text-[#888] uppercase tracking-wider">{{ t.remarks }}</p>
                 <button v-if="parseRemarks(c.remarks).length > 2"
