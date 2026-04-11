@@ -337,7 +337,7 @@ onUnmounted(() => {
     <!-- Top-Left Install Button (Mobile, non-standalone only) -->
     <button v-if="!isStandalone"
             @click="showInstallGuide = true"
-            class="absolute top-4 left-4 sm:top-6 sm:left-6 z-50 lg:hidden flex items-center gap-1.5 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-white/60 text-xs tracking-wider hover:text-white/90 hover:border-white/25 transition-all">
+            class="safe-top absolute left-4 sm:left-6 z-50 lg:hidden flex items-center gap-1.5 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-white/60 text-xs tracking-wider hover:text-white/90 hover:border-white/25 transition-all">
       <svg class="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 2v13M8 11l4 4 4-4"/>
         <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>
@@ -346,7 +346,7 @@ onUnmounted(() => {
     </button>
 
     <!-- Top-Right Language Switcher -->
-    <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 flex items-center gap-2 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-xs tracking-wider">
+    <div class="safe-top absolute right-4 sm:right-6 z-50 flex items-center gap-2 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-xs tracking-wider">
       <Globe class="w-3.5 h-3.5 text-white/70" />
       <select v-model="locale" class="bg-transparent text-white focus:outline-none cursor-pointer appearance-none pr-2">
         <option value="zh-TW" class="bg-black text-base">繁體中文</option>
@@ -785,6 +785,14 @@ html {
 }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.safe-top {
+  top: calc(1rem + env(safe-area-inset-top));
+}
+@media (min-width: 640px) {
+  .safe-top {
+    top: calc(1.5rem + env(safe-area-inset-top));
+  }
 }
 .guide-enter-active,
 .guide-leave-active {
