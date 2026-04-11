@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 import golfDataJson from './data/golf_courses.json'
 import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart } from 'lucide-vue-next'
 
@@ -169,6 +169,12 @@ const filteredCourses = computed(() => {
 
 const showFilterPanel = ref(false)
 
+
+const onRegionChange = () => {
+  const el = document.getElementById('content-layer')
+  if (el) window.scrollTo({ top: el.offsetTop, behavior: 'smooth' })
+}
+
 const activeFilterCount = computed(() => {
   let count = 0
   if (sortBy.value !== 'default') count++
@@ -182,10 +188,11 @@ const scrollToContent = () => {
   document.getElementById('content-layer').scrollIntoView({ behavior: 'smooth' })
 }
 
+
 </script>
 
 <template>
-  <div class="relative min-h-[100vh] bg-[#050505] text-[#f4f4f4] font-sans selection:bg-emerald-500 selection:text-white">
+  <div class="relative flex flex-col min-h-screen bg-[#050505] text-[#f4f4f4] font-sans selection:bg-emerald-500 selection:text-white">
     
     <!-- Top-Right Language Switcher -->
     <div class="absolute top-6 right-6 z-50 flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1.5 border border-white/10 text-xs tracking-wider">
@@ -222,20 +229,20 @@ const scrollToContent = () => {
     </div>
 
     <!-- Content Section (Floating Over Hero via -mt-32) -->
-    <div id="content-layer" class="relative z-20 min-h-[100vh] -mt-24 pt-0 pb-32 bg-[#050505] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
-      <div class="max-w-7xl mx-auto px-6 md:px-12">
+    <div id="content-layer" class="relative z-20 flex flex-col flex-1 -mt-24 pt-0 bg-[#050505] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
+      <div class="max-w-7xl mx-auto px-6 md:px-12 flex-1 pb-32">
         
         <!-- Filter Controls (Sticky) -->
-        <div class="sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 md:px-12 md:-mx-12 pt-4 md:pt-8 pb-3 md:pb-6 shadow-sm overflow-hidden">
+        <div class="sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 md:px-12 md:-mx-12 pt-4 md:pt-8 pb-3 md:pb-6 shadow-sm">
           
           <div class="flex flex-col gap-3 md:gap-8 md:flex-row">
 
             <!-- Row 1: Region + Favorites (Mobile) / Region (Desktop) -->
             <div class="flex items-center gap-3 w-full md:w-auto md:flex-1 md:max-w-xs">
               <div class="flex flex-col gap-1.5 md:gap-3 flex-1">
-                <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.region }}</label>
+                <label class="text-[10px] md:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.region }}</label>
                 <div class="relative group">
-                  <select v-model="selectedRegion" class="w-full appearance-none bg-transparent border-none pb-1.5 md:pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
+                  <select v-model="selectedRegion" @change="onRegionChange" class="w-full appearance-none bg-transparent border-none pb-1.5 md:pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
                     <option v-for="r in regions" :key="r" :value="r" class="bg-[#1a1a1a] text-white text-base py-2">
                       {{ getRegionName(r) }} ({{ regionCounts[r] }})
                     </option>
@@ -246,9 +253,10 @@ const scrollToContent = () => {
               <!-- Mobile only: Favorites -->
               <div class="flex items-end md:hidden">
                 <button @click="showFavoritesOnly = !showFavoritesOnly"
-                        :class="['flex items-center justify-center rounded-full border transition-all duration-200 active:scale-95 h-[38px] w-[38px]',
+                        :class="['flex items-center gap-1.5 px-3 rounded-full border transition-all duration-200 active:scale-95 h-[38px]',
                                  showFavoritesOnly ? 'bg-emerald-400/20 border-emerald-400/60 text-emerald-100 shadow-[0_0_15px_rgba(52,211,153,0.2)]' : 'bg-emerald-400/5 border-emerald-400/40 text-emerald-400']">
                   <Heart :class="['w-4 h-4 transition-transform duration-300', showFavoritesOnly ? 'fill-emerald-400 scale-110' : '']" />
+                  <span class="text-[10px] tracking-[0.2em] uppercase font-bold">{{ t.favorites }}</span>
                 </button>
               </div>
             </div>
@@ -256,7 +264,7 @@ const scrollToContent = () => {
             <!-- Row 2 (Mobile): Search + 篩選 button / Desktop: Search -->
             <div class="flex items-end gap-3 md:gap-0 flex-1 md:max-w-xs md:border-l border-white/10 md:pl-8">
               <div class="flex flex-col gap-1.5 md:gap-3 flex-1">
-                <label class="text-[10px] md:text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
+                <label class="text-[10px] md:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
                 <div class="relative group flex items-center h-[38px] md:h-[40px] overflow-hidden">
                   <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
                   <input type="text" v-model="searchQuery" :placeholder="t.search"
@@ -288,7 +296,7 @@ const scrollToContent = () => {
                     {{ t.golfDayAll }}
                   </button>
                   <button v-for="d in weekdays.slice(1).concat([weekdays[0]])" :key="d"
-                          @click="selectedGolfDay = d"
+                          @click="selectedGolfDay = selectedGolfDay === d ? '全部' : d"
                           :class="['px-3 py-1 text-xs border tracking-wider transition-all',
                                    selectedGolfDay === d ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/10 text-[#666]']">
                     {{ d }}{{ d === todayWeekday ? ' ★' : '' }}
@@ -300,7 +308,7 @@ const scrollToContent = () => {
                 <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none block mb-2">{{ t.sort }}</label>
                 <div class="flex flex-wrap gap-2">
                   <button v-for="(label, val) in { default: t.sortDefault, guestWk: t.sortGuestWk, guestHol: t.sortGuestHol, member: t.sortMember }" :key="val"
-                          @click="sortBy = val"
+                          @click="sortBy = sortBy === val && val !== 'default' ? 'default' : val"
                           :class="['px-3 py-1 text-xs border tracking-wider transition-all', sortBy === val ? 'border-white/40 text-white bg-white/10' : 'border-white/10 text-[#666]']">
                     {{ label }}
                   </button>
@@ -310,7 +318,7 @@ const scrollToContent = () => {
 
             <!-- Desktop only: Golf Day -->
             <div class="hidden md:flex flex-col gap-3 w-auto max-w-[120px] border-l border-white/10 pl-8">
-              <label class="text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.golfDay }}</label>
+              <label class="text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.golfDay }}</label>
               <div class="relative group">
                 <select v-model="selectedGolfDay" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
                   <option value="全部" class="bg-[#1a1a1a] text-white text-base">{{ t.golfDayAll }}</option>
@@ -323,7 +331,7 @@ const scrollToContent = () => {
 
             <!-- Desktop only: Sort -->
             <div class="hidden md:flex flex-col gap-3 w-auto max-w-[140px] border-l border-white/10 pl-8">
-              <label class="text-xs tracking-[0.1em] text-[#888] uppercase select-none">{{ t.sort }}</label>
+              <label class="text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.sort }}</label>
               <div class="relative group">
                 <select v-model="sortBy" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
                   <option value="default" class="bg-[#1a1a1a] text-white text-base">{{ t.sortDefault }}</option>
@@ -347,20 +355,20 @@ const scrollToContent = () => {
         </div>
 
         <!-- Desktop Table Architecture -->
-        <div class="hidden lg:block">
+        <div class="hidden xl:block">
           <table class="w-full text-left whitespace-nowrap">
             <thead>
-              <tr class="text-sm uppercase tracking-widest text-[#f4f4f4] font-semibold bg-[#111111] shadow-lg pointer-events-none sticky top-[108px] z-30">
+              <tr class="text-base uppercase tracking-widest text-[#f4f4f4] font-semibold bg-[#111111] shadow-lg pointer-events-none sticky top-[108px] z-30">
                 <th class="py-5 font-semibold w-[20%] px-4 rounded-tl-sm">{{ t.course }}</th>
-                <th class="py-5 font-semibold px-4">{{ t.guest }} <span class="text-xs lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
+                <th class="py-5 font-semibold px-4">{{ t.guest }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
                 <th class="py-5 font-semibold px-4">{{ t.member }}</th>
-                <th class="py-5 font-semibold px-4">{{ t.mGuest }} <span class="text-xs lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
-                <th class="py-5 font-semibold px-4">{{ t.team }} <span class="text-xs lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
+                <th class="py-5 font-semibold px-4">{{ t.mGuest }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
+                <th class="py-5 font-semibold px-4">{{ t.team }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
                 <th class="py-5 font-semibold text-right px-4">{{ t.amenities }}</th>
                 <th class="py-5 font-semibold w-[25%] px-4 rounded-tr-sm">{{ t.remarks }}</th>
               </tr>
             </thead>
-            <tbody class="text-sm font-light">
+            <tbody class="text-base font-light">
               <tr v-if="filteredCourses.length === 0">
                 <td colspan="7" class="py-24 text-center">
                   <p class="text-white/40 text-base">{{ t.noResult }}</p>
@@ -376,7 +384,7 @@ const scrollToContent = () => {
                           <Heart :class="['w-4 h-4 transition-all duration-300', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10 group-hover/fav:text-white/40']" />
                         </button>
                         <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer"
-                           class="group-hover:text-emerald-300 text-emerald-400 transition-colors relative text-base tracking-wide font-medium truncate min-w-0">
+                           class="group-hover:text-emerald-300 text-emerald-400 transition-colors relative text-lg tracking-wide font-medium truncate min-w-0">
                           {{ c.name }}
                           <span class="absolute -bottom-1 left-0 w-full h-[1px] bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                         </a>
@@ -388,37 +396,37 @@ const scrollToContent = () => {
                       </div>
                       <div class="mt-2 flex flex-col gap-0.5">
                         <div class="flex items-center gap-2">
-                          <div class="text-[#ccc] text-[11px] tracking-wider uppercase font-normal">{{ getRegionName(c.region) }}</div>
-                          <span v-if="c.holes" class="text-[10px] text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider">{{ c.holes }}H</span>
+                          <div class="text-[#ccc] text-sm tracking-wider uppercase font-normal">{{ getRegionName(c.region) }}</div>
+                          <span v-if="c.holes" class="text-xs text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider">{{ c.holes }}H</span>
                         </div>
-                        <div v-if="c.phone" class="text-[#f4f4f4] text-[11px] flex items-center gap-1.5">
+                        <div v-if="c.phone" class="text-[#f4f4f4] text-sm flex items-center gap-1.5">
                           <Phone class="w-2.5 h-2.5" />
                           <span>{{ c.phone }}</span>
                         </div>
                       </div>
                     </div>
                     <div class="text-right ml-4 flex flex-col items-end gap-2">
-                      <span v-if="c.status === 'closed'" class="text-[10px] px-2 py-1 leading-none tracking-wider bg-red-500/80 text-white whitespace-nowrap font-medium">{{ t.closed }}</span>
-                      <div v-if="c.updateDate" class="text-[10px] text-[#f4f4f4] tracking-[0.1em] uppercase font-light">
+                      <span v-if="c.status === 'closed'" class="text-xs px-2 py-1 leading-none tracking-wider bg-red-500/80 text-white whitespace-nowrap font-medium">{{ t.closed }}</span>
+                      <div v-if="c.updateDate" class="text-xs text-[#f4f4f4] tracking-[0.1em] uppercase font-light">
                         {{ t.update }}<br/><span class="text-[#eee]">{{ c.updateDate }}</span>
                       </div>
                     </div>
                   </div>
                 </td>
-                
-                <td class="py-5 px-4 align-top text-[#eee]">
+
+                <td class="py-5 px-4 align-top text-[#eee] text-base">
                   {{ formatPrice(c.guestWeekday) }} <span class="text-[#666] px-1 font-mono">/</span> {{ formatPrice(c.guestHoliday) }}
                 </td>
-                
-                <td class="py-5 px-4 align-top text-[#fff] font-mono">
+
+                <td class="py-5 px-4 align-top text-[#fff] font-mono text-base">
                   {{ formatPrice(c.member) }}
                 </td>
-                
-                <td class="py-5 px-4 align-top text-[#eee]">
+
+                <td class="py-5 px-4 align-top text-[#eee] text-base">
                   {{ formatPrice(c.memberGuestWeekday) }} <span class="text-[#666] px-1 font-mono">/</span> {{ formatPrice(c.memberGuestHoliday) }}
                 </td>
-                
-                <td class="py-5 px-4 align-top text-[#eee]">
+
+                <td class="py-5 px-4 align-top text-[#eee] text-base">
                   {{ formatPrice(c.teamWeekday) }} <span class="text-[#666] px-1 font-mono">/</span> {{ formatPrice(c.teamHoliday) }}
                 </td>
                 
@@ -428,7 +436,7 @@ const scrollToContent = () => {
                   <CreditCard v-if="c.hasCard" class="w-[15px] h-[15px]" title="Card" />
                 </td>
                 
-                <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-xs">
+                <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
                   <ul v-if="parseRemarks(c.remarks).length" class="list-disc pl-3 space-y-1.5 marker:text-[#444]">
                     <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
                   </ul>
@@ -440,27 +448,25 @@ const scrollToContent = () => {
         </div>
 
         <!-- Mobile Architecture (Hidden on large screens) -->
-        <div v-if="filteredCourses.length === 0" class="lg:hidden py-24 text-center">
+        <div v-if="filteredCourses.length === 0" class="xl:hidden py-24 text-center">
           <p class="text-white/40 text-base">{{ t.noResult }}</p>
           <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:hidden">
           <div v-for="c in filteredCourses" :key="c.name" :class="['p-6 border border-white/[0.05] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
             
             <div class="mb-6 pb-4 border-b border-white/[0.05] flex justify-between items-start">
               <div>
-                <div class="flex items-center justify-between mb-1">
-                  <div class="flex items-center gap-4">
-                    <button @click="toggleFavorite(c.name)" class="focus:outline-none" :title="t.favorites">
-                      <Heart :class="['w-6 h-6 transition-all', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10']" />
-                    </button>
-                    <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer" 
-                       class="block text-2xl font-light tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors">
-                      {{ c.name }}
-                    </a>
-                  </div>
-                  <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer" 
-                     class="bg-white/5 p-2 rounded-full text-[#666] hover:text-emerald-400 transition-colors">
+                <div class="flex items-center gap-3 mb-1">
+                  <button @click="toggleFavorite(c.name)" class="focus:outline-none flex-shrink-0" :title="t.favorites">
+                    <Heart :class="['w-6 h-6 transition-all', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10']" />
+                  </button>
+                  <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer"
+                     class="text-2xl font-light tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors">
+                    {{ c.name }}
+                  </a>
+                  <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer"
+                     class="flex-shrink-0 text-[#444] hover:text-emerald-400 transition-colors">
                     <ExternalLink class="w-4 h-4" />
                   </a>
                 </div>
@@ -516,7 +522,7 @@ const scrollToContent = () => {
 
             <div v-if="parseRemarks(c.remarks).length" class="pt-4 border-t border-white/[0.05]">
               <p class="text-xs text-[#888] uppercase tracking-wider mb-3">{{ t.remarks }}</p>
-              <ul class="list-disc pl-3 space-y-2 text-xs text-[#f4f4f4] leading-relaxed marker:text-[#444]">
+              <ul class="list-disc pl-3 space-y-2 text-sm text-[#f4f4f4] leading-relaxed marker:text-[#444]">
                 <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
               </ul>
             </div>
