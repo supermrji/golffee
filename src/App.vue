@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import golfDataJson from './data/golf_courses.json'
-import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart } from 'lucide-vue-next'
+import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X } from 'lucide-vue-next'
 
 const locale = ref('zh-TW')
 
@@ -232,6 +232,11 @@ const regionCounts = computed(() => {
 const favorites = ref(JSON.parse(localStorage.getItem('golffee_favorites') || '[]'))
 const showFavoritesOnly = ref(false)
 const expandedRemarks = reactive(new Set())
+const showInstallGuide = ref(false)
+const isStandalone = typeof window !== 'undefined' && (
+  window.navigator.standalone === true ||
+  window.matchMedia('(display-mode: standalone)').matches
+)
 
 const toggleFavorite = (name) => {
   const idx = favorites.value.indexOf(name)
@@ -329,6 +334,17 @@ onUnmounted(() => {
 <template>
   <div class="relative flex flex-col min-h-screen bg-[#050505] text-[#f4f4f4] font-sans selection:bg-emerald-500 selection:text-white">
     
+    <!-- Top-Left Install Button (Mobile, non-standalone only) -->
+    <button v-if="!isStandalone"
+            @click="showInstallGuide = true"
+            class="absolute top-4 left-4 sm:top-6 sm:left-6 z-50 lg:hidden flex items-center gap-1.5 bg-black/30 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 border border-white/10 text-white/60 text-xs tracking-wider hover:text-white/90 hover:border-white/25 transition-all">
+      <svg class="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2v13M8 11l4 4 4-4"/>
+        <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>
+      </svg>
+      加入主畫面
+    </button>
+
     <!-- Top-Right Language Switcher -->
     <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 flex items-center gap-2 bg-black/30 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 border border-white/10 text-xs tracking-wider">
       <Globe class="w-3.5 h-3.5 text-white/70" />
@@ -695,8 +711,153 @@ onUnmounted(() => {
           © 2026 KingsleyZheng. All Rights Reserved.
         </p>
         <p class="text-white/50 text-[10px] md:text-xs tracking-[0.2em] font-light mt-2">v 2026.4.11</p>
+
       </footer>
     </div>
+
+    <!-- Install Guide Modal -->
+    <Transition name="guide">
+      <div v-if="showInstallGuide"
+           class="fixed inset-0 z-[200] flex items-end justify-center bg-black/70 backdrop-blur-sm"
+           @click.self="showInstallGuide = false">
+        <div class="guide-panel w-full max-w-md bg-[#0d0d0d] border-t border-white/10 rounded-t-2xl pb-10 overflow-y-auto max-h-[92vh]">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/10">
+            <div>
+              <h2 class="text-white text-base font-medium tracking-wide">加入主畫面</h2>
+              <p class="text-white/40 text-xs mt-0.5 tracking-wide">將此網頁安裝為 App</p>
+            </div>
+            <button @click="showInstallGuide = false" class="text-white/40 hover:text-white transition-colors p-1">
+              <X class="w-5 h-5" />
+            </button>
+          </div>
+
+          <!-- Steps -->
+          <div class="px-6 pt-5 flex flex-col gap-8">
+
+            <!-- Step 1 -->
+            <div class="flex gap-4">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">1</div>
+              <div class="flex-1">
+                <p class="text-white text-sm font-medium mb-1">使用 Safari 開啟網頁</p>
+                <p class="text-white/50 text-xs leading-relaxed mb-3">確認你使用的是 iPhone 內建的 Safari 瀏覽器</p>
+                <!-- Mockup -->
+                <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a]">
+                  <svg viewBox="0 0 320 80" class="w-full">
+                    <!-- Safari top bar -->
+                    <rect width="320" height="80" fill="#1c1c1e"/>
+                    <!-- Address bar -->
+                    <rect x="12" y="14" width="230" height="28" rx="8" fill="#2c2c2e"/>
+                    <text x="34" y="33" fill="#a0a0a0" font-size="11" font-family="system-ui">golffee.vercel.app</text>
+                    <!-- Lock icon -->
+                    <rect x="18" y="22" width="10" height="10" rx="2" fill="none" stroke="#888" stroke-width="1.2"/>
+                    <rect x="20" y="25" width="6" height="7" rx="1" fill="#888"/>
+                    <!-- Refresh -->
+                    <text x="252" y="33" fill="#888" font-size="14">↻</text>
+                    <!-- Bottom bar bg -->
+                    <rect y="50" width="320" height="30" fill="#1c1c1e"/>
+                    <!-- Bottom icons: back, forward, share, bookmarks, tabs -->
+                    <text x="16" y="70" fill="#888" font-size="16">‹</text>
+                    <text x="48" y="70" fill="#444" font-size="16">›</text>
+                    <!-- Share highlighted -->
+                    <rect x="130" y="53" width="26" height="22" rx="5" fill="#10b98120"/>
+                    <rect x="130" y="53" width="26" height="22" rx="5" fill="none" stroke="#10b981" stroke-width="1.2"/>
+                    <text x="143" y="68" text-anchor="middle" fill="#10b981" font-size="13">⬆</text>
+                    <text x="196" y="70" fill="#888" font-size="13">□</text>
+                    <text x="240" y="70" fill="#888" font-size="13">⊞</text>
+                    <!-- Pulse ring -->
+                    <circle cx="143" cy="64" r="16" fill="none" stroke="#10b981" stroke-width="1" opacity="0.4"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="flex gap-4">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">2</div>
+              <div class="flex-1">
+                <p class="text-white text-sm font-medium mb-1">點選下方「分享」按鈕</p>
+                <p class="text-white/50 text-xs leading-relaxed mb-3">畫面底部中間的 <span class="text-white/70">⬆</span> 圖示</p>
+                <!-- Mockup: share sheet -->
+                <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a]">
+                  <svg viewBox="0 0 320 130" class="w-full">
+                    <rect width="320" height="130" fill="#1c1c1e"/>
+                    <!-- Share sheet background -->
+                    <rect x="0" y="10" width="320" height="120" rx="16" fill="#2c2c2e"/>
+                    <!-- Handle -->
+                    <rect x="140" y="18" width="40" height="4" rx="2" fill="#444"/>
+                    <!-- First row icons (AirDrop, Messages, etc.) -->
+                    <circle cx="40" cy="65" r="22" fill="#3a3a3c"/>
+                    <text x="40" y="70" text-anchor="middle" fill="white" font-size="16">📡</text>
+                    <circle cx="100" cy="65" r="22" fill="#3a3a3c"/>
+                    <text x="100" y="70" text-anchor="middle" fill="white" font-size="16">💬</text>
+                    <circle cx="160" cy="65" r="22" fill="#3a3a3c"/>
+                    <text x="160" y="70" text-anchor="middle" fill="white" font-size="16">📋</text>
+                    <circle cx="220" cy="65" r="22" fill="#3a3a3c"/>
+                    <text x="220" y="70" text-anchor="middle" fill="white" font-size="16">📌</text>
+                    <circle cx="280" cy="65" r="22" fill="#3a3a3c"/>
+                    <text x="280" y="70" text-anchor="middle" fill="white" font-size="16">⋯</text>
+                    <!-- Highlighted row: 加入主畫面 -->
+                    <rect x="8" y="95" width="304" height="28" rx="8" fill="#10b98115"/>
+                    <rect x="8" y="95" width="304" height="28" rx="8" fill="none" stroke="#10b981" stroke-width="1"/>
+                    <text x="44" y="114" fill="#10b981" font-size="12" font-family="system-ui" font-weight="500">加入主畫面</text>
+                    <!-- Icon -->
+                    <rect x="14" y="100" width="18" height="18" rx="4" fill="#10b98120" stroke="#10b981" stroke-width="0.8"/>
+                    <text x="23" y="113" text-anchor="middle" fill="#10b981" font-size="11">+</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="flex gap-4">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">3</div>
+              <div class="flex-1">
+                <p class="text-white text-sm font-medium mb-1">選擇「加入主畫面」</p>
+                <p class="text-white/50 text-xs leading-relaxed mb-3">在分享選單中向下滑找到此選項</p>
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="flex gap-4">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">4</div>
+              <div class="flex-1">
+                <p class="text-white text-sm font-medium mb-1">點選右上角「新增」</p>
+                <p class="text-white/50 text-xs leading-relaxed mb-3">確認名稱後點選新增完成安裝</p>
+                <!-- Mockup: Add dialog -->
+                <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a]">
+                  <svg viewBox="0 0 320 90" class="w-full">
+                    <rect width="320" height="90" fill="#1c1c1e"/>
+                    <!-- Dialog bar -->
+                    <rect x="0" y="0" width="320" height="40" fill="#2c2c2e"/>
+                    <text x="16" y="26" fill="#007aff" font-size="13" font-family="system-ui">取消</text>
+                    <text x="160" y="26" text-anchor="middle" fill="white" font-size="13" font-family="system-ui" font-weight="600">加入主畫面</text>
+                    <!-- 新增 button highlighted -->
+                    <rect x="270" y="12" width="40" height="22" rx="5" fill="#10b98120"/>
+                    <rect x="270" y="12" width="40" height="22" rx="5" fill="none" stroke="#10b981" stroke-width="1.2"/>
+                    <text x="290" y="27" text-anchor="middle" fill="#10b981" font-size="13" font-family="system-ui" font-weight="600">新增</text>
+                    <!-- App icon preview -->
+                    <rect x="16" y="50" width="30" height="30" rx="7" fill="#050505" stroke="#333" stroke-width="1"/>
+                    <text x="31" y="70" text-anchor="middle" font-size="14">⛳</text>
+                    <!-- Name field -->
+                    <rect x="54" y="52" width="210" height="26" rx="6" fill="#3a3a3c"/>
+                    <text x="66" y="69" fill="white" font-size="12" font-family="system-ui">高爾夫收費指南</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Done note -->
+            <div class="flex items-center gap-3 bg-emerald-400/5 border border-emerald-400/20 rounded-xl px-4 py-3 mb-2">
+              <span class="text-xl">✅</span>
+              <p class="text-white/70 text-xs leading-relaxed">完成後桌面會出現 App 圖示，下次直接點開就是全螢幕體驗！</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </Transition>
 
   </div>
 </template>
@@ -708,5 +869,21 @@ html {
 }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.guide-enter-active,
+.guide-leave-active {
+  transition: opacity 0.25s ease;
+}
+.guide-enter-active .guide-panel,
+.guide-leave-active .guide-panel {
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.guide-enter-from,
+.guide-leave-to {
+  opacity: 0;
+}
+.guide-enter-from .guide-panel,
+.guide-leave-to .guide-panel {
+  transform: translateY(100%);
 }
 </style>
