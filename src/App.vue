@@ -580,8 +580,8 @@ onUnmounted(() => {
                     </ul>
                     <button v-if="parseRemarks(c.remarks).length > 3"
                             @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
-                            class="mt-2 text-xs text-[#666] hover:text-emerald-400 transition-colors tracking-wide">
-                      {{ expandedRemarks.has(c.name) ? '收起' : `+${parseRemarks(c.remarks).length - 3} 更多` }}
+                            class="mt-3 px-2.5 py-1 text-xs border border-white/20 text-[#888] hover:border-emerald-400/60 hover:text-emerald-400 transition-all tracking-wide">
+                      {{ expandedRemarks.has(c.name) ? '▲ 收起' : `▼ +${parseRemarks(c.remarks).length - 3} 更多` }}
                     </button>
                   </template>
                   <span v-else>{{ t.noData }}</span>
@@ -592,11 +592,12 @@ onUnmounted(() => {
         </div>
 
         <!-- Mobile Architecture (Hidden on large screens) -->
-        <div v-if="filteredCourses.length === 0" class="xl:hidden py-24 text-center">
-          <p class="text-white/40 text-base">{{ t.noResult }}</p>
-          <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:hidden pt-6">
+        <div class="xl:hidden min-h-[50vh]">
+          <div v-if="filteredCourses.length === 0" class="py-24 text-center">
+            <p class="text-white/40 text-base">{{ t.noResult }}</p>
+            <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
           <div v-for="c in filteredCourses" :key="c.name" :class="['p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
             
             <div class="mb-6 pb-4 border-b border-white/[0.12] flex justify-between items-start">
@@ -672,6 +673,7 @@ onUnmounted(() => {
             </div>
 
           </div>
+        </div>
         </div>
 
       </div>
