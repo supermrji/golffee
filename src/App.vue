@@ -22,6 +22,7 @@ const dict = {
     holiday: '假日',
     remarks: '備註',
     search: '搜尋球場',
+    searchPlaceholder: '球場名稱',
     update: '更新',
     noData: '無資料',
     favorites: '我的最愛',
@@ -56,6 +57,7 @@ const dict = {
     holiday: 'Hol',
     remarks: 'Remarks',
     search: 'Search Course',
+    searchPlaceholder: 'Course name',
     update: 'Updated',
     noData: '-',
     favorites: 'Favorites',
@@ -73,23 +75,112 @@ const dict = {
     closed: 'Closed',
     noResult: 'No courses found',
     noResultSub: 'Try adjusting your filters'
+  },
+  'ja': {
+    title: 'ゴルフ料金ガイド',
+    subtitle: 'Taiwan Green Fees & Facilities',
+    explore: '探す',
+    region: '地域',
+    all: 'すべて',
+    course: 'コース名',
+    guest: 'ビジター',
+    member: '会員',
+    mGuest: '同伴',
+    team: 'グループ',
+    amenities: '設備',
+    weekday: '平日',
+    holiday: '休日',
+    remarks: '備考',
+    search: 'コースを検索',
+    searchPlaceholder: 'コース名',
+    update: '更新',
+    noData: '-',
+    favorites: 'お気に入り',
+    favOnly: 'お気に入りのみ',
+    holes: 'ホール',
+    sort: '並び替え',
+    sortDefault: 'デフォルト',
+    sortGuestWk: 'ビジター平日 安い順',
+    sortGuestHol: 'ビジター休日 安い順',
+    sortMember: '会員 安い順',
+    golfDay: 'ゴルフ曜日',
+    golfDayAll: 'すべて',
+    golfDayToday: '今日',
+    noGolfDay: '不定',
+    closed: '閉業',
+    noResult: '条件に合うコースが見つかりません',
+    noResultSub: '絞り込み条件を変えてみてください'
+  },
+  'ko': {
+    title: '골프 요금 가이드',
+    subtitle: 'Taiwan Green Fees & Facilities',
+    explore: '탐색',
+    region: '지역',
+    all: '전체',
+    course: '골프장 이름',
+    guest: '비회원',
+    member: '회원',
+    mGuest: '동반',
+    team: '단체',
+    amenities: '시설',
+    weekday: '평일',
+    holiday: '휴일',
+    remarks: '비고',
+    search: '골프장 검색',
+    searchPlaceholder: '골프장 이름',
+    update: '업데이트',
+    noData: '-',
+    favorites: '즐겨찾기',
+    favOnly: '즐겨찾기만',
+    holes: '홀수',
+    sort: '정렬',
+    sortDefault: '기본',
+    sortGuestWk: '비회원 평일 낮은순',
+    sortGuestHol: '비회원 휴일 낮은순',
+    sortMember: '회원 낮은순',
+    golfDay: '골프 요일',
+    golfDayAll: '전체',
+    golfDayToday: '오늘',
+    noGolfDay: '미정',
+    closed: '폐업',
+    noResult: '조건에 맞는 골프장이 없습니다',
+    noResultSub: '필터 조건을 변경해 보세요'
   }
 }
 
 const t = computed(() => dict[locale.value])
 
 const regionMap = {
-  '台北市、新北市': 'Taipei / New Taipei',
-  '桃園地區': 'Taoyuan',
-  '新竹、苗栗': 'Hsinchu / Miaoli',
-  '台中、彰化、南投': 'Taichung / Changhua / Nantou',
-  '嘉義、台南、高雄、屏東': 'South Taiwan',
-  '花東地區': 'East Taiwan'
+  en: {
+    '台北市、新北市': 'Taipei / New Taipei',
+    '桃園地區': 'Taoyuan',
+    '新竹、苗栗': 'Hsinchu / Miaoli',
+    '台中、彰化、南投': 'Taichung / Changhua / Nantou',
+    '嘉義、台南、高雄、屏東': 'South Taiwan',
+    '花東地區': 'East Taiwan'
+  },
+  ja: {
+    '台北市、新北市': '台北・新北',
+    '桃園地區': '桃園',
+    '新竹、苗栗': '新竹・苗栗',
+    '台中、彰化、南投': '台中・彰化・南投',
+    '嘉義、台南、高雄、屏東': '南台湾',
+    '花東地區': '東部'
+  },
+  ko: {
+    '台北市、新北市': '타이베이・신베이',
+    '桃園地區': '타오위안',
+    '新竹、苗栗': '신주・먀오리',
+    '台中、彰化、南投': '타이중・장화・난터우',
+    '嘉義、台南、高雄、屏東': '남대만',
+    '花東地區': '동부'
+  }
 }
 
 const getRegionName = (r) => {
   if (r === '全部') return t.value.all
-  return locale.value === 'en' ? (regionMap[r] || r) : r
+  const map = regionMap[locale.value]
+  return map ? (map[r] || r) : r
 }
 
 // Replace dash or empty with localized empty
@@ -243,6 +334,8 @@ onUnmounted(() => {
       <select v-model="locale" class="bg-transparent text-white focus:outline-none cursor-pointer appearance-none pr-2">
         <option value="zh-TW" class="bg-black text-base">繁體中文</option>
         <option value="en" class="bg-black text-base">English</option>
+        <option value="ja" class="bg-black text-base">日本語</option>
+        <option value="ko" class="bg-black text-base">한국어</option>
       </select>
     </div>
 
@@ -310,7 +403,7 @@ onUnmounted(() => {
                 <label class="text-[10px] md:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
                 <div class="relative group flex items-center h-[38px] md:h-[40px] overflow-hidden">
                   <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
-                  <input type="text" v-model="searchQuery" :placeholder="t.search"
+                  <input type="text" v-model="searchQuery" :placeholder="t.searchPlaceholder"
                          class="w-full bg-transparent border-none p-0 text-xl md:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[40px] flex-1" />
                   <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
                 </div>
