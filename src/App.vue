@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import golfDataJson from './data/golf_courses.json'
 import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart } from 'lucide-vue-next'
 
@@ -169,6 +169,42 @@ const filteredCourses = computed(() => {
 
 const showFilterPanel = ref(false)
 
+const filterVisible = ref(true)
+let lastScrollY = 0
+let scrollUpAccum = 0
+const SHOW_THRESHOLD = 80  // 需要向上捲超過 80px 才顯示 filter
+
+const handleScroll = () => {
+  const currentScrollY = window.scrollY
+  const contentLayer = document.getElementById('content-layer')
+  const filterBar = document.getElementById('filter-bar')
+  const contentTop = contentLayer ? contentLayer.offsetTop : window.innerHeight * 0.7
+  const filterHeight = filterBar ? filterBar.offsetHeight : 0
+  const activationPoint = contentTop + filterHeight
+
+  // 在 threshold 以上永遠顯示
+  if (currentScrollY < activationPoint) {
+    filterVisible.value = true
+    scrollUpAccum = 0
+    lastScrollY = currentScrollY
+    return
+  }
+
+  const delta = currentScrollY - lastScrollY
+  lastScrollY = currentScrollY
+
+  if (delta > 0) {
+    // 向下捲：立即隱藏，重置累積
+    scrollUpAccum = 0
+    filterVisible.value = false
+  } else {
+    // 向上捲：累積距離，超過門檻才顯示
+    scrollUpAccum += Math.abs(delta)
+    if (scrollUpAccum >= SHOW_THRESHOLD) {
+      filterVisible.value = true
+    }
+  }
+}
 
 const onRegionChange = () => {
   const el = document.getElementById('content-layer')
@@ -188,6 +224,13 @@ const scrollToContent = () => {
   document.getElementById('content-layer').scrollIntoView({ behavior: 'smooth' })
 }
 
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 
 </script>
 
@@ -233,7 +276,7 @@ const scrollToContent = () => {
       <div class="max-w-7xl mx-auto px-6 md:px-12 flex-1 pb-32">
         
         <!-- Filter Controls (Sticky) -->
-        <div class="sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 md:px-12 md:-mx-12 pt-4 md:pt-8 pb-3 md:pb-6 shadow-sm">
+        <div id="filter-bar" :class="['sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 md:px-12 md:-mx-12 pt-4 md:pt-8 pb-3 md:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full md:translate-y-0' : '']">
           
           <div class="flex flex-col gap-3 md:gap-8 md:flex-row">
 
