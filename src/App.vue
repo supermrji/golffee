@@ -383,7 +383,7 @@ onUnmounted(() => {
 
     <!-- Content Section (Floating Over Hero via -mt-32) -->
     <div id="content-layer" class="relative z-20 flex flex-col flex-1 -mt-24 pt-0 bg-[#050505] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
-      <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 pb-12 min-h-screen">
+      <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 min-h-screen" style="padding-bottom: calc(3.5rem + env(safe-area-inset-bottom))">
 
         <!-- Filter Controls (Sticky) -->
         <div id="filter-bar" :class="['sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 lg:px-12 lg:-mx-12 pt-4 lg:pt-8 pb-3 lg:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full lg:translate-y-0' : '']">
