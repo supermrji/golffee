@@ -235,6 +235,11 @@ const expandedRemarks = reactive(new Set())
 const showInstallGuide = ref(false)
 const hasUpdate = ref(false)
 const currentVersion = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : null
+const buildDate = (() => {
+  if (!currentVersion) return ''
+  const d = new Date(Number(currentVersion))
+  return `v${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`
+})()
 
 async function checkVersion() {
   if (!currentVersion) return
@@ -336,14 +341,20 @@ const scrollToContent = () => {
 
 let versionTimer = null
 
+function onVisibilityChange() {
+  if (document.visibilityState === 'visible') checkVersion()
+}
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  document.addEventListener('visibilitychange', onVisibilityChange)
   checkVersion()
   versionTimer = setInterval(checkVersion, 5 * 60 * 1000)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('visibilitychange', onVisibilityChange)
   clearInterval(versionTimer)
 })
 
@@ -739,7 +750,7 @@ onUnmounted(() => {
       <!-- Persistent Footer -->
       <footer class="fixed bottom-0 left-0 right-0 z-30 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md text-center" style="padding-top: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));">
         <p class="text-white text-[10px] tracking-[0.25em] font-light opacity-40">
-          ©2026 KingsleyZheng · v2026.4.11
+          ©2026 KingsleyZheng · {{ buildDate }}
         </p>
       </footer>
     </div>
