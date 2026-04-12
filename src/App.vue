@@ -242,7 +242,7 @@ const buildDate = (() => {
 })()
 
 function reloadPage() {
-  location.reload()
+  location.href = location.href
 }
 
 async function checkVersion() {
@@ -743,7 +743,7 @@ onUnmounted(() => {
       <!-- Update Banner -->
       <Transition name="update-banner">
         <div v-if="hasUpdate"
-             class="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between gap-3 px-4 py-3 bg-emerald-500 text-black text-sm font-medium"
+             class="fixed bottom-0 left-0 right-0 z-[9999] flex items-center justify-between gap-3 px-4 py-3 bg-emerald-500 text-black text-sm font-medium"
              style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
           <span>🎉 有新版本，點右側按鈕更新</span>
           <button @click="reloadPage"
