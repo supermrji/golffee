@@ -388,6 +388,11 @@ onUnmounted(() => {
 <template>
   <div class="relative flex flex-col min-h-screen bg-[#050505] text-[#f4f4f4] font-sans selection:bg-emerald-500 selection:text-white">
 
+    <!-- PWA 狀態列遮罩：填滿 safe-area-inset-top 避免內容透出 -->
+    <div v-if="isStandalone"
+         class="fixed top-0 left-0 right-0 z-40 bg-[#050505]"
+         style="height: env(safe-area-inset-top)"></div>
+
     <!-- Top-Left Install Button (Mobile, non-standalone only) -->
     <button v-if="!isStandalone"
             @click="showInstallGuide = true"
