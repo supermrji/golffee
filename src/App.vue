@@ -972,12 +972,11 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 button {
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition: opacity 0.12s ease;
   -webkit-tap-highlight-color: transparent;
 }
 button:active {
-  opacity: 0.55;
-  transform: scale(0.95);
+  opacity: 0.5;
 }
 .safe-top {
   top: calc(1rem + env(safe-area-inset-top));
