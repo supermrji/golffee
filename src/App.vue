@@ -747,7 +747,7 @@ onUnmounted(() => {
              style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
           <span>🎉 有新版本，點右側按鈕更新</span>
           <button @click="reloadPage"
-                  class="flex-shrink-0 bg-black text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full hover:bg-black/80 transition-colors">
+                  class="flex-shrink-0 bg-black text-emerald-400 text-sm font-semibold px-4 py-2 rounded-full hover:bg-black/80 transition-colors">
             立即更新
           </button>
         </div>
