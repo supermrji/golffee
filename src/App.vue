@@ -233,6 +233,19 @@ const favorites = ref(JSON.parse(localStorage.getItem('golffee_favorites') || '[
 const showFavoritesOnly = ref(false)
 const expandedRemarks = reactive(new Set())
 const showInstallGuide = ref(false)
+const hasUpdate = ref(false)
+const currentVersion = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : null
+
+async function checkVersion() {
+  if (!currentVersion) return
+  try {
+    const res = await fetch('/version.json?t=' + Date.now())
+    const data = await res.json()
+    if (data.version && data.version !== currentVersion) {
+      hasUpdate.value = true
+    }
+  } catch {}
+}
 const isStandalone = typeof window !== 'undefined' && (
   window.navigator.standalone === true ||
   window.matchMedia('(display-mode: standalone)').matches
@@ -321,12 +334,17 @@ const scrollToContent = () => {
   document.getElementById('content-layer').scrollIntoView({ behavior: 'smooth' })
 }
 
+let versionTimer = null
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  checkVersion()
+  versionTimer = setInterval(checkVersion, 5 * 60 * 1000)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  clearInterval(versionTimer)
 })
 
 </script>
@@ -705,6 +723,19 @@ onUnmounted(() => {
 
       </div>
 
+      <!-- Update Banner -->
+      <Transition name="update-banner">
+        <div v-if="hasUpdate"
+             class="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between gap-3 px-4 py-3 bg-emerald-500 text-black text-sm font-medium"
+             style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
+          <span>🎉 有新版本，點右側按鈕更新</span>
+          <button @click="() => window.location.reload()"
+                  class="flex-shrink-0 bg-black text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full hover:bg-black/80 transition-colors">
+            立即更新
+          </button>
+        </div>
+      </Transition>
+
       <!-- Persistent Footer -->
       <footer class="fixed bottom-0 left-0 right-0 z-30 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md text-center" style="padding-top: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));">
         <p class="text-white text-[10px] tracking-[0.25em] font-light opacity-40">
@@ -809,5 +840,14 @@ body {
 .guide-enter-from .guide-panel,
 .guide-leave-to .guide-panel {
   transform: translateY(100%);
+}
+.update-banner-enter-active,
+.update-banner-leave-active {
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;
+}
+.update-banner-enter-from,
+.update-banner-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
 }
 </style>

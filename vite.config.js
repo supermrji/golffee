@@ -1,14 +1,28 @@
+import fs from 'fs'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
+const buildVersion = Date.now().toString()
+
 export default defineConfig({
   plugins: [
     vue(),
     tailwindcss(),
+    {
+      name: 'version-inject',
+      buildStart() {
+        fs.writeFileSync(
+          new URL('./public/version.json', import.meta.url).pathname,
+          JSON.stringify({ version: buildVersion })
+        )
+      }
+    }
   ],
+  define: {
+    __APP_VERSION__: JSON.stringify(buildVersion)
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
