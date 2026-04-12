@@ -1,7 +1,8 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import golfDataJson from './data/golf_courses.json'
-import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X } from 'lucide-vue-next'
+import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X, Bell } from 'lucide-vue-next'
+import GolfFlag from './GolfFlag.vue'
 
 const locale = ref('zh-TW')
 
@@ -244,6 +245,53 @@ const showAbout = ref(false)
 const aboutTab = ref('features')
 const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024
 
+const features = [
+  { label: '查詢', items: [
+    '全台 <span class=\'hl\'>58 座</span>高爾夫球場收費資訊',
+    '<span class=\'hl\'>平日、假日、來賓、會員</span>四種費用',
+    '球場名稱搜尋',
+    '縣市篩選 · 球場日篩選',
+    '<span class=\'hl\'>價格排序</span>快速比較',
+    '同組費用 · 洞數顯示',
+    '備註展開 / 收合',
+    '<span class=\'hl\'>已停業</span>球場標示',
+  ]},
+  { label: '個人化', items: [
+    '收藏<span class=\'hl\'>最愛球場</span>，下次開啟保留',
+    '<span class=\'hl\'>4 種語系</span>：繁中 / English / 日本語 / 한국어',
+  ]},
+  { label: 'PWA', items: [
+    '加入主畫面，<span class=\'hl\'>全螢幕 App</span> 體驗',
+    '有新版本時<span class=\'hl\'>自動通知更新</span>',
+  ]},
+]
+
+const changelog = [
+  { version: 'v2026.4.12', items: [
+    '新增<span class=\'hl\'>版本自動偵測</span>，有更新時底部通知',
+    '修正 PWA <span class=\'hl\'>瀏海遮擋</span>語系選單與篩選列',
+    '新增「關於」<span class=\'hl\'>功能介紹</span>與<span class=\'hl\'>更新紀錄</span>',
+    '全面優化<span class=\'hl\'>無障礙</span>與手機操作體驗',
+  ]},
+  { version: 'v2026.4.11', items: [
+    '加入主畫面教學改為<span class=\'hl\'>實際截圖</span>',
+    'Footer <span class=\'hl\'>固定底部</span>，含安全區域支援',
+    '新增 <span class=\'hl\'>PWA manifest</span> 與 App 圖示',
+    '圖片全面<span class=\'hl\'>壓縮優化</span>',
+  ]},
+  { version: 'v2026.4.10', items: [
+    '補上<span class=\'hl\'>全台球場</span>完整資料',
+    '新增<span class=\'hl\'>球場日篩選</span>、<span class=\'hl\'>價格排序</span>',
+    '新增<span class=\'hl\'>日文、韓文</span>語系',
+    '備註欄<span class=\'hl\'>展開 / 收合</span>功能',
+  ]},
+  { version: 'v2026.4.9', items: [
+    '<span class=\'hl\'>初始版本</span>上線',
+    '串接 <span class=\'hl\'>Google Sheet</span> 即時資料',
+    '<span class=\'hl\'>最愛球場</span>收藏功能',
+  ]},
+]
+
 let _scrollY = 0
 watch([showAbout, showInstallGuide], ([about, guide]) => {
   const locked = about || guide
@@ -393,7 +441,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative flex flex-col min-h-screen bg-[#050505] text-[#f4f4f4] font-sans selection:bg-emerald-500 selection:text-white">
+  <div class="relative flex flex-col min-h-dvh bg-[#050505] text-[#f4f4f4] font-sans selection:bg-emerald-500 selection:text-white">
 
     <!-- PWA 狀態列遮罩：填滿 safe-area-inset-top 避免內容透出 -->
     <div v-if="isStandalone"
@@ -455,7 +503,7 @@ onUnmounted(() => {
 
     <!-- Content Section (Floating Over Hero via -mt-32) -->
     <div id="content-layer" class="relative z-20 flex flex-col flex-1 -mt-24 pt-0 bg-[#050505] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
-      <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 min-h-screen" style="padding-bottom: calc(3.5rem + env(safe-area-inset-bottom))">
+      <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 min-h-dvh" style="padding-bottom: calc(3.5rem + env(safe-area-inset-bottom))">
 
         <!-- Filter Controls (Sticky) -->
         <div id="filter-bar" :class="['sticky z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 lg:px-12 lg:-mx-12 pt-4 lg:pt-8 pb-3 lg:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full lg:translate-y-0' : '']" style="top: env(safe-area-inset-top)">
@@ -517,13 +565,14 @@ onUnmounted(() => {
                 <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none block mb-2">{{ t.golfDay }}</label>
                 <div class="flex flex-wrap gap-2">
                   <button @click="selectedGolfDay = '全部'"
-                          :class="['px-3 py-1 text-xs border tracking-wider transition-all', selectedGolfDay === '全部' ? 'border-white/40 text-white bg-white/10' : 'border-white/10 text-[#666]']">
+                          :class="['px-3 py-1.5 text-xs border tracking-wider transition-all duration-150', selectedGolfDay === '全部' ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium' : 'border-white/10 text-[#888]']">
                     {{ t.golfDayAll }}
                   </button>
                   <button v-for="d in weekdays.slice(1).concat([weekdays[0]])" :key="d"
                           @click="selectedGolfDay = selectedGolfDay === d ? '全部' : d"
-                          :class="['px-3 py-1 text-xs border tracking-wider transition-all',
-                                   selectedGolfDay === d ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/10 text-[#666]']">
+                          :class="['px-3 py-1.5 text-xs border tracking-wider transition-all duration-150',
+                                   selectedGolfDay === d ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium' :
+                                   d === todayWeekday ? 'border-emerald-400/25 text-[#888] bg-emerald-400/5' : 'border-white/10 text-[#888]']">
                     {{ d }}{{ d === todayWeekday ? ' ★' : '' }}
                   </button>
                 </div>
@@ -534,7 +583,7 @@ onUnmounted(() => {
                 <div class="flex flex-wrap gap-2">
                   <button v-for="(label, val) in { default: t.sortDefault, guestWk: t.sortGuestWk, guestHol: t.sortGuestHol, member: t.sortMember }" :key="val"
                           @click="sortBy = sortBy === val && val !== 'default' ? 'default' : val"
-                          :class="['px-3 py-1 text-xs border tracking-wider transition-all', sortBy === val ? 'border-white/40 text-white bg-white/10' : 'border-white/10 text-[#666]']">
+                          :class="['px-3 py-1.5 text-xs border tracking-wider transition-all duration-150', sortBy === val ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium' : 'border-white/10 text-[#888]']">
                     {{ label }}
                   </button>
                 </div>
@@ -605,7 +654,7 @@ onUnmounted(() => {
                   <div class="flex justify-between items-start pr-2">
                     <div>
                       <div class="flex items-center gap-2 min-w-0">
-                        <button @click="toggleFavorite(c.name)" class="focus:outline-none group/fav flex-shrink-0" :title="t.favorites">
+                        <button @click="toggleFavorite(c.name)" class="focus:outline-none group/fav flex-shrink-0 p-1 -m-1" :aria-label="isFavorite(c.name) ? '取消最愛' : '加入最愛'">
                           <Heart :class="['w-4 h-4 transition-all duration-300', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10 group-hover/fav:text-white/40']" />
                         </button>
                         <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer"
@@ -614,10 +663,10 @@ onUnmounted(() => {
                           <span class="absolute -bottom-1 left-0 w-full h-[1px] bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                         </a>
                         <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer"
-                           class="text-[#444] hover:text-emerald-400 transition-colors flex-shrink-0" title="Website">
+                           class="text-[#444] hover:text-emerald-400 transition-colors flex-shrink-0" :aria-label="`${c.name} 官網`">
                           <ExternalLink class="w-3.5 h-3.5" />
                         </a>
-                        <span v-if="c.golfDay" :class="['flex-shrink-0 text-xs px-1.5 py-0.5 leading-none tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#666] border-white/10']">⛳ {{ c.golfDay }}</span>
+                        <span v-if="c.golfDay" :class="['inline-flex items-center gap-1 flex-shrink-0 text-xs px-1.5 py-0.5 tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#666] border-white/10']"><GolfFlag :size="12" />{{ c.golfDay }}</span>
                       </div>
                       <div class="mt-2 flex flex-col gap-0.5">
                         <div class="flex items-center gap-2">
@@ -656,9 +705,9 @@ onUnmounted(() => {
                 </td>
 
                 <td class="py-5 px-4 align-top flex justify-end gap-3 text-[#999]">
-                  <Utensils v-if="c.hasRestaurant" class="w-4 h-4" title="Restaurant" />
-                  <Droplets v-if="c.hasWater" class="w-4 h-4" title="Water" />
-                  <CreditCard v-if="c.hasCard" class="w-4 h-4" title="Card" />
+                  <Utensils v-if="c.hasRestaurant" class="w-4 h-4" aria-label="餐廳" role="img" />
+                  <Droplets v-if="c.hasWater" class="w-4 h-4" aria-label="飲水" role="img" />
+                  <CreditCard v-if="c.hasCard" class="w-4 h-4" aria-label="刷卡" role="img" />
                 </td>
 
                 <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
@@ -670,7 +719,7 @@ onUnmounted(() => {
                     </div>
                     <button v-if="parseRemarks(c.remarks).length > 2"
                             @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
-                            class="mt-3 px-2.5 py-1 text-xs border border-white/20 text-[#888] hover:border-emerald-400/60 hover:text-emerald-400 transition-all tracking-wide">
+                            class="mt-3 px-3 py-1.5 text-xs border border-white/20 bg-white/5 text-[#aaa] hover:border-emerald-400/60 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all tracking-wide rounded">
                       {{ expandedRemarks.has(c.name) ? '▲ 收起' : '▼ 展開' }}
                     </button>
                   </template>
@@ -688,20 +737,20 @@ onUnmounted(() => {
             <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
-          <div v-for="c in filteredCourses" :key="c.name" :class="['flex flex-col p-4 md:p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
+          <div v-for="c in filteredCourses" :key="c.name" :class="['flex flex-col p-4 md:p-6 border rounded-xl group transition-colors', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60 border-white/[0.12]' : 'bg-[#0a0a0a] border-white/[0.12] hover:border-white/25']">
 
             <div class="mb-6 pb-4 border-b border-white/[0.12] flex justify-between items-start">
               <div>
                 <div class="flex items-center gap-3 mb-1">
-                  <button @click="toggleFavorite(c.name)" class="focus:outline-none flex-shrink-0" :title="t.favorites">
+                  <button @click="toggleFavorite(c.name)" class="focus:outline-none flex-shrink-0 p-1 -m-1" :aria-label="isFavorite(c.name) ? '取消最愛' : '加入最愛'">
                     <Heart :class="['w-6 h-6 transition-all', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10']" />
                   </button>
                   <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer"
-                     class="text-2xl font-light tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors">
+                     class="text-2xl font-normal tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors">
                     {{ c.name }}
                   </a>
                   <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer"
-                     class="flex-shrink-0 text-[#444] hover:text-emerald-400 transition-colors">
+                     class="flex-shrink-0 text-[#444] hover:text-emerald-400 transition-colors" :aria-label="`${c.name} 官網`">
                     <ExternalLink class="w-4 h-4" />
                   </a>
                 </div>
@@ -709,7 +758,7 @@ onUnmounted(() => {
                   <div class="flex items-center gap-2 flex-wrap">
                     <p class="text-xs text-[#ccc] uppercase tracking-wider font-normal">{{ getRegionName(c.region) }}</p>
                     <span v-if="c.holes" class="text-[10px] md:text-xs text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider whitespace-nowrap">{{ c.holes }}H</span>
-                    <span v-if="c.golfDay" :class="['text-[10px] md:text-xs px-1.5 py-0.5 leading-none tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#888] border-white/10']">⛳ {{ c.golfDay }}</span>
+                    <span v-if="c.golfDay" :class="['inline-flex items-center gap-1 text-[10px] md:text-xs px-1.5 py-0.5 tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#888] border-white/10']"><GolfFlag :size="12" />{{ c.golfDay }}</span>
                   </div>
                   <p v-if="c.phone" class="text-xs text-[#f4f4f4] flex items-center gap-2">
                     <Phone class="w-3 h-3" />
@@ -729,27 +778,28 @@ onUnmounted(() => {
             <div class="grid grid-cols-2 gap-y-6 gap-x-4 mb-6">
               <div>
                 <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.guest }}</p>
-                <p class="text-sm text-[#eee]">{{ formatPrice(c.guestWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.guestHoliday) }}</p>
+                <p class="text-sm text-[#eee] font-mono">{{ formatPrice(c.guestWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.guestHoliday) }}</p>
               </div>
               <div>
                 <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.member }}</p>
-                <p class="text-base text-white tracking-wide">{{ formatPrice(c.member) }}</p>
+                <p class="text-base text-white tracking-wide font-mono">{{ formatPrice(c.member) }}</p>
               </div>
               <div>
                 <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.mGuest }}</p>
-                <p class="text-sm text-[#eee]">{{ formatPrice(c.memberGuestWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.memberGuestHoliday) }}</p>
+                <p class="text-sm text-[#eee] font-mono">{{ formatPrice(c.memberGuestWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.memberGuestHoliday) }}</p>
               </div>
               <div>
                 <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.team }}</p>
-                <p class="text-sm text-[#eee]">{{ formatPrice(c.teamWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.teamHoliday) }}</p>
+                <p class="text-sm text-[#eee] font-mono">{{ formatPrice(c.teamWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.teamHoliday) }}</p>
               </div>
               <div class="col-span-2 flex items-center justify-between">
                 <div>
                   <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.amenities }}</p>
-                  <div class="flex gap-4 text-[#888] mt-1 min-h-[1rem]">
-                    <Utensils v-if="c.hasRestaurant" class="w-4 h-4" />
-                    <Droplets v-if="c.hasWater" class="w-4 h-4" />
-                    <CreditCard v-if="c.hasCard" class="w-4 h-4" />
+                  <div class="flex gap-4 text-[#888] mt-1">
+                    <Utensils v-if="c.hasRestaurant" class="w-4 h-4" aria-label="餐廳" role="img" />
+                    <Droplets v-if="c.hasWater" class="w-4 h-4" aria-label="飲水" role="img" />
+                    <CreditCard v-if="c.hasCard" class="w-4 h-4" aria-label="刷卡" role="img" />
+                    <span v-if="!c.hasRestaurant && !c.hasWater && !c.hasCard" class="text-xs text-[#444] tracking-wide">{{ t.noData }}</span>
                   </div>
                 </div>
               </div>
@@ -760,7 +810,7 @@ onUnmounted(() => {
                 <p class="text-xs text-[#888] uppercase tracking-wider">{{ t.remarks }}</p>
                 <button v-if="clampedRemarks.has(c.name) || expandedRemarks.has(c.name)"
                         @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
-                        class="px-2 py-0.5 text-xs border border-white/20 text-[#888] hover:border-emerald-400/60 hover:text-emerald-400 transition-all tracking-wide">
+                        class="px-3 py-1.5 text-xs border border-white/20 bg-white/5 text-[#aaa] hover:border-emerald-400/60 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all tracking-wide rounded">
                   {{ expandedRemarks.has(c.name) ? '▲ 收起' : '▼ 展開' }}
                 </button>
               </div>
@@ -783,7 +833,7 @@ onUnmounted(() => {
         <div v-if="hasUpdate"
              class="fixed bottom-0 left-0 right-0 z-[9999] flex items-center justify-between gap-3 px-4 py-3 bg-emerald-500 text-black text-sm font-medium"
              style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
-          <span>🎉 有新版本，點右側按鈕更新</span>
+          <span class="flex items-center gap-2"><Bell class="w-4 h-4 flex-shrink-0" />有新版本，點右側按鈕更新</span>
           <button @click="reloadPage"
                   class="flex-shrink-0 bg-black text-emerald-400 text-sm font-semibold px-4 py-2 rounded-full hover:bg-black/80 transition-colors">
             立即更新
@@ -810,7 +860,7 @@ onUnmounted(() => {
           <!-- Header -->
           <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/10">
             <h2 class="text-white text-base font-medium tracking-wide">關於 Golffee</h2>
-            <button @click="showAbout = false" class="text-white/40 hover:text-white transition-colors p-1">
+            <button @click="showAbout = false" class="text-white/40 hover:text-white transition-colors p-1" aria-label="關閉">
               <X class="w-5 h-5" />
             </button>
           </div>
@@ -829,26 +879,7 @@ onUnmounted(() => {
 
           <!-- Features Tab -->
           <div v-if="aboutTab === 'features'" class="px-6 pt-5 pb-4 flex flex-col gap-6">
-            <div v-for="section in [
-              { label: '查詢', items: [
-                '全台 <em class=\'hl\'>58 座</em>高爾夫球場收費資訊',
-                '<em class=\'hl\'>平日、假日、來賓、會員</em>四種費用',
-                '球場名稱搜尋',
-                '縣市篩選 · 球場日篩選',
-                '<em class=\'hl\'>價格排序</em>快速比較',
-                '同組費用 · 洞數顯示',
-                '備註展開 / 收合',
-                '<em class=\'hl\'>已停業</em>球場標示',
-              ]},
-              { label: '個人化', items: [
-                '收藏<em class=\'hl\'>最愛球場</em>，下次開啟保留',
-                '<em class=\'hl\'>4 種語系</em>：繁中 / English / 日本語 / 한국어',
-              ]},
-              { label: 'PWA', items: [
-                '加入主畫面，<em class=\'hl\'>全螢幕 App</em> 體驗',
-                '有新版本時<em class=\'hl\'>自動通知更新</em>',
-              ]},
-            ]" :key="section.label">
+            <div v-for="section in features" :key="section.label">
               <div>
                 <p class="text-xs tracking-[0.2em] text-white/30 uppercase mb-3">{{ section.label }}</p>
                 <ul class="flex flex-col gap-2">
@@ -864,30 +895,7 @@ onUnmounted(() => {
 
           <!-- Changelog Tab -->
           <div v-if="aboutTab === 'changelog'" class="px-6 pt-5 pb-4 flex flex-col gap-6">
-            <div v-for="release in [
-              { version: 'v2026.4.12', items: [
-                '新增<em class=\'hl\'>版本自動偵測</em>，有更新時底部通知',
-                '修正 PWA <em class=\'hl\'>瀏海遮擋</em>語系選單與篩選列',
-                '新增「關於」<em class=\'hl\'>功能介紹</em>與<em class=\'hl\'>更新紀錄</em>',
-              ]},
-              { version: 'v2026.4.11', items: [
-                '加入主畫面教學改為<em class=\'hl\'>實際截圖</em>',
-                'Footer <em class=\'hl\'>固定底部</em>，含安全區域支援',
-                '新增 <em class=\'hl\'>PWA manifest</em> 與 App 圖示',
-                '圖片全面<em class=\'hl\'>壓縮優化</em>',
-              ]},
-              { version: 'v2026.4.10', items: [
-                '補上<em class=\'hl\'>全台球場</em>完整資料',
-                '新增<em class=\'hl\'>球場日篩選</em>、<em class=\'hl\'>價格排序</em>',
-                '新增<em class=\'hl\'>日文、韓文</em>語系',
-                '備註欄<em class=\'hl\'>展開 / 收合</em>功能',
-              ]},
-              { version: 'v2026.4.9', items: [
-                '<em class=\'hl\'>初始版本</em>上線',
-                '串接 <em class=\'hl\'>Google Sheet</em> 即時資料',
-                '<em class=\'hl\'>最愛球場</em>收藏功能',
-              ]},
-            ]" :key="release.version">
+            <div v-for="release in changelog" :key="release.version">
               <div>
                 <p class="text-emerald-400 text-xs font-medium tracking-widest mb-2">{{ release.version }}</p>
                 <ul class="flex flex-col gap-1.5">
@@ -919,7 +927,7 @@ onUnmounted(() => {
               <h2 class="text-white text-base font-medium tracking-wide">加入主畫面</h2>
               <p class="text-white/40 text-sm mt-0.5 tracking-wide">將此網頁安裝為 App</p>
             </div>
-            <button @click="showInstallGuide = false" class="text-white/40 hover:text-white transition-colors p-1">
+            <button @click="showInstallGuide = false" class="text-white/40 hover:text-white transition-colors p-1" aria-label="關閉">
               <X class="w-5 h-5" />
             </button>
           </div>
@@ -983,15 +991,18 @@ button {
   cursor: pointer;
   transition: opacity 0.12s ease;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 button:active {
   opacity: 0.5;
 }
+a, select {
+  touch-action: manipulation;
+}
 .safe-top {
   top: calc(1rem + env(safe-area-inset-top));
 }
-em.hl {
-  font-style: normal;
+.hl {
   color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
 }
