@@ -386,7 +386,7 @@ onUnmounted(() => {
       <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 min-h-screen" style="padding-bottom: calc(3.5rem + env(safe-area-inset-bottom))">
 
         <!-- Filter Controls (Sticky) -->
-        <div id="filter-bar" :class="['sticky top-0 z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 lg:px-12 lg:-mx-12 pt-4 lg:pt-8 pb-3 lg:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full lg:translate-y-0' : '']">
+        <div id="filter-bar" :class="['sticky z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 lg:px-12 lg:-mx-12 pt-4 lg:pt-8 pb-3 lg:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full lg:translate-y-0' : '']" style="top: env(safe-area-inset-top)">
 
           <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 lg:flex-row">
 
