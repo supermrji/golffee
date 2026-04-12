@@ -232,7 +232,13 @@ const regionCounts = computed(() => {
 const favorites = ref(JSON.parse(localStorage.getItem('golffee_favorites') || '[]'))
 const showFavoritesOnly = ref(false)
 const expandedRemarks = reactive(new Set())
-const hasAnyExpanded = computed(() => expandedRemarks.size > 0)
+const clampedRemarks = reactive(new Set())
+
+function checkOverflow(el, name) {
+  if (!el) return
+  const isClamped = el.scrollHeight > el.clientHeight + 2
+  isClamped ? clampedRemarks.add(name) : clampedRemarks.delete(name)
+}
 const showInstallGuide = ref(false)
 const showAbout = ref(false)
 const aboutTab = ref('features')
@@ -681,7 +687,7 @@ onUnmounted(() => {
             <p class="text-white/40 text-base">{{ t.noResult }}</p>
             <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
           </div>
-          <div :class="['grid grid-cols-1 md:grid-cols-2 gap-6 pt-6', hasAnyExpanded ? 'items-start' : '']">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 items-start">
           <div v-for="c in filteredCourses" :key="c.name" :class="['flex flex-col p-4 md:p-6 border border-white/[0.12] group', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60' : 'bg-[#0a0a0a]']">
 
             <div class="mb-6 pb-4 border-b border-white/[0.12] flex justify-between items-start">
@@ -752,13 +758,14 @@ onUnmounted(() => {
             <div v-if="parseRemarks(c.remarks).length" class="mt-auto pt-4 border-t border-white/[0.12]">
               <div class="flex items-center justify-between mb-3">
                 <p class="text-xs text-[#888] uppercase tracking-wider">{{ t.remarks }}</p>
-                <button v-if="parseRemarks(c.remarks).length > 2"
+                <button v-if="clampedRemarks.has(c.name) || expandedRemarks.has(c.name)"
                         @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
                         class="px-2 py-0.5 text-xs border border-white/20 text-[#888] hover:border-emerald-400/60 hover:text-emerald-400 transition-all tracking-wide">
                   {{ expandedRemarks.has(c.name) ? '▲ 收起' : '▼ 展開' }}
                 </button>
               </div>
-              <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'">
+              <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'"
+                   :ref="el => checkOverflow(el, c.name)">
                 <ul class="list-disc pl-3 space-y-2 text-sm text-[#f4f4f4] leading-relaxed marker:text-[#444]">
                   <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
                 </ul>
