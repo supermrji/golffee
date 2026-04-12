@@ -241,6 +241,10 @@ const buildDate = (() => {
   return `v${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`
 })()
 
+function reloadPage() {
+  location.reload()
+}
+
 async function checkVersion() {
   if (!currentVersion) return
   try {
@@ -350,6 +354,8 @@ onMounted(() => {
   document.addEventListener('visibilitychange', onVisibilityChange)
   checkVersion()
   versionTimer = setInterval(checkVersion, 5 * 60 * 1000)
+  // 測試用：在 console 執行 window.__simulateUpdate() 可模擬觸發更新提示
+  window.__simulateUpdate = () => { hasUpdate.value = true }
 })
 
 onUnmounted(() => {
@@ -740,7 +746,7 @@ onUnmounted(() => {
              class="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between gap-3 px-4 py-3 bg-emerald-500 text-black text-sm font-medium"
              style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
           <span>🎉 有新版本，點右側按鈕更新</span>
-          <button @click="() => window.location.reload()"
+          <button @click="reloadPage"
                   class="flex-shrink-0 bg-black text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full hover:bg-black/80 transition-colors">
             立即更新
           </button>
