@@ -746,7 +746,7 @@ onUnmounted(() => {
               <div class="col-span-2 flex items-center justify-between">
                 <div>
                   <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.amenities }}</p>
-                  <div class="flex gap-4 text-[#888] mt-1">
+                  <div class="flex gap-4 text-[#888] mt-1 min-h-[1rem]">
                     <Utensils v-if="c.hasRestaurant" class="w-4 h-4" />
                     <Droplets v-if="c.hasWater" class="w-4 h-4" />
                     <CreditCard v-if="c.hasCard" class="w-4 h-4" />
