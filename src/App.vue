@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import golfDataJson from './data/golf_courses.json'
 import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X } from 'lucide-vue-next'
 
@@ -233,6 +233,25 @@ const favorites = ref(JSON.parse(localStorage.getItem('golffee_favorites') || '[
 const showFavoritesOnly = ref(false)
 const expandedRemarks = reactive(new Set())
 const showInstallGuide = ref(false)
+const showAbout = ref(false)
+const aboutTab = ref('features')
+const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024
+
+let _scrollY = 0
+watch([showAbout, showInstallGuide], ([about, guide]) => {
+  const locked = about || guide
+  if (locked) {
+    _scrollY = window.scrollY
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${_scrollY}px`
+    document.body.style.width = '100%'
+  } else {
+    document.body.style.position = ''
+    document.body.style.top = ''
+    document.body.style.width = ''
+    window.scrollTo(0, _scrollY)
+  }
+})
 const hasUpdate = ref(false)
 const currentVersion = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : null
 const buildDate = (() => {
@@ -380,15 +399,21 @@ onUnmounted(() => {
       加入主畫面
     </button>
 
-    <!-- Top-Right Language Switcher -->
-    <div class="safe-top absolute right-4 sm:right-6 z-50 flex items-center gap-2 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-xs tracking-wider">
-      <Globe class="w-3.5 h-3.5 text-white/70" />
-      <select v-model="locale" class="bg-transparent text-white focus:outline-none cursor-pointer appearance-none pr-2">
-        <option value="zh-TW" class="bg-black text-base">繁體中文</option>
-        <option value="en" class="bg-black text-base">English</option>
-        <option value="ja" class="bg-black text-base">日本語</option>
-        <option value="ko" class="bg-black text-base">한국어</option>
-      </select>
+    <!-- Top-Right Controls -->
+    <div class="safe-top absolute right-4 sm:right-6 z-50 flex items-center gap-2">
+      <button @click="showAbout = true; aboutTab = 'features'"
+              class="flex items-center h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-white/60 text-xs tracking-wider hover:text-white/90 hover:border-white/25 transition-all">
+        關於
+      </button>
+      <div class="flex items-center gap-2 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-xs tracking-wider">
+        <Globe class="w-3.5 h-3.5 text-white/70" />
+        <select v-model="locale" class="bg-transparent text-white focus:outline-none cursor-pointer appearance-none pr-2">
+          <option value="zh-TW" class="bg-black text-base">繁體中文</option>
+          <option value="en" class="bg-black text-base">English</option>
+          <option value="ja" class="bg-black text-base">日本語</option>
+          <option value="ko" class="bg-black text-base">한국어</option>
+        </select>
+      </div>
     </div>
 
     <!-- Hero Section (Compressed to 70vh) -->
@@ -761,12 +786,119 @@ onUnmounted(() => {
       </footer>
     </div>
 
+    <!-- About Modal -->
+    <Transition name="guide">
+      <div v-if="showAbout"
+           class="fixed inset-0 z-[200] flex items-end lg:items-center justify-center bg-black/70 backdrop-blur-sm"
+           @click.self="showAbout = false">
+        <div class="guide-panel w-full max-w-md lg:max-w-lg bg-[#0d0d0d] border-t lg:border border-white/10 rounded-t-2xl lg:rounded-2xl pb-10 overflow-y-auto"
+             :style="isDesktop ? { maxHeight: '80vh' } : { height: isStandalone ? 'calc(92vh - env(safe-area-inset-top))' : '95vh' }">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/10">
+            <h2 class="text-white text-base font-medium tracking-wide">關於 Golffee</h2>
+            <button @click="showAbout = false" class="text-white/40 hover:text-white transition-colors p-1">
+              <X class="w-5 h-5" />
+            </button>
+          </div>
+
+          <!-- Tabs -->
+          <div class="flex border-b border-white/10">
+            <button @click="aboutTab = 'features'"
+                    :class="['flex-1 py-3 text-sm tracking-wide transition-colors', aboutTab === 'features' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-white/40 hover:text-white/70']">
+              功能介紹
+            </button>
+            <button @click="aboutTab = 'changelog'"
+                    :class="['flex-1 py-3 text-sm tracking-wide transition-colors', aboutTab === 'changelog' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-white/40 hover:text-white/70']">
+              更新紀錄
+            </button>
+          </div>
+
+          <!-- Features Tab -->
+          <div v-if="aboutTab === 'features'" class="px-6 pt-5 pb-4 flex flex-col gap-6">
+            <div v-for="section in [
+              { label: '查詢', items: [
+                '全台 <em class=\'hl\'>58 座</em>高爾夫球場收費資訊',
+                '<em class=\'hl\'>平日、假日、來賓、會員</em>四種費用',
+                '球場名稱搜尋',
+                '縣市篩選 · 球場日篩選',
+                '<em class=\'hl\'>價格排序</em>快速比較',
+                '同組費用 · 洞數顯示',
+                '備註展開 / 收合',
+                '<em class=\'hl\'>已停業</em>球場標示',
+              ]},
+              { label: '個人化', items: [
+                '收藏<em class=\'hl\'>最愛球場</em>，下次開啟保留',
+                '<em class=\'hl\'>4 種語系</em>：繁中 / English / 日本語 / 한국어',
+              ]},
+              { label: 'PWA', items: [
+                '加入主畫面，<em class=\'hl\'>全螢幕 App</em> 體驗',
+                '有新版本時<em class=\'hl\'>自動通知更新</em>',
+              ]},
+            ]" :key="section.label">
+              <div>
+                <p class="text-xs tracking-[0.2em] text-white/30 uppercase mb-3">{{ section.label }}</p>
+                <ul class="flex flex-col gap-2">
+                  <li v-for="f in section.items" :key="f"
+                      class="flex items-center gap-2.5 text-sm text-white/70">
+                    <span class="w-1 h-1 rounded-full bg-emerald-400 flex-shrink-0"></span>
+                    <span v-html="f"></span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Changelog Tab -->
+          <div v-if="aboutTab === 'changelog'" class="px-6 pt-5 pb-4 flex flex-col gap-6">
+            <div v-for="release in [
+              { version: 'v2026.4.12', items: [
+                '新增<em class=\'hl\'>版本自動偵測</em>，有更新時底部通知',
+                '修正 PWA <em class=\'hl\'>瀏海遮擋</em>語系選單與篩選列',
+                '新增「關於」<em class=\'hl\'>功能介紹</em>與<em class=\'hl\'>更新紀錄</em>',
+              ]},
+              { version: 'v2026.4.11', items: [
+                '加入主畫面教學改為<em class=\'hl\'>實際截圖</em>',
+                'Footer <em class=\'hl\'>固定底部</em>，含安全區域支援',
+                '新增 <em class=\'hl\'>PWA manifest</em> 與 App 圖示',
+                '圖片全面<em class=\'hl\'>壓縮優化</em>',
+              ]},
+              { version: 'v2026.4.10', items: [
+                '補上<em class=\'hl\'>全台球場</em>完整資料',
+                '新增<em class=\'hl\'>球場日篩選</em>、<em class=\'hl\'>價格排序</em>',
+                '新增<em class=\'hl\'>日文、韓文</em>語系',
+                '備註欄<em class=\'hl\'>展開 / 收合</em>功能',
+              ]},
+              { version: 'v2026.4.9', items: [
+                '<em class=\'hl\'>初始版本</em>上線',
+                '串接 <em class=\'hl\'>Google Sheet</em> 即時資料',
+                '<em class=\'hl\'>最愛球場</em>收藏功能',
+              ]},
+            ]" :key="release.version">
+              <div>
+                <p class="text-emerald-400 text-xs font-medium tracking-widest mb-2">{{ release.version }}</p>
+                <ul class="flex flex-col gap-1.5">
+                  <li v-for="item in release.items" :key="item"
+                      class="flex items-start gap-2.5 text-sm text-white/60">
+                    <span class="w-1 h-1 rounded-full bg-white/20 flex-shrink-0 mt-2"></span>
+                    <span v-html="item"></span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </Transition>
+
     <!-- Install Guide Modal -->
     <Transition name="guide">
       <div v-if="showInstallGuide"
            class="fixed inset-0 z-[200] flex items-end justify-center bg-black/70 backdrop-blur-sm"
            @click.self="showInstallGuide = false">
-        <div class="guide-panel w-full max-w-md bg-[#0d0d0d] border-t border-white/10 rounded-t-2xl pb-10 overflow-y-auto max-h-[92vh]">
+        <div class="guide-panel w-full max-w-md bg-[#0d0d0d] border-t border-white/10 rounded-t-2xl pb-10 overflow-y-auto"
+             :style="{ maxHeight: isStandalone ? 'calc(92vh - env(safe-area-inset-top))' : '88vh' }">
 
           <!-- Header -->
           <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/10">
@@ -837,6 +969,11 @@ body {
 .safe-top {
   top: calc(1rem + env(safe-area-inset-top));
 }
+em.hl {
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
 @media (min-width: 640px) {
   .safe-top {
     top: calc(1.5rem + env(safe-area-inset-top));
@@ -857,6 +994,13 @@ body {
 .guide-enter-from .guide-panel,
 .guide-leave-to .guide-panel {
   transform: translateY(100%);
+}
+@media (min-width: 1024px) {
+  .guide-enter-from .guide-panel,
+  .guide-leave-to .guide-panel {
+    transform: translateY(12px) scale(0.97);
+    opacity: 0;
+  }
 }
 .update-banner-enter-active,
 .update-banner-leave-active {
