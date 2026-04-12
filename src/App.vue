@@ -972,6 +972,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 button {
+  cursor: pointer;
   transition: opacity 0.12s ease;
   -webkit-tap-highlight-color: transparent;
 }
