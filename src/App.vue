@@ -503,7 +503,7 @@ onUnmounted(() => {
 
     <!-- Content Section (Floating Over Hero via -mt-32) -->
     <div id="content-layer" class="relative z-20 flex flex-col flex-1 -mt-24 pt-0 bg-[#050505] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
-      <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 min-h-dvh" style="padding-bottom: calc(3.5rem + env(safe-area-inset-bottom))">
+      <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 min-h-dvh" style="padding-bottom: calc(5rem + env(safe-area-inset-bottom))">
 
         <!-- Filter Controls (Sticky) -->
         <div id="filter-bar" :class="['sticky z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 lg:px-12 lg:-mx-12 pt-4 lg:pt-8 pb-3 lg:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full lg:translate-y-0' : '']" style="top: env(safe-area-inset-top)">
@@ -842,7 +842,7 @@ onUnmounted(() => {
       </Transition>
 
       <!-- Persistent Footer -->
-      <footer class="fixed bottom-0 left-0 right-0 z-30 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md text-center" style="padding-top: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));">
+      <footer class="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md text-center" style="padding-top: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));">
         <p class="text-white text-[10px] tracking-[0.25em] font-light opacity-40">
           ©2026 KingsleyZheng · {{ buildDate }}
         </p>
