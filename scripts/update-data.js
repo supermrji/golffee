@@ -32,6 +32,20 @@ function fetchData(url) {
                 const parsed = JSON.parse(data);
                 fs.writeFileSync('./src/data/golf_courses.json', JSON.stringify(parsed, null, 2));
                 console.log('✅ 資料更新成功！共抓取 ' + (Array.isArray(parsed) ? parsed.length : 1) + ' 筆球場資料。');
+
+                const today = new Date().toISOString().slice(0, 10);
+                const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://golffee.vercel.app/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>\n`;
+                fs.writeFileSync('./public/sitemap.xml', sitemap);
+                console.log('✅ sitemap.xml 已更新 lastmod 為 ' + today);
+
                 process.exit(0);
             } catch (e) {
                 console.error('❌ 解析 JSON 失敗。');
