@@ -1,28 +1,66 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useHead } from '@unhead/vue'
+import { useRoute, useRouter } from 'vue-router'
 import golfDataJson from '../data/golf_courses.json'
 import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X, Bell } from 'lucide-vue-next'
 import GolfFlag from '../GolfFlag.vue'
 
-useHead({
-  title: '全台高爾夫球場收費查詢 - Golffee',
+const REGION_SLUGS = {
+  taipei:   '台北市、新北市',
+  taoyuan:  '桃園地區',
+  hsinchu:  '新竹、苗栗',
+  taichung: '台中、彰化、南投',
+  tainan:   '嘉義、台南、高雄、屏東',
+  hualien:  '花東地區',
+}
+const REGION_TO_SLUG = Object.fromEntries(Object.entries(REGION_SLUGS).map(([k, v]) => [v, k]))
+const REGION_PAGE_TITLES = {
+  '台北市、新北市':         '台北、新北高爾夫球場收費查詢',
+  '桃園地區':               '桃園高爾夫球場收費查詢',
+  '新竹、苗栗':             '新竹、苗栗高爾夫球場收費查詢',
+  '台中、彰化、南投':       '台中、彰化、南投高爾夫球場收費查詢',
+  '嘉義、台南、高雄、屏東': '南台灣高爾夫球場收費查詢',
+  '花東地區':               '花東高爾夫球場收費查詢',
+}
+
+const route = useRoute()
+const router = useRouter()
+const selectedRegion = ref(route.params.id ? (REGION_SLUGS[route.params.id] || '全部') : '全部')
+
+watch(() => route.params.id, (id) => {
+  selectedRegion.value = id ? (REGION_SLUGS[id] || '全部') : '全部'
+})
+
+const pageTitle = computed(() => (REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費查詢') + ' - Golffee')
+const pageDesc = computed(() => {
+  if (selectedRegion.value === '全部') return 'Golffee 整合全台 50+ 高爾夫球場最新收費資訊，一鍵查詢平日、假日、來賓與會員價格，支援地區篩選、排序與收藏，出發前掌握最新報價，不用再打電話詢問。'
+  const n = golfDataJson.filter(c => c.region === selectedRegion.value).length
+  return `${REGION_PAGE_TITLES[selectedRegion.value]}共 ${n} 座，快速查詢平日、假日、來賓與會員收費，掌握最新報價。`
+})
+const pageUrl = computed(() => {
+  const slug = REGION_TO_SLUG[selectedRegion.value]
+  return slug ? `https://golffee.vercel.app/region/${slug}` : 'https://golffee.vercel.app/'
+})
+
+useHead(computed(() => ({
+  title: pageTitle.value,
   htmlAttrs: { lang: 'zh-TW' },
   meta: [
-    { name: 'description', content: 'Golffee 整合全台 50+ 高爾夫球場最新收費資訊，一鍵查詢平日、假日、來賓與會員價格，支援地區篩選、排序與收藏，出發前掌握最新報價，不用再打電話詢問。' },
+    { name: 'description', content: pageDesc.value },
     { property: 'og:type', content: 'website' },
-    { property: 'og:url', content: 'https://golffee.vercel.app/' },
-    { property: 'og:title', content: 'Golffee - 高爾夫球場全台收費指南' },
-    { property: 'og:description', content: '想打球不用再打電話！一鍵查詢全台 50 個球場的最新報價與備註資訊。' },
+    { property: 'og:url', content: pageUrl.value },
+    { property: 'og:title', content: `Golffee - ${REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費指南'}` },
+    { property: 'og:description', content: pageDesc.value },
     { property: 'og:image', content: 'https://golffee.vercel.app/og-image.jpg' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:url', content: 'https://golffee.vercel.app/' },
-    { name: 'twitter:title', content: 'Golffee - 高爾夫球場全台收費指南' },
-    { name: 'twitter:description', content: '快速比較全台球場價格，掌握最新擊球優惠。' },
+    { name: 'twitter:url', content: pageUrl.value },
+    { name: 'twitter:title', content: `Golffee - ${REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費指南'}` },
+    { name: 'twitter:description', content: pageDesc.value },
     { name: 'twitter:image', content: 'https://golffee.vercel.app/og-image.jpg' },
   ],
   link: [
-    { rel: 'canonical', href: 'https://golffee.vercel.app/' }
+    { rel: 'canonical', href: pageUrl.value }
   ],
   script: [
     {
@@ -68,7 +106,7 @@ useHead({
       })
     }
   ]
-})
+})))
 
 const locale = ref('zh-TW')
 
@@ -275,7 +313,6 @@ const highlightMoney = (text) => {
 const courses = ref(golfDataJson)
 const regions = computed(() => ['全部', ...new Set(golfDataJson.map(c => c.region))])
 
-const selectedRegion = ref('全部')
 const searchQuery = ref('')
 const sortBy = ref('default')
 
@@ -466,6 +503,9 @@ const handleScroll = () => {
 }
 
 const onRegionChange = () => {
+  const slug = REGION_TO_SLUG[selectedRegion.value]
+  if (slug) router.push(`/region/${slug}`)
+  else router.push('/')
   const el = document.getElementById('content-layer')
   if (el) window.scrollTo({ top: el.offsetTop, behavior: 'smooth' })
 }
