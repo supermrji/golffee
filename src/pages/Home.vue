@@ -6,7 +6,7 @@ import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Pho
 import GolfFlag from '../GolfFlag.vue'
 
 useHead({
-  title: '高爾夫球場收費查詢 - Golffee',
+  title: '全台高爾夫球場收費查詢 - Golffee',
   htmlAttrs: { lang: 'zh-TW' },
   meta: [
     { name: 'description', content: 'Golffee 整合全台 50+ 高爾夫球場最新收費資訊，一鍵查詢平日、假日、來賓與會員價格，支援地區篩選、排序與收藏，出發前掌握最新報價，不用再打電話詢問。' },
@@ -74,7 +74,7 @@ const locale = ref('zh-TW')
 
 const dict = {
   'zh-TW': {
-    title: '全台高爾夫收費指南',
+    title: '全台高爾夫球場收費查詢',
     subtitle: 'Taiwan Green Fees & Facilities',
     explore: '探索',
     region: '縣市',
