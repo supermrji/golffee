@@ -31,11 +31,14 @@ export default defineConfig({
   ssgOptions: {
     includedRoutes(paths) {
       const regionSlugs = ['taipei', 'taoyuan', 'hsinchu', 'taichung', 'tainan', 'hualien']
-      return paths.flatMap(route =>
-        route === '/region/:id'
-          ? regionSlugs.map(id => `/region/${id}`)
-          : [route]
-      )
+      return [
+        ...paths.flatMap(route =>
+          route === '/region/:id'
+            ? regionSlugs.map(id => `/region/${id}`)
+            : route.includes(':pathMatch') ? [] : [route]
+        ),
+        '/404'
+      ]
     }
   }
 })
