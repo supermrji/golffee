@@ -53,6 +53,8 @@ useHead(computed(() => ({
     { property: 'og:title', content: `Golffee - ${REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費指南'}` },
     { property: 'og:description', content: pageDesc.value },
     { property: 'og:image', content: 'https://golffee.vercel.app/og-image.jpg' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:url', content: pageUrl.value },
     { name: 'twitter:title', content: `Golffee - ${REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費指南'}` },
@@ -87,10 +89,10 @@ useHead(computed(() => ({
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'ItemList',
-        name: '全台高爾夫球場收費列表',
-        description: '台灣各地高爾夫球場最新收費資訊',
-        numberOfItems: golfDataJson.length,
-        itemListElement: golfDataJson.map((course, i) => ({
+        name: selectedRegion.value === '全部' ? '全台高爾夫球場收費列表' : `${selectedRegion.value}高爾夫球場收費列表`,
+        description: pageDesc.value,
+        numberOfItems: (selectedRegion.value === '全部' ? golfDataJson : golfDataJson.filter(c => c.region === selectedRegion.value)).length,
+        itemListElement: (selectedRegion.value === '全部' ? golfDataJson : golfDataJson.filter(c => c.region === selectedRegion.value)).map((course, i) => ({
           '@type': 'ListItem',
           position: i + 1,
           item: {
@@ -741,7 +743,7 @@ onUnmounted(() => {
             <thead>
               <tr class="text-base uppercase tracking-widest text-[#f4f4f4] font-semibold bg-[#111111] shadow-lg pointer-events-none sticky top-[130px] z-30">
                 <th class="py-5 font-semibold w-[16%] px-4 rounded-tl-sm">{{ t.course }}</th>
-                <th class="py-5 font-semibold px-4">{{ t.guest }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
+                <th class="py-5 font-semibold px-4 text-emerald-400">{{ t.guest }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
                 <th class="py-5 font-semibold px-4">{{ t.member }}</th>
                 <th class="py-5 font-semibold px-4">{{ t.mGuest }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
                 <th class="py-5 font-semibold px-4">{{ t.team }} <span class="text-sm lowercase tracking-normal text-[#888] font-normal">({{ t.weekday }}/{{ t.holiday }})</span></th>
@@ -795,8 +797,8 @@ onUnmounted(() => {
                   </div>
                 </td>
 
-                <td class="py-5 px-4 align-top text-[#eee] text-base">
-                  {{ formatPrice(c.guestWeekday) }} <span class="text-[#666] px-1 font-mono">/</span> {{ formatPrice(c.guestHoliday) }}
+                <td class="py-5 px-4 align-top text-base">
+                  <span class="text-[#f4f4f4]">{{ formatPrice(c.guestWeekday) }}</span><span class="text-[#555] px-1 font-mono">/</span><span class="text-[#f4f4f4]">{{ formatPrice(c.guestHoliday) }}</span>
                 </td>
 
                 <td class="py-5 px-4 align-top text-[#fff] font-mono text-base">
@@ -811,10 +813,10 @@ onUnmounted(() => {
                   {{ formatPrice(c.teamWeekday) }} <span class="text-[#666] px-1 font-mono">/</span> {{ formatPrice(c.teamHoliday) }}
                 </td>
 
-                <td class="py-5 px-4 align-top flex justify-end gap-3 text-[#999]">
-                  <Utensils v-if="c.hasRestaurant" class="w-4 h-4" aria-label="餐廳" role="img" />
-                  <Droplets v-if="c.hasWater" class="w-4 h-4" aria-label="飲水" role="img" />
-                  <CreditCard v-if="c.hasCard" class="w-4 h-4" aria-label="刷卡" role="img" />
+                <td class="py-5 px-4 align-top flex justify-end gap-3">
+                  <Utensils v-if="c.hasRestaurant" class="w-4 h-4 text-[#f4f4f4]" aria-label="餐廳" role="img" />
+                  <Droplets v-if="c.hasWater" class="w-4 h-4 text-[#f4f4f4]" aria-label="飲水" role="img" />
+                  <CreditCard v-if="c.hasCard" class="w-4 h-4 text-[#f4f4f4]" aria-label="刷卡" role="img" />
                 </td>
 
                 <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
@@ -884,8 +886,8 @@ onUnmounted(() => {
 
             <div class="grid grid-cols-2 gap-y-6 gap-x-4 mb-6">
               <div>
-                <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.guest }}</p>
-                <p class="text-sm text-[#eee] font-mono">{{ formatPrice(c.guestWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.guestHoliday) }}</p>
+                <p class="text-xs text-emerald-400 uppercase tracking-wider mb-1">{{ t.guest }}</p>
+                <p class="text-sm font-mono font-medium"><span class="text-[#f4f4f4]">{{ formatPrice(c.guestWeekday) }}</span><span class="text-[#555] text-xs px-1">/</span><span class="text-[#f4f4f4]">{{ formatPrice(c.guestHoliday) }}</span></p>
               </div>
               <div>
                 <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.member }}</p>
@@ -902,10 +904,10 @@ onUnmounted(() => {
               <div class="col-span-2 flex items-center justify-between">
                 <div>
                   <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.amenities }}</p>
-                  <div class="flex gap-4 text-[#888] mt-1">
-                    <Utensils v-if="c.hasRestaurant" class="w-4 h-4" aria-label="餐廳" role="img" />
-                    <Droplets v-if="c.hasWater" class="w-4 h-4" aria-label="飲水" role="img" />
-                    <CreditCard v-if="c.hasCard" class="w-4 h-4" aria-label="刷卡" role="img" />
+                  <div class="flex gap-4 mt-1">
+                    <Utensils v-if="c.hasRestaurant" class="w-4 h-4 text-[#f4f4f4]" aria-label="餐廳" role="img" />
+                    <Droplets v-if="c.hasWater" class="w-4 h-4 text-[#f4f4f4]" aria-label="飲水" role="img" />
+                    <CreditCard v-if="c.hasCard" class="w-4 h-4 text-[#f4f4f4]" aria-label="刷卡" role="img" />
                     <span v-if="!c.hasRestaurant && !c.hasWater && !c.hasCard" class="text-xs text-[#444] tracking-wide">{{ t.noData }}</span>
                   </div>
                 </div>
