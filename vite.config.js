@@ -27,5 +27,15 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  ssgOptions: {
+    includedRoutes(paths) {
+      const regionSlugs = ['taipei', 'taoyuan', 'hsinchu', 'taichung', 'tainan', 'hualien']
+      return paths.flatMap(route =>
+        route === '/region/:id'
+          ? regionSlugs.map(id => `/region/${id}`)
+          : [route]
+      )
+    }
   }
 })

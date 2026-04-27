@@ -895,6 +895,19 @@ onUnmounted(() => {
 
       </div>
 
+      <!-- Region Links -->
+      <nav class="px-6 lg:px-12 -mx-6 lg:-mx-12 py-8 border-t border-white/5 mt-4" aria-label="地區專頁">
+        <p class="text-[10px] tracking-[0.2em] text-[#555] uppercase mb-4">地區專頁</p>
+        <div class="flex flex-wrap gap-3">
+          <a v-for="(info, slug) in { taipei: '台北、新北', taoyuan: '桃園', hsinchu: '新竹、苗栗', taichung: '台中、彰化、南投', tainan: '南台灣', hualien: '花東' }"
+             :key="slug"
+             :href="`/region/${slug}`"
+             class="px-3 py-1.5 text-xs border border-white/10 text-[#888] hover:border-emerald-400/40 hover:text-emerald-400 transition-all tracking-wider">
+            {{ info }}
+          </a>
+        </div>
+      </nav>
+
       <!-- Update Banner -->
       <Transition name="update-banner">
         <div v-if="hasUpdate"
