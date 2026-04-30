@@ -292,6 +292,14 @@ const getCourseName = (c) => {
   return c.name
 }
 
+const NAV_LABELS_MAP = {
+  'zh-TW': { taipei: '台北、新北', taoyuan: '桃園', hsinchu: '新竹、苗栗', taichung: '台中、彰化、南投', tainan: '南台灣',      hualien: '花東'         },
+  en:      { taipei: 'Taipei / New Taipei', taoyuan: 'Taoyuan', hsinchu: 'Hsinchu / Miaoli', taichung: 'Taichung Area', tainan: 'South Taiwan', hualien: 'East Taiwan'  },
+  ja:      { taipei: '台北・新北',          taoyuan: '桃園',     hsinchu: '新竹・苗栗',        taichung: '台中エリア',    tainan: '南台湾',        hualien: '東部'          },
+  ko:      { taipei: '타이베이・신베이',     taoyuan: '타오위안', hsinchu: '신주・먀오리',       taichung: '타이중 지역',   tainan: '남대만',        hualien: '동부'          },
+}
+const localizedNavLabels = computed(() => NAV_LABELS_MAP[locale.value] ?? NAV_LABELS_MAP['zh-TW'])
+
 // Replace dash or empty with localized empty
 const formatPrice = (p) => {
   if (!p || p === '-') return t.value.noData
@@ -919,7 +927,7 @@ onUnmounted(() => {
       <nav class="px-6 lg:px-12 py-12 lg:py-16 border-t border-white/10 mt-12 lg:mt-16" aria-label="地區專頁">
         <p class="text-[11px] tracking-[0.25em] text-[#555] uppercase mb-6">{{ t.regionNav }}</p>
         <div class="flex flex-wrap gap-3">
-          <a v-for="(label, slug) in REGION_NAV_LABELS"
+          <a v-for="(label, slug) in localizedNavLabels"
              :key="slug"
              :href="`/region/${slug}`"
              class="px-4 py-2 text-xs border border-white/10 text-[#777] hover:border-emerald-400/40 hover:text-emerald-400 transition-all tracking-wider">
