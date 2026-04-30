@@ -379,14 +379,29 @@ const buildDate = (() => {
   return `v${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`
 })()
 
-function reloadPage() {
+function dismissUpdate() {
+  hasUpdate.value = false
+}
+
+async function reloadPage() {
+  // 先通知 waiting SW 跳過等待，確保 reload 後載入最新版本
+  if ('serviceWorker' in navigator) {
+    try {
+      const reg = await navigator.serviceWorker.getRegistration()
+      if (reg?.waiting) {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+        await new Promise(r => navigator.serviceWorker.addEventListener('controllerchange', r, { once: true }))
+      }
+    } catch {}
+  }
   location.reload()
 }
 
 let versionCheckInFlight = false
 const VERSION_FETCH_TIMEOUT_MS = 10_000
 async function checkVersion() {
-  if (import.meta.env.DEV || !currentVersion || versionCheckInFlight) return
+  // 已顯示 banner 或不在 production 就跳過
+  if (import.meta.env.DEV || !currentVersion || versionCheckInFlight || hasUpdate.value) return
   versionCheckInFlight = true
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), VERSION_FETCH_TIMEOUT_MS)
@@ -941,11 +956,18 @@ onUnmounted(() => {
         <div v-if="hasUpdate"
              class="fixed bottom-0 left-0 right-0 z-[9999] flex items-center justify-between gap-3 px-4 py-3 bg-emerald-500 text-black text-sm font-medium"
              style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
-          <span class="flex items-center gap-2"><Bell class="w-4 h-4 flex-shrink-0" />有新版本，點右側按鈕更新</span>
-          <button @click="reloadPage"
-                  class="flex-shrink-0 bg-black text-emerald-400 text-sm font-semibold px-4 py-2 rounded-full hover:bg-black/80 transition-colors">
-            立即更新
-          </button>
+          <span class="flex items-center gap-2 min-w-0 truncate"><Bell class="w-4 h-4 flex-shrink-0" />有新版本，點右側按鈕更新</span>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <button @click="reloadPage"
+                    class="bg-black text-emerald-400 text-sm font-semibold px-4 py-2 rounded-full hover:bg-black/80 transition-colors">
+              立即更新
+            </button>
+            <button @click="dismissUpdate"
+                    class="w-7 h-7 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 transition-colors"
+                    aria-label="關閉通知">
+              <X class="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </Transition>
 
