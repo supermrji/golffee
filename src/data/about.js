@@ -20,6 +20,14 @@ export const features = [
 ]
 
 export const changelog = [
+  { version: 'v2026.4.30', items: [
+    '新增 <span class=\'hl\'>Service Worker</span>，支援離線瀏覽與快取加速',
+    '全 58 座球場加入<span class=\'hl\'>英 / 日 / 韓名稱</span>，隨語系即時切換',
+    '<span class=\'hl\'>球場名稱搜尋</span>支援各語系關鍵字',
+    'UI 多語系補齊：展開收起、地區連結、關於按鈕等',
+    '修正日韓語系<span class=\'hl\'>名稱換行</span>與畫面四周白邊問題',
+    '地區專頁區塊<span class=\'hl\'>版面重新設計</span>，間距與對齊全面優化',
+  ]},
   { version: 'v2026.4.12', items: [
     '新增<span class=\'hl\'>版本自動偵測</span>，有更新時底部通知',
     '修正 PWA <span class=\'hl\'>瀏海遮擋</span>語系選單與篩選列',
