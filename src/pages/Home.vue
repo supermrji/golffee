@@ -455,6 +455,33 @@ async function checkVersion() {
     versionCheckInFlight = false
   }
 }
+// ── 文字大小（只縮放資料區，UI chrome 不受影響）───────────────
+const fontSize = ref((typeof window !== 'undefined' && localStorage.getItem('golffee_font_size')) || 'normal')
+
+function applyFontSize(val) {
+  const zoom = val === 'large' ? '1.15' : ''
+  ;['golffee-table', 'golffee-cards'].forEach(id => {
+    const el = document.getElementById(id)
+    if (el) el.style.zoom = zoom
+  })
+}
+
+function toggleFontSize() {
+  markHintSeen()
+  fontSize.value = fontSize.value === 'normal' ? 'large' : 'normal'
+  localStorage.setItem('golffee_font_size', fontSize.value)
+  applyFontSize(fontSize.value)
+}
+
+// ── 功能提示 pulse（首次造訪才顯示）──────────────────────────
+const hintSeen = ref(typeof window !== 'undefined' && !!localStorage.getItem('golffee_hint_seen'))
+
+function markHintSeen() {
+  if (hintSeen.value) return
+  hintSeen.value = true
+  localStorage.setItem('golffee_hint_seen', '1')
+}
+
 const isStandalone = typeof window !== 'undefined' && (
   window.navigator.standalone === true ||
   window.matchMedia('(display-mode: standalone)').matches
@@ -491,6 +518,7 @@ const filteredCourses = computed(() => {
 const showFilterPanel = ref(false)
 
 const filterVisible = ref(true)
+const topControlsVisible = ref(true)   // Hero 頂部按鈕是否可見
 let lastScrollY = 0
 let scrollUpAccum = 0
 const SHOW_THRESHOLD = 200
@@ -507,6 +535,9 @@ const handleScroll = () => {
     const contentTop = contentLayer ? contentLayer.offsetTop : window.innerHeight * 0.7
     const filterHeight = filterBar ? filterBar.offsetHeight : 0
     const activationPoint = contentTop + filterHeight
+
+    // 捲過 Hero 後才顯示 filter bar 的狀態 chips
+    topControlsVisible.value = currentScrollY < contentTop - 40
 
     if (currentScrollY < activationPoint) {
       filterVisible.value = true
@@ -554,6 +585,8 @@ const scrollToContent = () => {
   document.getElementById('content-layer')?.scrollIntoView({ behavior: 'smooth' })
 }
 
+const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
 let versionTimer = null
 let midnightTimer = null
 function scheduleMidnight() {
@@ -573,6 +606,7 @@ function onVisibilityChange() {
 
 onMounted(() => {
   favorites.value = JSON.parse(localStorage.getItem('golffee_favorites') || '[]')
+  if (fontSize.value === 'large') applyFontSize('large')
   window.addEventListener('scroll', handleScroll, { passive: true })
   document.addEventListener('visibilitychange', onVisibilityChange)
   desktopMq?.addEventListener('change', onDesktopChange)
@@ -620,9 +654,18 @@ onUnmounted(() => {
               class="flex items-center h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-white/60 text-xs tracking-wider hover:text-white/90 hover:border-white/25 transition-all">
         {{ t.about }}
       </button>
-      <div class="flex items-center gap-2 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-xs tracking-wider">
+
+      <!-- Font Size Toggle -->
+      <button @click="toggleFontSize"
+              @animationend="markHintSeen"
+              :aria-label="fontSize === 'large' ? '縮小文字' : '放大文字'"
+              :class="['flex items-center gap-0.5 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border hover:border-white/25 transition-all select-none', hintSeen ? 'border-white/10' : 'hint-pulse']">
+        <span :class="['leading-none transition-colors', fontSize === 'normal' ? 'text-white/90' : 'text-white/30']" style="font-size: 11px">A</span>
+        <span :class="['leading-none transition-colors', fontSize === 'large'  ? 'text-white/90' : 'text-white/30']" style="font-size: 15px">A</span>
+      </button>
+      <div :class="['flex items-center gap-2 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border text-xs tracking-wider', hintSeen ? 'border-white/10' : 'hint-pulse']">
         <Globe class="w-3.5 h-3.5 text-white/70" />
-        <select v-model="locale" class="bg-transparent text-white focus:outline-none cursor-pointer appearance-none pr-2">
+        <select v-model="locale" @change="markHintSeen" class="bg-transparent text-white focus:outline-none cursor-pointer appearance-none pr-2">
           <option value="zh-TW" class="bg-black text-base">繁體中文</option>
           <option value="en" class="bg-black text-base">English</option>
           <option value="ja" class="bg-black text-base">日本語</option>
@@ -696,7 +739,7 @@ onUnmounted(() => {
                 <div class="relative group flex items-center h-[38px] overflow-hidden">
                   <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
                   <input type="text" v-model="searchQuery" :placeholder="t.searchPlaceholder"
-                         class="w-full bg-transparent border-none p-0 text-xl lg:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#333] leading-[38px] flex-1" />
+                         class="w-full bg-transparent border-none p-0 text-xl lg:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#666] leading-[38px] flex-1" />
                   <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
                 </div>
               </div>
@@ -780,11 +823,39 @@ onUnmounted(() => {
                 <span class="text-xs tracking-[0.2em] uppercase font-bold">{{ t.favorites }}</span>
               </button>
             </div>
+
+            <!-- 字級 & 語系狀態 chips（捲過 Hero 後才顯示，僅桌面） -->
+            <Transition name="state-chip">
+              <div v-if="!topControlsVisible"
+                   class="hidden lg:flex items-end gap-2 ml-auto pb-1">
+                <!-- 語系 chip：內嵌 select 下拉 -->
+                <div class="flex items-center gap-1.5 h-[40px] px-2.5 border border-white/15 hover:border-white/30 transition-all cursor-pointer">
+                  <Globe class="w-3 h-3 text-[#666] flex-shrink-0 pointer-events-none" />
+                  <select v-model="locale" @change="markHintSeen"
+                          class="appearance-none bg-transparent text-[#888] hover:text-white/80 focus:outline-none cursor-pointer text-[11px] tracking-widest uppercase transition-colors">
+                    <option value="zh-TW" class="bg-[#1a1a1a] text-white text-sm normal-case tracking-normal">繁中</option>
+                    <option value="en"    class="bg-[#1a1a1a] text-white text-sm normal-case tracking-normal">EN</option>
+                    <option value="ja"    class="bg-[#1a1a1a] text-white text-sm normal-case tracking-normal">JA</option>
+                    <option value="ko"    class="bg-[#1a1a1a] text-white text-sm normal-case tracking-normal">KO</option>
+                  </select>
+                </div>
+                <!-- 字級 chip：toggle，顯示目前狀態 -->
+                <button @click="toggleFontSize"
+                        :title="fontSize === 'large' ? '恢復預設字級' : '放大文字'"
+                        :class="['flex items-center gap-0.5 h-[40px] px-2.5 border transition-all',
+                                 fontSize === 'large'
+                                   ? 'border-emerald-400/50 text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20'
+                                   : 'border-white/15 text-[#555] hover:border-white/30 hover:text-[#888]']">
+                  <span style="font-size:10px" class="leading-none">A</span>
+                  <span style="font-size:14px" class="leading-none">A</span>
+                </button>
+              </div>
+            </Transition>
           </div>
         </div>
 
         <!-- Desktop Table Architecture -->
-        <div class="hidden xl:block pt-6">
+        <div id="golffee-table" class="hidden xl:block pt-6">
           <table class="w-full text-left whitespace-nowrap">
             <thead>
               <tr class="text-base uppercase tracking-widest text-[#f4f4f4] font-semibold bg-[#111111] shadow-lg pointer-events-none sticky top-[130px] z-30">
@@ -897,7 +968,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Mobile Architecture (Hidden on large screens) -->
-        <div class="xl:hidden">
+        <div id="golffee-cards" class="xl:hidden">
           <div v-if="filteredCourses.length === 0" class="py-24 text-center">
             <p class="text-white/40 text-base">{{ t.noResult }}</p>
             <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
@@ -1018,6 +1089,35 @@ onUnmounted(() => {
         </div>
       </nav>
 
+      <!-- 手機版：字級 & 語系狀態 fixed 小按鈕（捲過 Hero 後才顯示，不影響 filter bar） -->
+      <Transition name="state-chip">
+        <div v-if="!topControlsVisible"
+             class="lg:hidden fixed bottom-[calc(2.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex flex-col gap-1.5 items-end">
+          <!-- 語系 chip：固定寬度，select 覆蓋整個區塊 -->
+          <div class="relative flex items-center justify-center w-[44px] h-[28px] border border-white/15 bg-[#050505]/90 backdrop-blur-md hover:border-white/30 transition-all cursor-pointer">
+            <span class="text-[10px] tracking-widest text-[#666] uppercase pointer-events-none select-none">
+              {{ locale === 'zh-TW' ? '繁' : locale.toUpperCase() }}
+            </span>
+            <select v-model="locale" @change="markHintSeen"
+                    class="absolute inset-0 opacity-0 cursor-pointer w-full">
+              <option value="zh-TW">繁體中文</option>
+              <option value="en">English</option>
+              <option value="ja">日本語</option>
+              <option value="ko">한국어</option>
+            </select>
+          </div>
+          <!-- 字級 chip：同寬同高 -->
+          <button @click="toggleFontSize"
+                  :class="['flex items-center justify-center gap-[2px] w-[44px] h-[28px] border bg-[#050505]/90 backdrop-blur-md transition-all',
+                           fontSize === 'large'
+                             ? 'border-emerald-400/50 text-emerald-400 bg-emerald-400/10'
+                             : 'border-white/15 text-[#555]']">
+            <span style="font-size:10px" class="leading-none">A</span>
+            <span style="font-size:13px" class="leading-none">A</span>
+          </button>
+        </div>
+      </Transition>
+
       <!-- Update Banner -->
       <Transition name="update-banner">
         <div v-if="hasUpdate"
@@ -1039,10 +1139,16 @@ onUnmounted(() => {
       </Transition>
 
       <!-- Persistent Footer -->
-      <footer class="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md text-center" style="padding-top: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));">
+      <footer class="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md flex items-center justify-center" style="padding-top: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));">
         <p class="text-white text-[10px] tracking-[0.25em] font-light opacity-40">
           ©2026 KingsleyZheng · {{ buildDate }}
         </p>
+        <!-- 回到頂端 -->
+        <button @click="scrollToTop"
+                aria-label="回到頂端"
+                class="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 px-2 py-1 text-white/25 hover:text-white/60 transition-colors text-sm leading-none select-none">
+          ↑
+        </button>
       </footer>
     </div>
 
@@ -1227,6 +1333,20 @@ a, select {
     transform: translateY(12px) scale(0.97);
     opacity: 0;
   }
+}
+.state-chip-enter-active, .state-chip-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.state-chip-enter-from, .state-chip-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+.hint-pulse {
+  animation: hint-ring 1.5s ease-in-out 3;
+}
+@keyframes hint-ring {
+  0%, 100% { border-color: rgba(255,255,255,0.1); box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+  50%       { border-color: rgba(52,211,153,0.55); box-shadow: 0 0 0 3px rgba(52,211,153,0.12); }
 }
 .update-banner-enter-active,
 .update-banner-leave-active {
