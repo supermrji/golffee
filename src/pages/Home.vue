@@ -916,7 +916,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Region Links -->
-      <nav class="px-6 lg:px-12 -mx-6 lg:-mx-12 py-12 lg:py-16 border-t border-white/10 mt-12 lg:mt-16" aria-label="地區專頁">
+      <nav class="px-6 lg:px-12 py-12 lg:py-16 border-t border-white/10 mt-12 lg:mt-16" aria-label="地區專頁">
         <p class="text-[11px] tracking-[0.25em] text-[#555] uppercase mb-6">{{ t.regionNav }}</p>
         <div class="flex flex-wrap gap-3">
           <a v-for="(label, slug) in REGION_NAV_LABELS"
