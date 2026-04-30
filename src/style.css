@@ -2,6 +2,13 @@
 
 @theme {
   --font-sans: "Inter", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-canvas: #050505;
+  --color-canvas-muted: #1a1a1a;
+  --color-fg: #f4f4f4;
+}
+
+html {
+  background-color: var(--color-canvas);  /* 防止 html 層漏白 */
 }
 
 body {

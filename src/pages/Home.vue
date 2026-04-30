@@ -125,7 +125,11 @@ const dict = {
     noGolfDay: '無固定',
     closed: '已停業',
     noResult: '找不到符合條件的球場',
-    noResultSub: '試試調整篩選條件'
+    noResultSub: '試試調整篩選條件',
+    expand: '▼ 展開',
+    collapse: '▲ 收起',
+    about: '關於',
+    regionNav: '地區專頁'
   },
   'en': {
     title: 'Golf Fees.',
@@ -160,7 +164,11 @@ const dict = {
     noGolfDay: 'Varies',
     closed: 'Closed',
     noResult: 'No courses found',
-    noResultSub: 'Try adjusting your filters'
+    noResultSub: 'Try adjusting your filters',
+    expand: '▼ More',
+    collapse: '▲ Less',
+    about: 'About',
+    regionNav: 'Regional Pages'
   },
   'ja': {
     title: 'ゴルフ料金ガイド',
@@ -195,7 +203,11 @@ const dict = {
     noGolfDay: '不定',
     closed: '閉業',
     noResult: '条件に合うコースが見つかりません',
-    noResultSub: '絞り込み条件を変えてみてください'
+    noResultSub: '絞り込み条件を変えてみてください',
+    expand: '▼ 展開',
+    collapse: '▲ 閉じる',
+    about: 'について',
+    regionNav: '地域ページ'
   },
   'ko': {
     title: '골프 요금 가이드',
@@ -230,7 +242,11 @@ const dict = {
     noGolfDay: '미정',
     closed: '폐업',
     noResult: '조건에 맞는 골프장이 없습니다',
-    noResultSub: '필터 조건을 변경해 보세요'
+    noResultSub: '필터 조건을 변경해 보세요',
+    expand: '▼ 더보기',
+    collapse: '▲ 접기',
+    about: '정보',
+    regionNav: '지역 페이지'
   }
 }
 
@@ -532,7 +548,7 @@ onUnmounted(() => {
     <div class="safe-top absolute right-4 sm:right-6 z-50 flex items-center gap-2">
       <button @click="showAbout = true; aboutTab = 'features'"
               class="flex items-center h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-white/60 text-xs tracking-wider hover:text-white/90 hover:border-white/25 transition-all">
-        關於
+        {{ t.about }}
       </button>
       <div class="flex items-center gap-2 h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-xs tracking-wider">
         <Globe class="w-3.5 h-3.5 text-white/70" />
@@ -789,7 +805,7 @@ onUnmounted(() => {
                     <button v-if="c.parsedRemarks.length > 2"
                             @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
                             class="mt-3 px-3 py-1.5 text-xs border border-white/20 bg-white/5 text-[#aaa] hover:border-emerald-400/60 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all tracking-wide rounded">
-                      {{ expandedRemarks.has(c.name) ? '▲ 收起' : '▼ 展開' }}
+                      {{ expandedRemarks.has(c.name) ? t.collapse : t.expand }}
                     </button>
                   </template>
                   <span v-else>{{ t.noData }}</span>
@@ -882,7 +898,7 @@ onUnmounted(() => {
                 <button v-if="clampedRemarks.has(c.name) || expandedRemarks.has(c.name)"
                         @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
                         class="px-3 py-1.5 text-xs border border-white/20 bg-white/5 text-[#aaa] hover:border-emerald-400/60 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all tracking-wide rounded">
-                  {{ expandedRemarks.has(c.name) ? '▲ 收起' : '▼ 展開' }}
+                  {{ expandedRemarks.has(c.name) ? t.collapse : t.expand }}
                 </button>
               </div>
               <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'"
@@ -900,13 +916,13 @@ onUnmounted(() => {
       </div>
 
       <!-- Region Links -->
-      <nav class="px-6 lg:px-12 -mx-6 lg:-mx-12 py-8 border-t border-white/5 mt-4" aria-label="地區專頁">
-        <p class="text-[10px] tracking-[0.2em] text-[#555] uppercase mb-4">地區專頁</p>
+      <nav class="px-6 lg:px-12 -mx-6 lg:-mx-12 py-12 lg:py-16 border-t border-white/10 mt-12 lg:mt-16" aria-label="地區專頁">
+        <p class="text-[11px] tracking-[0.25em] text-[#555] uppercase mb-6">{{ t.regionNav }}</p>
         <div class="flex flex-wrap gap-3">
           <a v-for="(label, slug) in REGION_NAV_LABELS"
              :key="slug"
              :href="`/region/${slug}`"
-             class="px-3 py-1.5 text-xs border border-white/10 text-[#888] hover:border-emerald-400/40 hover:text-emerald-400 transition-all tracking-wider">
+             class="px-4 py-2 text-xs border border-white/10 text-[#777] hover:border-emerald-400/40 hover:text-emerald-400 transition-all tracking-wider">
             {{ label }}
           </a>
         </div>
