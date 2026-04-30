@@ -403,7 +403,7 @@ function reloadPage() {
 let versionCheckInFlight = false
 const VERSION_FETCH_TIMEOUT_MS = 10_000
 async function checkVersion() {
-  if (!currentVersion || versionCheckInFlight) return
+  if (import.meta.env.DEV || !currentVersion || versionCheckInFlight) return
   versionCheckInFlight = true
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), VERSION_FETCH_TIMEOUT_MS)
