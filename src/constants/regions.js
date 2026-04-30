@@ -23,3 +23,12 @@ export const REGION_PAGE_TITLES = {
   '嘉義、台南、高雄、屏東': '南台灣高爾夫球場收費查詢',
   '花東地區':               '花東高爾夫球場收費查詢',
 }
+
+export const REGION_NAV_LABELS = {
+  taipei:   '台北、新北',
+  taoyuan:  '桃園',
+  hsinchu:  '新竹、苗栗',
+  taichung: '台中、彰化、南投',
+  tainan:   '南台灣',
+  hualien:  '花東',
+}
