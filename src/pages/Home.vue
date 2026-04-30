@@ -1,19 +1,11 @@
 <script setup>
-import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useHead } from '@unhead/vue'
 import { useRoute, useRouter } from 'vue-router'
 import golfDataJson from '../data/golf_courses.json'
 import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X, Bell } from 'lucide-vue-next'
 import GolfFlag from '../GolfFlag.vue'
-
-const REGION_SLUGS = {
-  taipei:   '台北市、新北市',
-  taoyuan:  '桃園地區',
-  hsinchu:  '新竹、苗栗',
-  taichung: '台中、彰化、南投',
-  tainan:   '嘉義、台南、高雄、屏東',
-  hualien:  '花東地區',
-}
+import { REGION_SLUGS } from '../constants/regions.js'
 const REGION_TO_SLUG = Object.fromEntries(Object.entries(REGION_SLUGS).map(([k, v]) => [v, k]))
 const REGION_PAGE_TITLES = {
   '台北市、新北市':         '台北、新北高爾夫球場收費查詢',
@@ -27,6 +19,9 @@ const REGION_PAGE_TITLES = {
 const route = useRoute()
 const router = useRouter()
 const selectedRegion = ref(route.params.id ? (REGION_SLUGS[route.params.id] || '全部') : '全部')
+const regionCourses = computed(() =>
+  selectedRegion.value === '全部' ? golfDataJson : golfDataJson.filter(c => c.region === selectedRegion.value)
+)
 
 watch(() => route.params.id, (id) => {
   selectedRegion.value = id ? (REGION_SLUGS[id] || '全部') : '全部'
@@ -91,8 +86,8 @@ useHead(computed(() => ({
         '@type': 'ItemList',
         name: selectedRegion.value === '全部' ? '全台高爾夫球場收費列表' : `${selectedRegion.value}高爾夫球場收費列表`,
         description: pageDesc.value,
-        numberOfItems: (selectedRegion.value === '全部' ? golfDataJson : golfDataJson.filter(c => c.region === selectedRegion.value)).length,
-        itemListElement: (selectedRegion.value === '全部' ? golfDataJson : golfDataJson.filter(c => c.region === selectedRegion.value)).map((course, i) => ({
+        numberOfItems: regionCourses.value.length,
+        itemListElement: regionCourses.value.map((course, i) => ({
           '@type': 'ListItem',
           position: i + 1,
           item: {
@@ -298,16 +293,14 @@ const formatPrice = (p) => {
 
 const parseRemarks = (text) => {
   if (!text || text === '-') return []
-  // Split by full stop or semicolon as they are common sentence enders
   return text
-    .split(/[。]/)
+    .split('。')
     .map(s => s.trim())
     .filter(Boolean)
 }
 
 const highlightMoney = (text) => {
   if (!text) return ''
-  // Regex to match monetary amounts: 3+ digits, ignoring dates/quantities/ranges
   const regex = /(^|[^0-9/:\-~])(\d{3,})(?=[^0-9/:\-~人位組桌球年月日]|$)/g
   return text.replace(regex, '$1<span class="text-amber-400 font-medium tracking-wide mx-[1px]">$2</span>')
 }
@@ -424,15 +417,19 @@ function reloadPage() {
   location.href = location.href
 }
 
+let versionCheckInFlight = false
 async function checkVersion() {
-  if (!currentVersion) return
+  if (!currentVersion || versionCheckInFlight) return
+  versionCheckInFlight = true
   try {
     const res = await fetch('/version.json?t=' + Date.now())
     const data = await res.json()
     if (data.version && data.version !== currentVersion) {
       hasUpdate.value = true
     }
-  } catch {}
+  } catch {} finally {
+    versionCheckInFlight = false
+  }
 }
 const isStandalone = typeof window !== 'undefined' && (
   window.navigator.standalone === true ||
@@ -472,42 +469,46 @@ let lastScrollY = 0
 let scrollUpAccum = 0
 const SHOW_THRESHOLD = 200  // 需要向上捲超過 200px 才顯示 filter
 
+let rafPending = false
 const handleScroll = () => {
-  const currentScrollY = window.scrollY
-  const contentLayer = document.getElementById('content-layer')
-  const filterBar = document.getElementById('filter-bar')
-  const contentTop = contentLayer ? contentLayer.offsetTop : window.innerHeight * 0.7
-  const filterHeight = filterBar ? filterBar.offsetHeight : 0
-  const activationPoint = contentTop + filterHeight
+  if (rafPending) return
+  rafPending = true
+  requestAnimationFrame(() => {
+    rafPending = false
+    const currentScrollY = window.scrollY
+    const contentLayer = document.getElementById('content-layer')
+    const filterBar = document.getElementById('filter-bar')
+    const contentTop = contentLayer ? contentLayer.offsetTop : window.innerHeight * 0.7
+    const filterHeight = filterBar ? filterBar.offsetHeight : 0
+    const activationPoint = contentTop + filterHeight
 
-  // 在 threshold 以上永遠顯示
-  if (currentScrollY < activationPoint) {
-    filterVisible.value = true
-    scrollUpAccum = 0
-    lastScrollY = currentScrollY
-    return
-  }
-
-  const delta = currentScrollY - lastScrollY
-  lastScrollY = currentScrollY
-
-  if (delta > 0) {
-    // 向下捲：立即隱藏，重置累積
-    scrollUpAccum = 0
-    filterVisible.value = false
-  } else {
-    // 向上捲：累積距離，超過門檻才顯示
-    scrollUpAccum += Math.abs(delta)
-    if (scrollUpAccum >= SHOW_THRESHOLD) {
+    if (currentScrollY < activationPoint) {
       filterVisible.value = true
+      scrollUpAccum = 0
+      lastScrollY = currentScrollY
+      return
     }
-  }
+
+    const delta = currentScrollY - lastScrollY
+    lastScrollY = currentScrollY
+
+    if (delta > 0) {
+      scrollUpAccum = 0
+      filterVisible.value = false
+    } else {
+      scrollUpAccum += Math.abs(delta)
+      if (scrollUpAccum >= SHOW_THRESHOLD) {
+        filterVisible.value = true
+      }
+    }
+  })
 }
 
-const onRegionChange = () => {
+const onRegionChange = async () => {
   const slug = REGION_TO_SLUG[selectedRegion.value]
-  if (slug) router.push(`/region/${slug}`)
-  else router.push('/')
+  if (slug) await router.push(`/region/${slug}`)
+  else await router.push('/')
+  await nextTick()
   const el = document.getElementById('content-layer')
   if (el) window.scrollTo({ top: el.offsetTop, behavior: 'smooth' })
 }

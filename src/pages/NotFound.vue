@@ -11,25 +11,20 @@ useHead({
 <template>
   <div class="min-h-dvh bg-[#050505] text-[#f4f4f4] font-sans flex flex-col items-center justify-center px-6 overflow-hidden">
 
-    <!-- 背景光暈 -->
     <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
       <div class="w-[600px] h-[600px] rounded-full bg-violet-600/[0.06] blur-[120px]"></div>
     </div>
 
     <div class="relative z-10 flex flex-col items-center text-center">
-
-      <!-- 404 大字 -->
       <div class="relative select-none mb-8">
         <p class="text-[9rem] sm:text-[12rem] font-bold leading-none tracking-tighter text-white/[0.08]">404</p>
         <p class="absolute inset-0 flex items-center justify-center text-[9rem] sm:text-[12rem] font-bold leading-none tracking-tighter bg-gradient-to-b from-white/30 to-white/5 bg-clip-text text-transparent">404</p>
       </div>
 
-      <!-- Flag + 文案 -->
       <GolfFlag class="w-8 h-8 text-violet-400/60 mb-5" />
       <h1 class="text-xl sm:text-2xl font-medium tracking-wide text-white/90 mb-3">找不到這個頁面</h1>
       <p class="text-white/35 text-sm leading-relaxed mb-10 max-w-[240px]">你輸入的網址可能已失效或不存在</p>
 
-      <!-- CTA -->
       <a href="/"
          class="inline-flex items-center gap-2 px-8 py-3 border border-emerald-400/40 text-emerald-400 text-sm tracking-widest hover:bg-emerald-400/10 hover:border-emerald-400/70 transition-all duration-300">
         ← 返回首頁
@@ -41,9 +36,3 @@ useHead({
     </footer>
   </div>
 </template>
-
-<style scoped>
-.font-sans {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-</style>

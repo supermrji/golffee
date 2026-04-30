@@ -3,6 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
+import { REGION_SLUGS } from './src/constants/regions.js'
 
 const buildVersion = Date.now().toString()
 
@@ -30,7 +31,7 @@ export default defineConfig({
   },
   ssgOptions: {
     includedRoutes(paths) {
-      const regionSlugs = ['taipei', 'taoyuan', 'hsinchu', 'taichung', 'tainan', 'hualien']
+      const regionSlugs = Object.keys(REGION_SLUGS)
       return [
         ...paths.flatMap(route =>
           route === '/region/:id'
