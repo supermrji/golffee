@@ -3,40 +3,63 @@ import { ref, reactive, computed, watch, nextTick, onMounted, onUnmounted } from
 import { useHead } from '@unhead/vue'
 import { useRoute, useRouter } from 'vue-router'
 import golfDataJson from '../data/golf_courses.json'
-import { MapPin, Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X, Bell } from 'lucide-vue-next'
+import { Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X, Bell } from 'lucide-vue-next'
 import GolfFlag from '../GolfFlag.vue'
-import { REGION_SLUGS } from '../constants/regions.js'
-const REGION_TO_SLUG = Object.fromEntries(Object.entries(REGION_SLUGS).map(([k, v]) => [v, k]))
-const REGION_PAGE_TITLES = {
-  '台北市、新北市':         '台北、新北高爾夫球場收費查詢',
-  '桃園地區':               '桃園高爾夫球場收費查詢',
-  '新竹、苗栗':             '新竹、苗栗高爾夫球場收費查詢',
-  '台中、彰化、南投':       '台中、彰化、南投高爾夫球場收費查詢',
-  '嘉義、台南、高雄、屏東': '南台灣高爾夫球場收費查詢',
-  '花東地區':               '花東高爾夫球場收費查詢',
-}
+import { ALL_REGION, DEFAULT_PAGE_TITLE, SITE_URL, REGION_SLUGS, REGION_TO_SLUG, REGION_PAGE_TITLES } from '../constants/regions.js'
 
 const route = useRoute()
 const router = useRouter()
-const selectedRegion = ref(route.params.id ? (REGION_SLUGS[route.params.id] || '全部') : '全部')
+const selectedRegion = ref(route.params.id ? (REGION_SLUGS[route.params.id] || ALL_REGION) : ALL_REGION)
 const regionCourses = computed(() =>
-  selectedRegion.value === '全部' ? golfDataJson : golfDataJson.filter(c => c.region === selectedRegion.value)
+  selectedRegion.value === ALL_REGION ? golfDataJson : golfDataJson.filter(c => c.region === selectedRegion.value)
 )
 
 watch(() => route.params.id, (id) => {
-  selectedRegion.value = id ? (REGION_SLUGS[id] || '全部') : '全部'
+  selectedRegion.value = id ? (REGION_SLUGS[id] || ALL_REGION) : ALL_REGION
 })
 
-const pageTitle = computed(() => (REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費查詢') + ' - Golffee')
+const pageTitle = computed(() => (REGION_PAGE_TITLES[selectedRegion.value] || DEFAULT_PAGE_TITLE) + ' - Golffee')
 const pageDesc = computed(() => {
-  if (selectedRegion.value === '全部') return 'Golffee 整合全台 50+ 高爾夫球場最新收費資訊，一鍵查詢平日、假日、來賓與會員價格，支援地區篩選、排序與收藏，出發前掌握最新報價，不用再打電話詢問。'
-  const n = golfDataJson.filter(c => c.region === selectedRegion.value).length
-  return `${REGION_PAGE_TITLES[selectedRegion.value]}共 ${n} 座，快速查詢平日、假日、來賓與會員收費，掌握最新報價。`
+  if (selectedRegion.value === ALL_REGION) return 'Golffee 整合全台高爾夫球場最新收費資訊，一鍵查詢平日、假日、來賓與會員價格，支援地區篩選、排序與收藏，出發前掌握最新報價，不用再打電話詢問。'
+  return `${REGION_PAGE_TITLES[selectedRegion.value]}共 ${regionCourses.value.length} 座，快速查詢平日、假日、來賓與會員收費，掌握最新報價。`
 })
 const pageUrl = computed(() => {
   const slug = REGION_TO_SLUG[selectedRegion.value]
-  return slug ? `https://golffee.vercel.app/region/${slug}` : 'https://golffee.vercel.app/'
+  return slug ? `${SITE_URL}/region/${slug}` : `${SITE_URL}/`
 })
+
+const websiteJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Golffee',
+  url: `${SITE_URL}/`,
+  description: '全台高爾夫球場即時收費資訊查詢，包含平日、假日、來賓與會員價格',
+  inLanguage: 'zh-TW',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/?search={search_term_string}` },
+    'query-input': 'required name=search_term_string'
+  }
+})
+
+const itemListJsonLd = computed(() => JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: selectedRegion.value === ALL_REGION ? '全台高爾夫球場收費列表' : `${selectedRegion.value}高爾夫球場收費列表`,
+  description: pageDesc.value,
+  numberOfItems: regionCourses.value.length,
+  itemListElement: regionCourses.value.map((course, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'SportsActivityLocation',
+      name: course.name,
+      address: { '@type': 'PostalAddress', addressRegion: course.region, addressCountry: 'TW' }
+    }
+  }))
+}))
+
+const ogTitle = computed(() => `Golffee - ${REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費指南'}`)
 
 useHead(computed(() => ({
   title: pageTitle.value,
@@ -45,63 +68,23 @@ useHead(computed(() => ({
     { name: 'description', content: pageDesc.value },
     { property: 'og:type', content: 'website' },
     { property: 'og:url', content: pageUrl.value },
-    { property: 'og:title', content: `Golffee - ${REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費指南'}` },
+    { property: 'og:title', content: ogTitle.value },
     { property: 'og:description', content: pageDesc.value },
-    { property: 'og:image', content: 'https://golffee.vercel.app/og-image.jpg' },
+    { property: 'og:image', content: `${SITE_URL}/og-image.jpg` },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:url', content: pageUrl.value },
-    { name: 'twitter:title', content: `Golffee - ${REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費指南'}` },
+    { name: 'twitter:title', content: ogTitle.value },
     { name: 'twitter:description', content: pageDesc.value },
-    { name: 'twitter:image', content: 'https://golffee.vercel.app/og-image.jpg' },
+    { name: 'twitter:image', content: `${SITE_URL}/og-image.jpg` },
   ],
   link: [
     { rel: 'canonical', href: pageUrl.value }
   ],
   script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        name: 'Golffee',
-        url: 'https://golffee.vercel.app/',
-        description: '全台高爾夫球場即時收費資訊查詢，包含平日、假日、來賓與會員價格',
-        inLanguage: 'zh-TW',
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: {
-            '@type': 'EntryPoint',
-            urlTemplate: 'https://golffee.vercel.app/?search={search_term_string}'
-          },
-          'query-input': 'required name=search_term_string'
-        }
-      })
-    },
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'ItemList',
-        name: selectedRegion.value === '全部' ? '全台高爾夫球場收費列表' : `${selectedRegion.value}高爾夫球場收費列表`,
-        description: pageDesc.value,
-        numberOfItems: regionCourses.value.length,
-        itemListElement: regionCourses.value.map((course, i) => ({
-          '@type': 'ListItem',
-          position: i + 1,
-          item: {
-            '@type': 'SportsActivityLocation',
-            name: course.name,
-            address: {
-              '@type': 'PostalAddress',
-              addressRegion: course.region,
-              addressCountry: 'TW'
-            }
-          }
-        }))
-      })
-    }
+    { type: 'application/ld+json', innerHTML: websiteJsonLd },
+    { type: 'application/ld+json', innerHTML: itemListJsonLd.value }
   ]
 })))
 
@@ -280,7 +263,7 @@ const regionMap = {
 }
 
 const getRegionName = (r) => {
-  if (r === '全部') return t.value.all
+  if (r === ALL_REGION) return t.value.all
   const map = regionMap[locale.value]
   return map ? (map[r] || r) : r
 }
@@ -306,7 +289,7 @@ const highlightMoney = (text) => {
 }
 
 const courses = ref(golfDataJson)
-const regions = computed(() => ['全部', ...new Set(golfDataJson.map(c => c.region))])
+const regions = computed(() => [ALL_REGION, ...new Set(golfDataJson.map(c => c.region))])
 
 const searchQuery = ref('')
 const sortBy = ref('default')
@@ -321,7 +304,7 @@ const parseNum = (v) => {
 }
 
 const regionCounts = computed(() => {
-  const counts = { '全部': courses.value.length }
+  const counts = { [ALL_REGION]: courses.value.length }
   courses.value.forEach(c => {
     counts[c.region] = (counts[c.region] || 0) + 1
   })
@@ -414,20 +397,24 @@ const buildDate = (() => {
 })()
 
 function reloadPage() {
-  location.href = location.href
+  location.reload()
 }
 
 let versionCheckInFlight = false
+const VERSION_FETCH_TIMEOUT_MS = 10_000
 async function checkVersion() {
   if (!currentVersion || versionCheckInFlight) return
   versionCheckInFlight = true
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), VERSION_FETCH_TIMEOUT_MS)
   try {
-    const res = await fetch('/version.json?t=' + Date.now())
+    const res = await fetch('/version.json?t=' + Date.now(), { signal: ctrl.signal })
     const data = await res.json()
     if (data.version && data.version !== currentVersion) {
       hasUpdate.value = true
     }
   } catch {} finally {
+    clearTimeout(timer)
     versionCheckInFlight = false
   }
 }
@@ -449,12 +436,12 @@ const toggleFavorite = (name) => {
 const isFavorite = (name) => favorites.value.includes(name)
 
 const filteredCourses = computed(() => {
-  const list = courses.value.filter(c => {
-    const regionMatch = selectedRegion.value === '全部' || c.region === selectedRegion.value
-    const searchMatch = !searchQuery.value || c.name.toLowerCase().includes(searchQuery.value.trim().toLowerCase())
-    const favoriteMatch = !showFavoritesOnly.value || isFavorite(c.name)
-    const golfDayMatch = selectedGolfDay.value === '全部' || c.golfDay === selectedGolfDay.value
-    return regionMatch && searchMatch && favoriteMatch && golfDayMatch
+  const search = searchQuery.value.trim().toLowerCase()
+  const list = regionCourses.value.filter(c => {
+    if (search && !c.name.toLowerCase().includes(search)) return false
+    if (showFavoritesOnly.value && !isFavorite(c.name)) return false
+    if (selectedGolfDay.value !== '全部' && c.golfDay !== selectedGolfDay.value) return false
+    return true
   })
   if (sortBy.value === 'guestWk')  return [...list].sort((a, b) => parseNum(a.guestWeekday) - parseNum(b.guestWeekday))
   if (sortBy.value === 'guestHol') return [...list].sort((a, b) => parseNum(a.guestHoliday) - parseNum(b.guestHoliday))
@@ -467,7 +454,7 @@ const showFilterPanel = ref(false)
 const filterVisible = ref(true)
 let lastScrollY = 0
 let scrollUpAccum = 0
-const SHOW_THRESHOLD = 200  // 需要向上捲超過 200px 才顯示 filter
+const SHOW_THRESHOLD = 200
 
 let rafPending = false
 const handleScroll = () => {
@@ -538,8 +525,9 @@ onMounted(() => {
   document.addEventListener('visibilitychange', onVisibilityChange)
   checkVersion()
   versionTimer = setInterval(checkVersion, 5 * 60 * 1000)
-  // 測試用：在 console 執行 window.__simulateUpdate() 可模擬觸發更新提示
-  window.__simulateUpdate = () => { hasUpdate.value = true }
+  if (import.meta.env.DEV) {
+    window.__simulateUpdate = () => { hasUpdate.value = true }
+  }
 })
 
 onUnmounted(() => {
@@ -1106,9 +1094,6 @@ onUnmounted(() => {
 html {
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
-}
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 button {
   cursor: pointer;
