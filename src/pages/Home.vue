@@ -5,7 +5,8 @@ import { useRoute, useRouter } from 'vue-router'
 import golfDataJson from '../data/golf_courses.json'
 import { Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X, Bell } from 'lucide-vue-next'
 import GolfFlag from '../GolfFlag.vue'
-import { ALL_REGION, DEFAULT_PAGE_TITLE, SITE_URL, REGION_SLUGS, REGION_TO_SLUG, REGION_PAGE_TITLES } from '../constants/regions.js'
+import { ALL_REGION, DEFAULT_PAGE_TITLE, SITE_URL, REGION_SLUGS, REGION_TO_SLUG, REGION_PAGE_TITLES, REGION_NAV_LABELS } from '../constants/regions.js'
+import { features, changelog } from '../data/about.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -59,7 +60,7 @@ const itemListJsonLd = computed(() => JSON.stringify({
   }))
 }))
 
-const ogTitle = computed(() => `Golffee - ${REGION_PAGE_TITLES[selectedRegion.value] || '全台高爾夫球場收費指南'}`)
+const ogTitle = computed(() => `Golffee - ${REGION_PAGE_TITLES[selectedRegion.value] || DEFAULT_PAGE_TITLE}`)
 
 useHead(computed(() => ({
   title: pageTitle.value,
@@ -268,6 +269,13 @@ const getRegionName = (r) => {
   return map ? (map[r] || r) : r
 }
 
+const getCourseName = (c) => {
+  if (locale.value === 'en') return c.name_en || c.name
+  if (locale.value === 'ja') return c.name_ja || c.name
+  if (locale.value === 'ko') return c.name_ko || c.name
+  return c.name
+}
+
 // Replace dash or empty with localized empty
 const formatPrice = (p) => {
   if (!p || p === '-') return t.value.noData
@@ -288,28 +296,23 @@ const highlightMoney = (text) => {
   return text.replace(regex, '$1<span class="text-amber-400 font-medium tracking-wide mx-[1px]">$2</span>')
 }
 
-const courses = ref(golfDataJson)
 const regions = computed(() => [ALL_REGION, ...new Set(golfDataJson.map(c => c.region))])
+const regionCounts = { [ALL_REGION]: golfDataJson.length }
+golfDataJson.forEach(c => { regionCounts[c.region] = (regionCounts[c.region] || 0) + 1 })
 
 const searchQuery = ref('')
 const sortBy = ref('default')
 
+const ALL_GOLF_DAY = '全部'
 const weekdays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六']
-const todayWeekday = weekdays[new Date().getDay()]
-const selectedGolfDay = ref('全部')
+const todayDate = ref(new Date())
+const todayWeekday = computed(() => weekdays[todayDate.value.getDay()])
+const selectedGolfDay = ref(ALL_GOLF_DAY)
 
 const parseNum = (v) => {
   const n = parseInt(v)
   return isNaN(n) ? Infinity : n
 }
-
-const regionCounts = computed(() => {
-  const counts = { [ALL_REGION]: courses.value.length }
-  courses.value.forEach(c => {
-    counts[c.region] = (counts[c.region] || 0) + 1
-  })
-  return counts
-})
 
 const favorites = ref([])
 const showFavoritesOnly = ref(false)
@@ -324,54 +327,10 @@ function checkOverflow(el, name) {
 const showInstallGuide = ref(false)
 const showAbout = ref(false)
 const aboutTab = ref('features')
-const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024
+const desktopMq = typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)') : null
+const isDesktop = ref(desktopMq?.matches ?? false)
+const onDesktopChange = (e) => { isDesktop.value = e.matches }
 
-const features = [
-  { label: '查詢', items: [
-    '全台 <span class=\'hl\'>58 座</span>高爾夫球場收費資訊',
-    '<span class=\'hl\'>平日、假日、來賓、會員</span>四種費用',
-    '球場名稱搜尋',
-    '縣市篩選 · 球場日篩選',
-    '<span class=\'hl\'>價格排序</span>快速比較',
-    '同組費用 · 洞數顯示',
-    '備註展開 / 收合',
-    '<span class=\'hl\'>已停業</span>球場標示',
-  ]},
-  { label: '個人化', items: [
-    '收藏<span class=\'hl\'>最愛球場</span>，下次開啟保留',
-    '<span class=\'hl\'>4 種語系</span>：繁中 / English / 日本語 / 한국어',
-  ]},
-  { label: 'PWA', items: [
-    '加入主畫面，<span class=\'hl\'>全螢幕 App</span> 體驗',
-    '有新版本時<span class=\'hl\'>自動通知更新</span>',
-  ]},
-]
-
-const changelog = [
-  { version: 'v2026.4.12', items: [
-    '新增<span class=\'hl\'>版本自動偵測</span>，有更新時底部通知',
-    '修正 PWA <span class=\'hl\'>瀏海遮擋</span>語系選單與篩選列',
-    '新增「關於」<span class=\'hl\'>功能介紹</span>與<span class=\'hl\'>更新紀錄</span>',
-    '全面優化<span class=\'hl\'>無障礙</span>與手機操作體驗',
-  ]},
-  { version: 'v2026.4.11', items: [
-    '加入主畫面教學改為<span class=\'hl\'>實際截圖</span>',
-    'Footer <span class=\'hl\'>固定底部</span>，含安全區域支援',
-    '新增 <span class=\'hl\'>PWA manifest</span> 與 App 圖示',
-    '圖片全面<span class=\'hl\'>壓縮優化</span>',
-  ]},
-  { version: 'v2026.4.10', items: [
-    '補上<span class=\'hl\'>全台球場</span>完整資料',
-    '新增<span class=\'hl\'>球場日篩選</span>、<span class=\'hl\'>價格排序</span>',
-    '新增<span class=\'hl\'>日文、韓文</span>語系',
-    '備註欄<span class=\'hl\'>展開 / 收合</span>功能',
-  ]},
-  { version: 'v2026.4.9', items: [
-    '<span class=\'hl\'>初始版本</span>上線',
-    '串接 <span class=\'hl\'>Google Sheet</span> 即時資料',
-    '<span class=\'hl\'>最愛球場</span>收藏功能',
-  ]},
-]
 
 let _scrollY = 0
 watch([showAbout, showInstallGuide], ([about, guide]) => {
@@ -438,15 +397,17 @@ const isFavorite = (name) => favorites.value.includes(name)
 const filteredCourses = computed(() => {
   const search = searchQuery.value.trim().toLowerCase()
   const list = regionCourses.value.filter(c => {
-    if (search && !c.name.toLowerCase().includes(search)) return false
+    if (search && !c.name.toLowerCase().includes(search) && !getCourseName(c).toLowerCase().includes(search)) return false
     if (showFavoritesOnly.value && !isFavorite(c.name)) return false
-    if (selectedGolfDay.value !== '全部' && c.golfDay !== selectedGolfDay.value) return false
+    if (selectedGolfDay.value !== ALL_GOLF_DAY && c.golfDay !== selectedGolfDay.value) return false
     return true
   })
-  if (sortBy.value === 'guestWk')  return [...list].sort((a, b) => parseNum(a.guestWeekday) - parseNum(b.guestWeekday))
-  if (sortBy.value === 'guestHol') return [...list].sort((a, b) => parseNum(a.guestHoliday) - parseNum(b.guestHoliday))
-  if (sortBy.value === 'member')   return [...list].sort((a, b) => parseNum(a.member) - parseNum(b.member))
-  return list
+  let sorted
+  if (sortBy.value === 'guestWk')       sorted = [...list].sort((a, b) => parseNum(a.guestWeekday) - parseNum(b.guestWeekday))
+  else if (sortBy.value === 'guestHol') sorted = [...list].sort((a, b) => parseNum(a.guestHoliday) - parseNum(b.guestHoliday))
+  else if (sortBy.value === 'member')   sorted = [...list].sort((a, b) => parseNum(a.member) - parseNum(b.member))
+  else                                  sorted = list
+  return sorted.map(c => ({ ...c, parsedRemarks: parseRemarks(c.remarks) }))
 })
 
 const showFilterPanel = ref(false)
@@ -503,7 +464,7 @@ const onRegionChange = async () => {
 const activeFilterCount = computed(() => {
   let count = 0
   if (sortBy.value !== 'default') count++
-  if (selectedGolfDay.value !== '全部') count++
+  if (selectedGolfDay.value !== ALL_GOLF_DAY) count++
   return count
 })
 
@@ -514,6 +475,12 @@ const scrollToContent = () => {
 }
 
 let versionTimer = null
+let midnightTimer = null
+function scheduleMidnight() {
+  const now = new Date()
+  const ms = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now
+  midnightTimer = setTimeout(() => { todayDate.value = new Date(); scheduleMidnight() }, ms)
+}
 
 function onVisibilityChange() {
   if (document.visibilityState === 'visible') checkVersion()
@@ -523,8 +490,10 @@ onMounted(() => {
   favorites.value = JSON.parse(localStorage.getItem('golffee_favorites') || '[]')
   window.addEventListener('scroll', handleScroll, { passive: true })
   document.addEventListener('visibilitychange', onVisibilityChange)
+  desktopMq?.addEventListener('change', onDesktopChange)
   checkVersion()
   versionTimer = setInterval(checkVersion, 5 * 60 * 1000)
+  scheduleMidnight()
   if (import.meta.env.DEV) {
     window.__simulateUpdate = () => { hasUpdate.value = true }
   }
@@ -533,7 +502,9 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
   document.removeEventListener('visibilitychange', onVisibilityChange)
+  desktopMq?.removeEventListener('change', onDesktopChange)
   clearInterval(versionTimer)
+  clearTimeout(midnightTimer)
 })
 
 </script>
@@ -662,12 +633,12 @@ onUnmounted(() => {
               <div>
                 <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none block mb-2">{{ t.golfDay }}</label>
                 <div class="flex flex-wrap gap-2">
-                  <button @click="selectedGolfDay = '全部'"
-                          :class="['px-3 py-1.5 text-xs border tracking-wider transition-all duration-150', selectedGolfDay === '全部' ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium' : 'border-white/10 text-[#888]']">
+                  <button @click="selectedGolfDay = ALL_GOLF_DAY"
+                          :class="['px-3 py-1.5 text-xs border tracking-wider transition-all duration-150', selectedGolfDay === ALL_GOLF_DAY ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium' : 'border-white/10 text-[#888]']">
                     {{ t.golfDayAll }}
                   </button>
                   <button v-for="d in weekdays.slice(1).concat([weekdays[0]])" :key="d"
-                          @click="selectedGolfDay = selectedGolfDay === d ? '全部' : d"
+                          @click="selectedGolfDay = selectedGolfDay === d ? ALL_GOLF_DAY : d"
                           :class="['px-3 py-1.5 text-xs border tracking-wider transition-all duration-150',
                                    selectedGolfDay === d ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium' :
                                    d === todayWeekday ? 'border-emerald-400/25 text-[#888] bg-emerald-400/5' : 'border-white/10 text-[#888]']">
@@ -693,7 +664,7 @@ onUnmounted(() => {
               <label class="text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.golfDay }}</label>
               <div class="relative group">
                 <select v-model="selectedGolfDay" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
-                  <option value="全部" class="bg-[#1a1a1a] text-white text-base">{{ t.golfDayAll }}</option>
+                  <option :value="ALL_GOLF_DAY" class="bg-[#1a1a1a] text-white text-base">{{ t.golfDayAll }}</option>
                   <option v-for="d in weekdays.slice(1).concat([weekdays[0]])" :key="d" :value="d" class="bg-[#1a1a1a] text-white text-base">
                     {{ d }}{{ d === todayWeekday ? ' ★' : '' }}
                   </option>
@@ -757,7 +728,7 @@ onUnmounted(() => {
                         </button>
                         <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer"
                            class="group-hover:text-emerald-300 text-emerald-400 transition-colors relative text-lg tracking-wide font-medium truncate min-w-0">
-                          {{ c.name }}
+                          {{ getCourseName(c) }}
                           <span class="absolute -bottom-1 left-0 w-full h-[1px] bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                         </a>
                         <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer"
@@ -809,13 +780,13 @@ onUnmounted(() => {
                 </td>
 
                 <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
-                  <template v-if="parseRemarks(c.remarks).length">
+                  <template v-if="c.parsedRemarks.length">
                     <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'">
                       <ul class="list-disc pl-3 space-y-1.5 marker:text-[#444]">
-                        <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
+                        <li v-for="(rm, idx) in c.parsedRemarks" :key="idx" v-html="highlightMoney(rm)"></li>
                       </ul>
                     </div>
-                    <button v-if="parseRemarks(c.remarks).length > 2"
+                    <button v-if="c.parsedRemarks.length > 2"
                             @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
                             class="mt-3 px-3 py-1.5 text-xs border border-white/20 bg-white/5 text-[#aaa] hover:border-emerald-400/60 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all tracking-wide rounded">
                       {{ expandedRemarks.has(c.name) ? '▲ 收起' : '▼ 展開' }}
@@ -844,8 +815,10 @@ onUnmounted(() => {
                     <Heart :class="['w-6 h-6 transition-all', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10']" />
                   </button>
                   <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer"
-                     class="text-2xl font-normal tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors">
-                    {{ c.name }}
+                     :class="locale === 'zh-TW'
+                       ? 'text-2xl font-normal tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors'
+                       : 'text-xl font-medium tracking-normal text-emerald-400 hover:text-emerald-300 transition-colors'">
+                    {{ getCourseName(c) }}
                   </a>
                   <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer"
                      class="flex-shrink-0 text-[#444] hover:text-emerald-400 transition-colors" :aria-label="`${c.name} 官網`">
@@ -903,7 +876,7 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <div v-if="parseRemarks(c.remarks).length" class="pt-4 border-t border-white/[0.12]">
+            <div v-if="c.parsedRemarks.length" class="pt-4 border-t border-white/[0.12]">
               <div class="flex items-center justify-between mb-3">
                 <p class="text-xs text-[#888] uppercase tracking-wider">{{ t.remarks }}</p>
                 <button v-if="clampedRemarks.has(c.name) || expandedRemarks.has(c.name)"
@@ -915,7 +888,7 @@ onUnmounted(() => {
               <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'"
                    :ref="el => checkOverflow(el, c.name)">
                 <ul class="list-disc pl-3 space-y-2 text-sm text-[#f4f4f4] leading-relaxed marker:text-[#444]">
-                  <li v-for="(rm, idx) in parseRemarks(c.remarks)" :key="idx" v-html="highlightMoney(rm)"></li>
+                  <li v-for="(rm, idx) in c.parsedRemarks" :key="idx" v-html="highlightMoney(rm)"></li>
                 </ul>
               </div>
             </div>
@@ -930,11 +903,11 @@ onUnmounted(() => {
       <nav class="px-6 lg:px-12 -mx-6 lg:-mx-12 py-8 border-t border-white/5 mt-4" aria-label="地區專頁">
         <p class="text-[10px] tracking-[0.2em] text-[#555] uppercase mb-4">地區專頁</p>
         <div class="flex flex-wrap gap-3">
-          <a v-for="(info, slug) in { taipei: '台北、新北', taoyuan: '桃園', hsinchu: '新竹、苗栗', taichung: '台中、彰化、南投', tainan: '南台灣', hualien: '花東' }"
+          <a v-for="(label, slug) in REGION_NAV_LABELS"
              :key="slug"
              :href="`/region/${slug}`"
              class="px-3 py-1.5 text-xs border border-white/10 text-[#888] hover:border-emerald-400/40 hover:text-emerald-400 transition-all tracking-wider">
-            {{ info }}
+            {{ label }}
           </a>
         </div>
       </nav>

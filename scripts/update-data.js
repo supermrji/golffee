@@ -30,8 +30,23 @@ function fetchData(url) {
             try {
                 const data = Buffer.concat(chunks).toString('utf8');
                 const parsed = JSON.parse(data);
-                fs.writeFileSync('./src/data/golf_courses.json', JSON.stringify(parsed, null, 2));
-                console.log('✅ 資料更新成功！共抓取 ' + (Array.isArray(parsed) ? parsed.length : 1) + ' 筆球場資料。');
+
+                // 若 GAS 尚未加入多語系欄位，保留本地翻譯（name_en / name_ja / name_ko）
+                let existing = []
+                try { existing = JSON.parse(fs.readFileSync('./src/data/golf_courses.json', 'utf8')) } catch {}
+                const localMap = {}
+                existing.forEach(c => { if (c.name_en) localMap[c.name] = { name_en: c.name_en, name_ja: c.name_ja, name_ko: c.name_ko } })
+                const merged = parsed.map(c => {
+                    if (c.name_en) return c              // GAS 已有翻譯，直接用
+                    if (localMap[c.name]) {              // 用本地翻譯補齊
+                        const { name, ...rest } = c
+                        return { name, ...localMap[c.name], ...rest }
+                    }
+                    return c
+                })
+
+                fs.writeFileSync('./src/data/golf_courses.json', JSON.stringify(merged, null, 2));
+                console.log('✅ 資料更新成功！共抓取 ' + (Array.isArray(merged) ? merged.length : 1) + ' 筆球場資料。');
 
                 const today = new Date().toISOString().slice(0, 10);
                 const regionSlugs = ['taipei', 'taoyuan', 'hsinchu', 'taichung', 'tainan', 'hualien'];

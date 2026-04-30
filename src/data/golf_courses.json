@@ -1,6 +1,9 @@
 [
   {
     "name": "翡翠",
+    "name_en": "Jade",
+    "name_ja": "翡翠",
+    "name_ko": "제이드",
     "phone": "02-24924935",
     "region": "台北市、新北市",
     "holes": 18,
@@ -22,6 +25,9 @@
   },
   {
     "name": "黃金海岸(北海)",
+    "name_en": "Gold Coast (Peihai)",
+    "name_ja": "ゴールドコースト（北海）",
+    "name_ko": "골드 코스트 (북해)",
     "phone": "02-26383205",
     "region": "台北市、新北市",
     "holes": 18,
@@ -43,6 +49,9 @@
   },
   {
     "name": "濱海",
+    "name_en": "Binhai",
+    "name_ja": "濱海",
+    "name_ko": "빈하이",
     "phone": "02-26380679",
     "region": "台北市、新北市",
     "holes": 18,
@@ -64,6 +73,9 @@
   },
   {
     "name": "大屯",
+    "name_en": "Tatun",
+    "name_ja": "大屯",
+    "name_ko": "따툰",
     "phone": "02-26213271",
     "region": "台北市、新北市",
     "holes": 18,
@@ -85,6 +97,9 @@
   },
   {
     "name": "台灣(老淡水)",
+    "name_en": "Taiwan (Old Tamsui)",
+    "name_ja": "台湾（老淡水）",
+    "name_ko": "타이완 (올드 탐수이)",
     "phone": "02-26212211#27",
     "region": "台北市、新北市",
     "holes": 18,
@@ -106,6 +121,9 @@
   },
   {
     "name": "揮皇(新淡水)",
+    "name_en": "Huihuang (New Tamsui)",
+    "name_ja": "揮皇（新淡水）",
+    "name_ko": "후이황 (신 탐수이)",
     "phone": "02-28092466#111",
     "region": "台北市、新北市",
     "holes": 18,
@@ -127,6 +145,9 @@
   },
   {
     "name": "國華",
+    "name_en": "Kuo Hua",
+    "name_ja": "国華",
+    "name_ko": "궈화",
     "phone": "02-86261281",
     "region": "台北市、新北市",
     "holes": 18,
@@ -148,6 +169,9 @@
   },
   {
     "name": "八里國際",
+    "name_en": "Bali International",
+    "name_ja": "八里インターナショナル",
+    "name_ko": "바리 인터내셔널",
     "phone": "02-26052222#222",
     "region": "台北市、新北市",
     "holes": 18,
@@ -169,6 +193,9 @@
   },
   {
     "name": "美麗華",
+    "name_en": "Miramar",
+    "name_ja": "ミラマー",
+    "name_ko": "미라마",
     "phone": "02-26063456#5",
     "region": "台北市、新北市",
     "holes": 36,
@@ -190,6 +217,9 @@
   },
   {
     "name": "幸福",
+    "name_en": "Hsingfu",
+    "name_ja": "幸福",
+    "name_ko": "싱푸",
     "phone": "02-26062345#101",
     "region": "台北市、新北市",
     "holes": 27,
@@ -211,6 +241,9 @@
   },
   {
     "name": "東華",
+    "name_en": "Tung Hua",
+    "name_ja": "東華",
+    "name_ko": "둥화",
     "phone": "02-26062558",
     "region": "台北市、新北市",
     "holes": 18,
@@ -232,6 +265,9 @@
   },
   {
     "name": "林口",
+    "name_en": "Linkou",
+    "name_ja": "林口",
+    "name_ko": "린커우",
     "phone": "02-26014104",
     "region": "台北市、新北市",
     "holes": 27,
@@ -253,6 +289,9 @@
   },
   {
     "name": "台北",
+    "name_en": "Taipei",
+    "name_ja": "台北",
+    "name_ko": "타이베이",
     "phone": "03-3244856",
     "region": "桃園地區",
     "holes": 36,
@@ -274,6 +313,9 @@
   },
   {
     "name": "統帥",
+    "name_en": "Commander",
+    "name_ja": "コマンダー",
+    "name_ko": "커맨더",
     "phone": "03-3129001",
     "region": "桃園地區",
     "holes": 18,
@@ -295,6 +337,9 @@
   },
   {
     "name": "第一",
+    "name_en": "Formosa",
+    "name_ja": "フォルモサ",
+    "name_ko": "포르모사",
     "phone": "03-3245291",
     "region": "桃園地區",
     "holes": 36,
@@ -316,6 +361,9 @@
   },
   {
     "name": "永漢",
+    "name_en": "Yung Han",
+    "name_ja": "永漢",
+    "name_ko": "융한",
     "phone": "03-3245711#619",
     "region": "桃園地區",
     "holes": 18,
@@ -337,6 +385,9 @@
   },
   {
     "name": "長庚",
+    "name_en": "Chang Gung",
+    "name_ja": "チャングン",
+    "name_ko": "창궁",
     "phone": "03-3296354#223#224",
     "region": "桃園地區",
     "holes": 27,
@@ -358,6 +409,9 @@
   },
   {
     "name": "東方",
+    "name_en": "Orient",
+    "name_ja": "オリエント",
+    "name_ko": "오리엔트",
     "phone": "03-3501212",
     "region": "桃園地區",
     "holes": 18,
@@ -379,6 +433,9 @@
   },
   {
     "name": "大溪",
+    "name_en": "Tashee",
+    "name_ja": "タシー",
+    "name_ko": "타시",
     "phone": "03-3875699",
     "region": "桃園地區",
     "holes": 27,
@@ -400,6 +457,9 @@
   },
   {
     "name": "桃園",
+    "name_en": "Taoyuan",
+    "name_ja": "桃園",
+    "name_ko": "타오위안",
     "phone": "03-4803388",
     "region": "桃園地區",
     "holes": 27,
@@ -421,6 +481,9 @@
   },
   {
     "name": "龍潭",
+    "name_en": "Lungtan",
+    "name_ja": "龍潭",
+    "name_ko": "룽탄",
     "phone": "03-4995505",
     "region": "桃園地區",
     "holes": 18,
@@ -442,6 +505,9 @@
   },
   {
     "name": "揚昇",
+    "name_en": "Sunrise",
+    "name_ja": "サンライズ",
+    "name_ko": "선라이즈",
     "phone": "03-4780188#2211",
     "region": "桃園地區",
     "holes": 18,
@@ -463,6 +529,9 @@
   },
   {
     "name": "楊梅",
+    "name_en": "Yangmei",
+    "name_ja": "楊梅",
+    "name_ko": "양메이",
     "phone": "03-4780541",
     "region": "桃園地區",
     "holes": 18,
@@ -484,6 +553,9 @@
   },
   {
     "name": "礁溪",
+    "name_en": "Jiaoxi",
+    "name_ja": "礁渓",
+    "name_ko": "자오시",
     "phone": "03-9886691#11",
     "region": "花東地區",
     "holes": 18,
@@ -505,6 +577,9 @@
   },
   {
     "name": "花蓮",
+    "name_en": "Hualien",
+    "name_ja": "花蓮",
+    "name_ko": "화련",
     "phone": "03-8227528#168",
     "region": "花東地區",
     "holes": 18,
@@ -526,6 +601,9 @@
   },
   {
     "name": "長安",
+    "name_en": "Chang An",
+    "name_ja": "長安",
+    "name_ko": "창안",
     "phone": "03-5693458#131#132",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -547,6 +625,9 @@
   },
   {
     "name": "再興",
+    "name_en": "Zai-Shing",
+    "name_ja": "再興",
+    "name_ko": "재싱",
     "phone": "03-5690999#55",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -568,6 +649,9 @@
   },
   {
     "name": "新竹(新豐)",
+    "name_en": "Hsinchu (Hsinfeng)",
+    "name_ja": "新竹（新豊）",
+    "name_ko": "신주 (신펑)",
     "phone": "03-5596141#152",
     "region": "新竹、苗栗",
     "holes": 27,
@@ -589,6 +673,9 @@
   },
   {
     "name": "立益",
+    "name_en": "Lily",
+    "name_ja": "リリー",
+    "name_ko": "릴리",
     "phone": "03-5875111",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -610,6 +697,9 @@
   },
   {
     "name": "旭陽",
+    "name_en": "Sungold Valley",
+    "name_ja": "サンゴールドバレー",
+    "name_ko": "선골드 밸리",
     "phone": "03-5476168#111",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -631,6 +721,9 @@
   },
   {
     "name": "老爺關西",
+    "name_en": "Royal Kuansi",
+    "name_ja": "ロイヤル関西",
+    "name_ko": "로열 관시",
     "phone": "03-547-6331#110",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -652,6 +745,9 @@
   },
   {
     "name": "山溪地",
+    "name_en": "Sun City",
+    "name_ja": "サンシティ",
+    "name_ko": "선 시티",
     "phone": "03-5476288#111",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -673,6 +769,9 @@
   },
   {
     "name": "寶山",
+    "name_en": "Pao-Shan",
+    "name_ja": "宝山",
+    "name_ko": "바오산",
     "phone": "03-5762888#11#12",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -694,6 +793,9 @@
   },
   {
     "name": "東方之星",
+    "name_en": "Star of the East",
+    "name_ja": "スター・オブ・ザ・イースト",
+    "name_ko": "스타 오브 더 이스트",
     "phone": "03-5762200#205#206",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -715,6 +817,9 @@
   },
   {
     "name": "皇家",
+    "name_en": "Royal",
+    "name_ja": "ロイヤル",
+    "name_ko": "로열",
     "phone": "037-543122#11#12",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -736,6 +841,9 @@
   },
   {
     "name": "全國",
+    "name_en": "National",
+    "name_ja": "ナショナル",
+    "name_ko": "내셔널",
     "phone": "037-741166#3262",
     "region": "新竹、苗栗",
     "holes": 18,
@@ -757,6 +865,9 @@
   },
   {
     "name": "清泉崗(CCK)",
+    "name_en": "Ching Chuan Kang (CCK)",
+    "name_ja": "チンチュアンカン（CCK）",
+    "name_ko": "칭취안강 (CCK)",
     "phone": "04-26200134#31",
     "region": "台中、彰化、南投",
     "holes": 18,
@@ -778,6 +889,9 @@
   },
   {
     "name": "豐原",
+    "name_en": "Fengyuan",
+    "name_ja": "豊原",
+    "name_ko": "펑위안",
     "phone": "04-25222835#18",
     "region": "台中、彰化、南投",
     "holes": 18,
@@ -799,6 +913,9 @@
   },
   {
     "name": "台中(興農)",
+    "name_en": "Taichung (Hsing Nung)",
+    "name_ja": "台中（興農）",
+    "name_ko": "타이중 (싱눙)",
     "phone": "04-25665130#121",
     "region": "台中、彰化、南投",
     "holes": 27,
@@ -820,6 +937,9 @@
   },
   {
     "name": "台中國際",
+    "name_en": "Taichung International",
+    "name_ja": "台中インターナショナル",
+    "name_ko": "타이중 인터내셔널",
     "phone": "04-22391172#1",
     "region": "台中、彰化、南投",
     "holes": 27,
@@ -841,6 +961,9 @@
   },
   {
     "name": "鴻禧太平",
+    "name_en": "Sunrise Taiping",
+    "name_ja": "サンライズ太平",
+    "name_ko": "선라이즈 타이핑",
     "phone": "04-22703470",
     "region": "台中、彰化、南投",
     "holes": 9,
@@ -862,6 +985,9 @@
   },
   {
     "name": "霧峰",
+    "name_en": "Wufeng",
+    "name_ja": "霧峰",
+    "name_ko": "우펑",
     "phone": "04-23335209",
     "region": "台中、彰化、南投",
     "holes": 18,
@@ -883,6 +1009,9 @@
   },
   {
     "name": "台豐",
+    "name_en": "Tai Fong",
+    "name_ja": "台豊",
+    "name_ko": "타이펑",
     "phone": "04-8520101",
     "region": "台中、彰化、南投",
     "holes": 18,
@@ -904,6 +1033,9 @@
   },
   {
     "name": "彰化",
+    "name_en": "Changhua",
+    "name_ja": "彰化",
+    "name_ko": "장화",
     "phone": "04-7135799#11",
     "region": "台中、彰化、南投",
     "holes": 18,
@@ -925,6 +1057,9 @@
   },
   {
     "name": "南峰",
+    "name_en": "Nanfeng",
+    "name_ja": "南峰",
+    "name_ko": "난펑",
     "phone": "049-2254868#11#12",
     "region": "台中、彰化、南投",
     "holes": 18,
@@ -946,6 +1081,9 @@
   },
   {
     "name": "松柏嶺(南投) ",
+    "name_en": "Sung Po Ling (Nantou)",
+    "name_ja": "松柏嶺（南投）",
+    "name_ko": "쑹보링 (난터우)",
     "phone": "049-2732126",
     "region": "台中、彰化、南投",
     "holes": 18,
@@ -967,6 +1105,9 @@
   },
   {
     "name": "棕梠湖(東洋)",
+    "name_en": "Palm Lakes (Tung Yang)",
+    "name_ja": "パームレイク（東洋）",
+    "name_ko": "팜 레이크 (동양)",
     "phone": "05-2590000",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 18,
@@ -988,6 +1129,9 @@
   },
   {
     "name": "嘉光",
+    "name_en": "Chia Kuang",
+    "name_ja": "嘉光",
+    "name_ko": "자광",
     "phone": "05-2531344",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 9,
@@ -1009,6 +1153,9 @@
   },
   {
     "name": "斑芝花(永安)",
+    "name_en": "Bauhinia (Yung An)",
+    "name_ja": "バウヒニア（永安）",
+    "name_ko": "바우히니아 (융안)",
     "phone": "06-6862208#200",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 27,
@@ -1030,6 +1177,9 @@
   },
   {
     "name": "嘉南",
+    "name_en": "Chianan",
+    "name_ja": "嘉南",
+    "name_ko": "자난",
     "phone": "06-6900016",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 18,
@@ -1051,6 +1201,9 @@
   },
   {
     "name": "南寶",
+    "name_en": "Nanbao",
+    "name_ja": "南宝",
+    "name_ko": "남바오",
     "phone": "06-5763829#14",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 27,
@@ -1072,6 +1225,9 @@
   },
   {
     "name": "台南(新化)",
+    "name_en": "Tainan (Hsinhua)",
+    "name_ja": "台南（新化）",
+    "name_ko": "타이난 (신화)",
     "phone": "06-5901666#88",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 18,
@@ -1093,6 +1249,9 @@
   },
   {
     "name": "南一",
+    "name_en": "Nan-Yi",
+    "name_ja": "南一",
+    "name_ko": "난이",
     "phone": "06-5551121#602",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 18,
@@ -1114,6 +1273,9 @@
   },
   {
     "name": "大崗山",
+    "name_en": "Dagangshan",
+    "name_ja": "大岡山",
+    "name_ko": "다강산",
     "phone": "07-6366411#1",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 18,
@@ -1135,6 +1297,9 @@
   },
   {
     "name": "高雄(澄清湖)",
+    "name_en": "Kaohsiung (Chengcing Lake)",
+    "name_ja": "高雄（澄清湖）",
+    "name_ko": "가오슝 (청칭 호수)",
     "phone": "07-3701101#101#102",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 18,
@@ -1156,6 +1321,9 @@
   },
   {
     "name": "觀音山",
+    "name_en": "Guanyin Mountain",
+    "name_ja": "観音山",
+    "name_ko": "관음산",
     "phone": "07-6578192",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 18,
@@ -1177,6 +1345,9 @@
   },
   {
     "name": "信誼",
+    "name_en": "Hsin-Yi",
+    "name_ja": "信誼",
+    "name_ko": "신이",
     "phone": "07-6563211#705",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 18,
@@ -1198,6 +1369,9 @@
   },
   {
     "name": "山湖觀",
+    "name_en": "Mountain Lake View",
+    "name_ja": "マウンテンレイクビュー",
+    "name_ko": "마운틴 레이크 뷰",
     "phone": "08-7956600",
     "region": "嘉義、台南、高雄、屏東",
     "holes": 27,
