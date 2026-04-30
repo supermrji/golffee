@@ -383,7 +383,11 @@ function dismissUpdate() {
   hasUpdate.value = false
 }
 
+const RELOAD_COOLDOWN_MS = 60_000
+
 async function reloadPage() {
+  // 記錄 reload 時間，避免 reload 後立刻再觸發 banner
+  sessionStorage.setItem('golffee_reload_ts', Date.now().toString())
   // 先通知 waiting SW 跳過等待，確保 reload 後載入最新版本
   if ('serviceWorker' in navigator) {
     try {
@@ -402,6 +406,9 @@ const VERSION_FETCH_TIMEOUT_MS = 10_000
 async function checkVersion() {
   // 已顯示 banner 或不在 production 就跳過
   if (import.meta.env.DEV || !currentVersion || versionCheckInFlight || hasUpdate.value) return
+  // reload 後冷卻期內不檢查（避免 SW 尚未完全更新就再次觸發 banner）
+  const reloadTs = sessionStorage.getItem('golffee_reload_ts')
+  if (reloadTs && Date.now() - Number(reloadTs) < RELOAD_COOLDOWN_MS) return
   versionCheckInFlight = true
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), VERSION_FETCH_TIMEOUT_MS)
@@ -522,7 +529,12 @@ function scheduleMidnight() {
 }
 
 function onVisibilityChange() {
-  if (document.visibilityState === 'visible') checkVersion()
+  if (document.visibilityState === 'visible') {
+    // reload 後冷卻期內不因切換分頁而觸發
+    const reloadTs = sessionStorage.getItem('golffee_reload_ts')
+    if (reloadTs && Date.now() - Number(reloadTs) < RELOAD_COOLDOWN_MS) return
+    checkVersion()
+  }
 }
 
 onMounted(() => {
@@ -530,7 +542,8 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
   document.addEventListener('visibilitychange', onVisibilityChange)
   desktopMq?.addEventListener('change', onDesktopChange)
-  checkVersion()
+  // 延遲 8 秒再做初次版本檢查，讓 SW 有時間完全接管後才比對
+  setTimeout(() => checkVersion(), 8000)
   versionTimer = setInterval(checkVersion, 5 * 60 * 1000)
   scheduleMidnight()
   if (import.meta.env.DEV) {
