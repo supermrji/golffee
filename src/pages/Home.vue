@@ -129,7 +129,15 @@ const dict = {
     expand: '▼ 展開',
     collapse: '▲ 收起',
     about: '關於',
-    regionNav: '地區專頁'
+    regionNav: '地區專頁',
+    filter: '篩選',
+    updateMsg: '有新版本，點右側按鈕更新',
+    aboutTitle: '關於 Golffee',
+    featuresTab: '功能介紹',
+    changelogTab: '更新紀錄',
+    amenityRestaurant: '餐廳',
+    amenityWater: '飲水',
+    amenityCard: '刷卡',
   },
   'en': {
     title: 'Golf Fees.',
@@ -168,7 +176,15 @@ const dict = {
     expand: '▼ More',
     collapse: '▲ Less',
     about: 'About',
-    regionNav: 'Regional Pages'
+    regionNav: 'Regional Pages',
+    filter: 'Filter',
+    updateMsg: 'New version available',
+    aboutTitle: 'About Golffee',
+    featuresTab: 'Features',
+    changelogTab: 'Changelog',
+    amenityRestaurant: 'Restaurant',
+    amenityWater: 'Beverages',
+    amenityCard: 'Card OK',
   },
   'ja': {
     title: 'ゴルフ料金ガイド',
@@ -207,7 +223,15 @@ const dict = {
     expand: '▼ 展開',
     collapse: '▲ 閉じる',
     about: 'について',
-    regionNav: '地域ページ'
+    regionNav: '地域ページ',
+    filter: '絞り込む',
+    updateMsg: '新しいバージョンがあります',
+    aboutTitle: 'Golffee について',
+    featuresTab: '機能紹介',
+    changelogTab: '更新履歴',
+    amenityRestaurant: 'レストラン',
+    amenityWater: 'ドリンク',
+    amenityCard: 'カード可',
   },
   'ko': {
     title: '골프 요금 가이드',
@@ -246,7 +270,15 @@ const dict = {
     expand: '▼ 더보기',
     collapse: '▲ 접기',
     about: '정보',
-    regionNav: '지역 페이지'
+    regionNav: '지역 페이지',
+    filter: '필터',
+    updateMsg: '새 버전이 있습니다',
+    aboutTitle: 'Golffee 정보',
+    featuresTab: '기능 소개',
+    changelogTab: '업데이트 내역',
+    amenityRestaurant: '레스토랑',
+    amenityWater: '음료',
+    amenityCard: '카드 가능',
   }
 }
 
@@ -511,13 +543,15 @@ const activeFilterCount = computed(() => {
   let count = 0
   if (sortBy.value !== 'default') count++
   if (selectedGolfDay.value !== ALL_GOLF_DAY) count++
+  if (showFavoritesOnly.value) count++
   return count
 })
 
-const getMapUrl = (name) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' 高爾夫')}`
+const mapSuffix = { 'zh-TW': ' 高爾夫', en: ' golf', ja: ' ゴルフ', ko: ' 골프' }
+const getMapUrl = (name) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + (mapSuffix[locale.value] ?? ' 高爾夫'))}`
 
 const scrollToContent = () => {
-  document.getElementById('content-layer').scrollIntoView({ behavior: 'smooth' })
+  document.getElementById('content-layer')?.scrollIntoView({ behavior: 'smooth' })
 }
 
 let versionTimer = null
@@ -602,7 +636,7 @@ onUnmounted(() => {
 
       <!-- Background Image Layer -->
       <div class="absolute inset-0 z-0">
-        <img src="../assets/hero-bg.png" alt="Golf Course Hero" class="w-full h-full object-cover object-center opacity-70" />
+        <img src="../assets/hero-bg.png" alt="Golf Course Hero" class="w-full h-full object-cover object-center opacity-70" fetchpriority="high" loading="eager" />
         <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90"></div>
       </div>
 
@@ -672,7 +706,7 @@ onUnmounted(() => {
                 <button @click="showFilterPanel = !showFilterPanel"
                         :class="['relative flex items-center gap-1.5 px-3 h-[38px] border text-[11px] tracking-widest uppercase transition-all duration-200',
                                  showFilterPanel || activeFilterCount > 0 ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/20 text-[#888]']">
-                  <span>篩選</span>
+                  <span>{{ t.filter }}</span>
                   <span v-if="activeFilterCount > 0" class="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-400 text-black text-[10px] font-bold leading-none">{{ activeFilterCount }}</span>
                   <ChevronDown :class="['w-3 h-3 transition-transform duration-200', showFilterPanel ? 'rotate-180' : '']" />
                 </button>
@@ -825,10 +859,21 @@ onUnmounted(() => {
                   {{ formatPrice(c.teamWeekday) }} <span class="text-[#666] px-1 font-mono">/</span> {{ formatPrice(c.teamHoliday) }}
                 </td>
 
-                <td class="py-5 px-4 align-top flex justify-end gap-3">
-                  <Utensils v-if="c.hasRestaurant" class="w-4 h-4 text-[#f4f4f4]" aria-label="餐廳" role="img" />
-                  <Droplets v-if="c.hasWater" class="w-4 h-4 text-[#f4f4f4]" aria-label="飲水" role="img" />
-                  <CreditCard v-if="c.hasCard" class="w-4 h-4 text-[#f4f4f4]" aria-label="刷卡" role="img" />
+                <td class="py-5 px-4 align-top">
+                  <div class="flex justify-end gap-3">
+                    <span v-if="c.hasRestaurant" class="relative group/tip flex items-center">
+                      <Utensils class="w-4 h-4 text-[#f4f4f4]" :aria-label="t.amenityRestaurant" role="img" />
+                      <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2.5 py-1.5 text-xs bg-[#1a1a1a] border border-white/15 text-white/80 rounded whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity">{{ t.amenityRestaurant }}</span>
+                    </span>
+                    <span v-if="c.hasWater" class="relative group/tip flex items-center">
+                      <Droplets class="w-4 h-4 text-[#f4f4f4]" :aria-label="t.amenityWater" role="img" />
+                      <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2.5 py-1.5 text-xs bg-[#1a1a1a] border border-white/15 text-white/80 rounded whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity">{{ t.amenityWater }}</span>
+                    </span>
+                    <span v-if="c.hasCard" class="relative group/tip flex items-center">
+                      <CreditCard class="w-4 h-4 text-[#f4f4f4]" :aria-label="t.amenityCard" role="img" />
+                      <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2.5 py-1.5 text-xs bg-[#1a1a1a] border border-white/15 text-white/80 rounded whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity">{{ t.amenityCard }}</span>
+                    </span>
+                  </div>
                 </td>
 
                 <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
@@ -918,10 +963,19 @@ onUnmounted(() => {
               <div class="col-span-2 flex items-center justify-between">
                 <div>
                   <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.amenities }}</p>
-                  <div class="flex gap-4 mt-1">
-                    <Utensils v-if="c.hasRestaurant" class="w-4 h-4 text-[#f4f4f4]" aria-label="餐廳" role="img" />
-                    <Droplets v-if="c.hasWater" class="w-4 h-4 text-[#f4f4f4]" aria-label="飲水" role="img" />
-                    <CreditCard v-if="c.hasCard" class="w-4 h-4 text-[#f4f4f4]" aria-label="刷卡" role="img" />
+                  <div class="flex gap-3 mt-1 flex-wrap">
+                    <span v-if="c.hasRestaurant" class="flex items-center gap-1 text-[#aaa]">
+                      <Utensils class="w-3.5 h-3.5" :aria-label="t.amenityRestaurant" role="img" />
+                      <span class="text-xs tracking-wide">{{ t.amenityRestaurant }}</span>
+                    </span>
+                    <span v-if="c.hasWater" class="flex items-center gap-1 text-[#aaa]">
+                      <Droplets class="w-3.5 h-3.5" :aria-label="t.amenityWater" role="img" />
+                      <span class="text-xs tracking-wide">{{ t.amenityWater }}</span>
+                    </span>
+                    <span v-if="c.hasCard" class="flex items-center gap-1 text-[#aaa]">
+                      <CreditCard class="w-3.5 h-3.5" :aria-label="t.amenityCard" role="img" />
+                      <span class="text-xs tracking-wide">{{ t.amenityCard }}</span>
+                    </span>
                     <span v-if="!c.hasRestaurant && !c.hasWater && !c.hasCard" class="text-xs text-[#444] tracking-wide">{{ t.noData }}</span>
                   </div>
                 </div>
@@ -955,12 +1009,12 @@ onUnmounted(() => {
       <nav class="px-6 lg:px-12 py-12 lg:py-16 border-t border-white/10 mt-12 lg:mt-16" aria-label="地區專頁">
         <p class="text-[11px] tracking-[0.25em] text-[#555] uppercase mb-6">{{ t.regionNav }}</p>
         <div class="flex flex-wrap gap-3">
-          <a v-for="(label, slug) in localizedNavLabels"
+          <RouterLink v-for="(label, slug) in localizedNavLabels"
              :key="slug"
-             :href="`/region/${slug}`"
+             :to="`/region/${slug}`"
              class="px-4 py-2 text-xs border border-white/10 text-[#777] hover:border-emerald-400/40 hover:text-emerald-400 transition-all tracking-wider">
             {{ label }}
-          </a>
+          </RouterLink>
         </div>
       </nav>
 
@@ -969,7 +1023,7 @@ onUnmounted(() => {
         <div v-if="hasUpdate"
              class="fixed bottom-0 left-0 right-0 z-[9999] flex items-center justify-between gap-3 px-4 py-3 bg-emerald-500 text-black text-sm font-medium"
              style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
-          <span class="flex items-center gap-2 min-w-0 truncate"><Bell class="w-4 h-4 flex-shrink-0" />有新版本，點右側按鈕更新</span>
+          <span class="flex items-center gap-2 min-w-0 truncate"><Bell class="w-4 h-4 flex-shrink-0" />{{ t.updateMsg }}</span>
           <div class="flex items-center gap-2 flex-shrink-0">
             <button @click="reloadPage"
                     class="bg-black text-emerald-400 text-sm font-semibold px-4 py-2 rounded-full hover:bg-black/80 transition-colors">
@@ -1002,7 +1056,7 @@ onUnmounted(() => {
 
           <!-- Header -->
           <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/10">
-            <h2 class="text-white text-base font-medium tracking-wide">關於 Golffee</h2>
+            <h2 class="text-white text-base font-medium tracking-wide">{{ t.aboutTitle }}</h2>
             <button @click="showAbout = false" class="text-white/40 hover:text-white transition-colors p-1" aria-label="關閉">
               <X class="w-5 h-5" />
             </button>
@@ -1012,11 +1066,11 @@ onUnmounted(() => {
           <div class="flex border-b border-white/10">
             <button @click="aboutTab = 'features'"
                     :class="['flex-1 py-3 text-sm tracking-wide transition-colors', aboutTab === 'features' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-white/40 hover:text-white/70']">
-              功能介紹
+              {{ t.featuresTab }}
             </button>
             <button @click="aboutTab = 'changelog'"
                     :class="['flex-1 py-3 text-sm tracking-wide transition-colors', aboutTab === 'changelog' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-white/40 hover:text-white/70']">
-              更新紀錄
+              {{ t.changelogTab }}
             </button>
           </div>
 
@@ -1134,7 +1188,7 @@ button {
   touch-action: manipulation;
 }
 button:active {
-  opacity: 0.5;
+  opacity: 0.75;
 }
 a, select {
   touch-action: manipulation;
