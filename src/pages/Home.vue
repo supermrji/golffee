@@ -6,6 +6,7 @@ import golfDataJson from '../data/golf_courses.json'
 import { Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X, Bell } from 'lucide-vue-next'
 import GolfFlag from '../GolfFlag.vue'
 import AboutModal from '../components/AboutModal.vue'
+import InstallGuideModal from '../components/InstallGuideModal.vue'
 import { ALL_REGION, DEFAULT_PAGE_TITLE, SITE_URL, REGION_SLUGS, REGION_TO_SLUG, REGION_PAGE_TITLES, REGION_NAV_LABELS } from '../constants/regions.js'
 import { features, changelog } from '../data/about.js'
 
@@ -1247,67 +1248,11 @@ onUnmounted(() => {
     />
 
     <!-- Install Guide Modal -->
-    <Transition name="guide">
-      <div v-if="showInstallGuide"
-           class="fixed inset-0 z-[200] flex items-end justify-center bg-black/70 backdrop-blur-sm"
-           @click.self="showInstallGuide = false">
-        <div class="guide-panel w-full max-w-md bg-[#0d0d0d] border-t border-white/10 rounded-t-2xl pb-10 overflow-y-auto"
-             :style="{ maxHeight: isStandalone ? 'calc(92vh - env(safe-area-inset-top))' : '88vh' }">
-
-          <!-- Header -->
-          <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/10">
-            <div>
-              <h2 class="text-white text-base font-medium tracking-wide">加入主畫面</h2>
-              <p class="text-white/40 text-sm mt-0.5 tracking-wide">將此網頁安裝為 App</p>
-            </div>
-            <button @click="showInstallGuide = false" class="text-white/40 hover:text-white transition-colors p-1" aria-label="關閉">
-              <X class="w-5 h-5" />
-            </button>
-          </div>
-
-          <!-- Steps -->
-          <div class="px-6 pt-5 flex flex-col gap-8">
-
-            <!-- Step 1 -->
-            <div class="flex gap-4">
-              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">1</div>
-              <div class="flex-1">
-                <p class="text-white text-base font-medium mb-1">使用 Safari 開啟網頁</p>
-                <p class="text-white/50 text-sm leading-relaxed mb-3">確認你使用的是 iPhone 內建的 Safari 瀏覽器，點選底部中間的 ⬆ 分享按鈕</p>
-                <img src="/guide-step1.jpg" class="w-full rounded-xl border border-white/10" alt="Safari 分享按鈕示意" />
-              </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="flex gap-4">
-              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">2</div>
-              <div class="flex-1">
-                <p class="text-white text-base font-medium mb-1">選擇「加入主畫面」</p>
-                <p class="text-white/50 text-sm leading-relaxed mb-3">在分享選單中找到「加入主畫面」並點選</p>
-                <img src="/guide-step2.jpg" class="w-full rounded-xl border border-white/10" alt="加入主畫面選項示意" />
-              </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="flex gap-4">
-              <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm font-medium">3</div>
-              <div class="flex-1">
-                <p class="text-white text-base font-medium mb-1">點選右上角「加入」</p>
-                <p class="text-white/50 text-sm leading-relaxed mb-3">確認名稱後點選加入，完成安裝</p>
-                <img src="/guide-step3.jpg" class="w-full rounded-xl border border-white/10" alt="確認加入主畫面示意" />
-              </div>
-            </div>
-
-            <!-- Done note -->
-            <div class="flex items-center gap-3 bg-emerald-400/5 border border-emerald-400/20 rounded-xl px-4 py-3 mb-2">
-              <span class="text-xl">✅</span>
-              <p class="text-white/70 text-sm leading-relaxed">完成後桌面會出現 App 圖示，下次直接點開就是全螢幕體驗！</p>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </Transition>
+    <InstallGuideModal
+      :show="showInstallGuide"
+      :isStandalone="isStandalone"
+      @close="showInstallGuide = false"
+    />
 
   </div>
 </template>
