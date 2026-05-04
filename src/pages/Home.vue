@@ -414,6 +414,7 @@ const selectedDay = ref('weekday')     // 'weekday' | 'holiday'
 const maxBudget = ref(Infinity)
 const viewMode = ref(localStorage.getItem('golffee_view') || 'table')
 const showMobileFilter = ref(false)
+const sortBy = ref('default') // temporary shim — will be removed in Task 6
 
 watch(viewMode, (v) => localStorage.setItem('golffee_view', v))
 
@@ -643,8 +644,8 @@ const handleScroll = () => {
 }
 
 const onRegionChange = async (newRegion) => {
-  selectedRegion.value = newRegion
-  const slug = REGION_TO_SLUG[newRegion]
+  if (newRegion !== undefined) selectedRegion.value = newRegion
+  const slug = REGION_TO_SLUG[selectedRegion.value]
   if (slug) await router.push(`/region/${slug}`)
   else await router.push('/')
   await nextTick()
@@ -830,18 +831,18 @@ onUnmounted(() => {
 
               <!-- Mobile only: 篩選 button -->
               <div class="flex items-end lg:hidden pb-1.5">
-                <button @click="showFilterPanel = !showFilterPanel"
+                <button @click="showMobileFilter = !showMobileFilter"
                         :class="['relative flex items-center gap-1.5 px-3 h-[38px] border text-[11px] tracking-widest uppercase transition-all duration-200',
-                                 showFilterPanel || activeFilterCount > 0 ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/20 text-[#888]']">
+                                 showMobileFilter || activeFilterCount > 0 ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/20 text-[#888]']">
                   <span>{{ t.filter }}</span>
                   <span v-if="activeFilterCount > 0" class="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-400 text-black text-[10px] font-bold leading-none">{{ activeFilterCount }}</span>
-                  <ChevronDown :class="['w-3 h-3 transition-transform duration-200', showFilterPanel ? 'rotate-180' : '']" />
+                  <ChevronDown :class="['w-3 h-3 transition-transform duration-200', showMobileFilter ? 'rotate-180' : '']" />
                 </button>
               </div>
             </div>
 
             <!-- Mobile only: 篩選 Panel -->
-            <div v-if="showFilterPanel" class="lg:hidden flex flex-col gap-4 pt-1 pb-2 border-t border-white/10">
+            <div v-if="showMobileFilter" class="lg:hidden flex flex-col gap-4 pt-1 pb-2 border-t border-white/10">
               <!-- Golf Day Chips -->
               <div>
                 <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none block mb-2">{{ t.golfDay }}</label>
