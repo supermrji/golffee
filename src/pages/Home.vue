@@ -138,6 +138,19 @@ const dict = {
     amenityRestaurant: '餐廳',
     amenityWater: '飲水',
     amenityCard: '刷卡',
+    identity: '看身分',
+    identityGuest: '來賓',
+    identityMember: '會員',
+    identityMGuest: '同組',
+    identityTeam: '團體',
+    day: '看日期',
+    dayWeekday: '平日',
+    dayHoliday: '假日',
+    budget: '預算上限',
+    viewTable: '表格',
+    viewCard: '卡片',
+    filterBtn: '篩選',
+    resetFilter: '重置',
   },
   'en': {
     title: 'Golf Fees.',
@@ -185,6 +198,19 @@ const dict = {
     amenityRestaurant: 'Restaurant',
     amenityWater: 'Beverages',
     amenityCard: 'Card OK',
+    identity: 'Identity',
+    identityGuest: 'Guest',
+    identityMember: 'Member',
+    identityMGuest: 'M-Guest',
+    identityTeam: 'Team',
+    day: 'Day',
+    dayWeekday: 'Weekday',
+    dayHoliday: 'Holiday',
+    budget: 'Budget',
+    viewTable: 'Table',
+    viewCard: 'Card',
+    filterBtn: 'Filter',
+    resetFilter: 'Reset',
   },
   'ja': {
     title: 'ゴルフ料金ガイド',
@@ -232,6 +258,19 @@ const dict = {
     amenityRestaurant: 'レストラン',
     amenityWater: 'ドリンク',
     amenityCard: 'カード可',
+    identity: '区分',
+    identityGuest: 'ビジター',
+    identityMember: '会員',
+    identityMGuest: '同伴',
+    identityTeam: 'グループ',
+    day: '日程',
+    dayWeekday: '平日',
+    dayHoliday: '休日',
+    budget: '予算',
+    viewTable: 'テーブル',
+    viewCard: 'カード',
+    filterBtn: '絞込み',
+    resetFilter: 'リセット',
   },
   'ko': {
     title: '골프 요금 가이드',
@@ -279,6 +318,19 @@ const dict = {
     amenityRestaurant: '레스토랑',
     amenityWater: '음료',
     amenityCard: '카드 가능',
+    identity: '구분',
+    identityGuest: '비회원',
+    identityMember: '회원',
+    identityMGuest: '동반',
+    identityTeam: '단체',
+    day: '요일',
+    dayWeekday: '평일',
+    dayHoliday: '휴일',
+    budget: '예산',
+    viewTable: '테이블',
+    viewCard: '카드',
+    filterBtn: '필터',
+    resetFilter: '초기화',
   }
 }
 
@@ -357,7 +409,13 @@ const regionCounts = { [ALL_REGION]: golfDataJson.length }
 golfDataJson.forEach(c => { regionCounts[c.region] = (regionCounts[c.region] || 0) + 1 })
 
 const searchQuery = ref('')
-const sortBy = ref('default')
+const selectedIdentity = ref('guest')  // 'guest' | 'member' | 'mGuest' | 'team'
+const selectedDay = ref('weekday')     // 'weekday' | 'holiday'
+const maxBudget = ref(Infinity)
+const viewMode = ref(localStorage.getItem('golffee_view') || 'table')
+const showMobileFilter = ref(false)
+
+watch(viewMode, (v) => localStorage.setItem('golffee_view', v))
 
 const ALL_GOLF_DAY = '全部'
 const weekdays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六']
@@ -499,23 +557,46 @@ const toggleFavorite = (name) => {
 
 const isFavorite = (name) => favorites.value.includes(name)
 
+const priceField = computed(() => {
+  if (selectedIdentity.value === 'member') return 'member'
+  const dayKey = selectedDay.value === 'weekday' ? 'Weekday' : 'Holiday'
+  const map = { guest: 'guest', mGuest: 'memberGuest', team: 'team' }
+  return map[selectedIdentity.value] + dayKey
+})
+
+const budgetMax = computed(() => {
+  const prices = golfDataJson
+    .map(c => parseInt(c[priceField.value]))
+    .filter(n => !isNaN(n))
+  return prices.length ? Math.max(...prices) : 20000
+})
+
+const regionOptions = computed(() =>
+  regions.value.map(r => ({
+    value: r,
+    label: getRegionName(r),
+    count: regionCounts[r] ?? 0,
+  }))
+)
+
 const filteredCourses = computed(() => {
   const search = searchQuery.value.trim().toLowerCase()
+  const budget = maxBudget.value
+  const field = priceField.value
+
   const list = regionCourses.value.filter(c => {
     if (search && !c.name.toLowerCase().includes(search) && !getCourseName(c).toLowerCase().includes(search)) return false
     if (showFavoritesOnly.value && !isFavorite(c.name)) return false
     if (selectedGolfDay.value !== ALL_GOLF_DAY && c.golfDay !== selectedGolfDay.value) return false
+    const price = parseInt(c[field])
+    if (!isNaN(price) && price > budget) return false
     return true
   })
-  let sorted
-  if (sortBy.value === 'guestWk')       sorted = [...list].sort((a, b) => parseNum(a.guestWeekday) - parseNum(b.guestWeekday))
-  else if (sortBy.value === 'guestHol') sorted = [...list].sort((a, b) => parseNum(a.guestHoliday) - parseNum(b.guestHoliday))
-  else if (sortBy.value === 'member')   sorted = [...list].sort((a, b) => parseNum(a.member) - parseNum(b.member))
-  else                                  sorted = list
-  return sorted.map(c => ({ ...c, parsedRemarks: parseRemarks(c.remarks) }))
-})
 
-const showFilterPanel = ref(false)
+  return [...list]
+    .sort((a, b) => parseNum(a[field]) - parseNum(b[field]))
+    .map(c => ({ ...c, parsedRemarks: parseRemarks(c.remarks) }))
+})
 
 const filterVisible = ref(true)
 const topControlsVisible = ref(true)   // Hero 頂部按鈕是否可見
@@ -561,8 +642,9 @@ const handleScroll = () => {
   })
 }
 
-const onRegionChange = async () => {
-  const slug = REGION_TO_SLUG[selectedRegion.value]
+const onRegionChange = async (newRegion) => {
+  selectedRegion.value = newRegion
+  const slug = REGION_TO_SLUG[newRegion]
   if (slug) await router.push(`/region/${slug}`)
   else await router.push('/')
   await nextTick()
@@ -572,7 +654,9 @@ const onRegionChange = async () => {
 
 const activeFilterCount = computed(() => {
   let count = 0
-  if (sortBy.value !== 'default') count++
+  if (selectedIdentity.value !== 'guest') count++
+  if (selectedDay.value !== 'weekday') count++
+  if (maxBudget.value !== Infinity) count++
   if (selectedGolfDay.value !== ALL_GOLF_DAY) count++
   if (showFavoritesOnly.value) count++
   return count
