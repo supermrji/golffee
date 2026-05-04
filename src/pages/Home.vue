@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import golfDataJson from '../data/golf_courses.json'
 import { Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X, Bell } from 'lucide-vue-next'
 import GolfFlag from '../GolfFlag.vue'
+import AboutModal from '../components/AboutModal.vue'
 import { ALL_REGION, DEFAULT_PAGE_TITLE, SITE_URL, REGION_SLUGS, REGION_TO_SLUG, REGION_PAGE_TITLES, REGION_NAV_LABELS } from '../constants/regions.js'
 import { features, changelog } from '../data/about.js'
 
@@ -441,7 +442,6 @@ function checkOverflow(el, name) {
 }
 const showInstallGuide = ref(false)
 const showAbout = ref(false)
-const aboutTab = ref('features')
 const desktopMq = typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)') : null
 const isDesktop = ref(desktopMq?.matches ?? false)
 const onDesktopChange = (e) => { isDesktop.value = e.matches }
@@ -735,7 +735,7 @@ onUnmounted(() => {
 
     <!-- Top-Right Controls -->
     <div class="safe-top absolute right-4 sm:right-6 z-50 flex items-center gap-2">
-      <button @click="showAbout = true; aboutTab = 'features'"
+      <button @click="showAbout = true"
               class="flex items-center h-7 sm:h-8 bg-black/30 backdrop-blur-md px-2.5 sm:px-3 border border-white/10 text-white/60 text-xs tracking-wider hover:text-white/90 hover:border-white/25 transition-all">
         {{ t.about }}
       </button>
@@ -1238,68 +1238,13 @@ onUnmounted(() => {
     </div>
 
     <!-- About Modal -->
-    <Transition name="guide">
-      <div v-if="showAbout"
-           class="fixed inset-0 z-[200] flex items-end lg:items-center justify-center bg-black/70 backdrop-blur-sm"
-           @click.self="showAbout = false">
-        <div class="guide-panel w-full max-w-md lg:max-w-lg bg-[#0d0d0d] border-t lg:border border-white/10 rounded-t-2xl lg:rounded-2xl pb-10 overflow-y-auto"
-             :style="isDesktop ? { maxHeight: '80vh' } : { height: isStandalone ? 'calc(92vh - env(safe-area-inset-top))' : '95vh' }">
-
-          <!-- Header -->
-          <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/10">
-            <h2 class="text-white text-base font-medium tracking-wide">{{ t.aboutTitle }}</h2>
-            <button @click="showAbout = false" class="text-white/40 hover:text-white transition-colors p-1" aria-label="關閉">
-              <X class="w-5 h-5" />
-            </button>
-          </div>
-
-          <!-- Tabs -->
-          <div class="flex border-b border-white/10">
-            <button @click="aboutTab = 'features'"
-                    :class="['flex-1 py-3 text-sm tracking-wide transition-colors', aboutTab === 'features' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-white/40 hover:text-white/70']">
-              {{ t.featuresTab }}
-            </button>
-            <button @click="aboutTab = 'changelog'"
-                    :class="['flex-1 py-3 text-sm tracking-wide transition-colors', aboutTab === 'changelog' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-white/40 hover:text-white/70']">
-              {{ t.changelogTab }}
-            </button>
-          </div>
-
-          <!-- Features Tab -->
-          <div v-if="aboutTab === 'features'" class="px-6 pt-5 pb-4 flex flex-col gap-6">
-            <div v-for="section in features" :key="section.label">
-              <div>
-                <p class="text-xs tracking-[0.2em] text-white/30 uppercase mb-3">{{ section.label }}</p>
-                <ul class="flex flex-col gap-2">
-                  <li v-for="f in section.items" :key="f"
-                      class="flex items-center gap-2.5 text-sm text-white/70">
-                    <span class="w-1 h-1 rounded-full bg-emerald-400 flex-shrink-0"></span>
-                    <span v-html="f"></span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Changelog Tab -->
-          <div v-if="aboutTab === 'changelog'" class="px-6 pt-5 pb-4 flex flex-col gap-6">
-            <div v-for="release in changelog" :key="release.version">
-              <div>
-                <p class="text-emerald-400 text-xs font-medium tracking-widest mb-2">{{ release.version }}</p>
-                <ul class="flex flex-col gap-1.5">
-                  <li v-for="item in release.items" :key="item"
-                      class="flex items-start gap-2.5 text-sm text-white/60">
-                    <span class="w-1 h-1 rounded-full bg-white/20 flex-shrink-0 mt-2"></span>
-                    <span v-html="item"></span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </Transition>
+    <AboutModal
+      :show="showAbout"
+      :t="t"
+      :isDesktop="isDesktop"
+      :isStandalone="isStandalone"
+      @close="showAbout = false"
+    />
 
     <!-- Install Guide Modal -->
     <Transition name="guide">
