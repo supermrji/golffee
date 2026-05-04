@@ -7,6 +7,7 @@ import { Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, Exte
 import GolfFlag from '../GolfFlag.vue'
 import AboutModal from '../components/AboutModal.vue'
 import CourseTable from '../components/CourseTable.vue'
+import CourseCards from '../components/CourseCards.vue'
 import InstallGuideModal from '../components/InstallGuideModal.vue'
 import { ALL_REGION, DEFAULT_PAGE_TITLE, SITE_URL, REGION_SLUGS, REGION_TO_SLUG, REGION_PAGE_TITLES, REGION_NAV_LABELS } from '../constants/regions.js'
 import { features, changelog } from '../data/about.js'
@@ -434,14 +435,6 @@ const parseNum = (v) => {
 
 const favorites = ref([])
 const showFavoritesOnly = ref(false)
-const expandedRemarks = reactive(new Set())
-const clampedRemarks = reactive(new Set())
-
-function checkOverflow(el, name) {
-  if (!el) return
-  const isClamped = el.scrollHeight > el.clientHeight + 2
-  isClamped ? clampedRemarks.add(name) : clampedRemarks.delete(name)
-}
 const showInstallGuide = ref(false)
 const showAbout = ref(false)
 const desktopMq = typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)') : null
@@ -954,111 +947,17 @@ onUnmounted(() => {
           />
         </div>
 
-        <!-- Mobile Architecture (Hidden on large screens) -->
-        <div id="golffee-cards" class="xl:hidden">
-          <div v-if="filteredCourses.length === 0" class="py-24 text-center">
-            <p class="text-white/40 text-base">{{ t.noResult }}</p>
-            <p class="text-white/20 text-sm mt-2">{{ t.noResultSub }}</p>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
-          <div v-for="c in filteredCourses" :key="c.name" :class="['flex flex-col p-4 md:p-6 border rounded-xl group transition-colors', c.status === 'closed' ? 'bg-[#0a0a0a] opacity-60 border-white/[0.12]' : 'bg-[#0a0a0a] border-white/[0.12] hover:border-white/25']">
-
-            <div class="mb-6 pb-4 border-b border-white/[0.12] flex justify-between items-start">
-              <div>
-                <div class="flex items-center gap-3 mb-1">
-                  <button @click="toggleFavorite(c.name)" class="focus:outline-none flex-shrink-0 p-1 -m-1" :aria-label="isFavorite(c.name) ? '取消最愛' : '加入最愛'">
-                    <Heart :class="['w-6 h-6 transition-all', isFavorite(c.name) ? 'fill-red-500 text-red-500' : 'text-white/10']" />
-                  </button>
-                  <a :href="getMapUrl(c.name)" target="_blank" rel="noopener noreferrer"
-                     :class="locale === 'zh-TW'
-                       ? 'text-2xl font-normal tracking-wide text-emerald-400 hover:text-emerald-300 transition-colors'
-                       : 'text-xl font-medium tracking-normal text-emerald-400 hover:text-emerald-300 transition-colors'">
-                    {{ getCourseName(c) }}
-                  </a>
-                  <a v-if="c.website" :href="c.website" target="_blank" rel="noopener noreferrer"
-                     class="flex-shrink-0 text-[#444] hover:text-emerald-400 transition-colors" :aria-label="`${c.name} 官網`">
-                    <ExternalLink class="w-4 h-4" />
-                  </a>
-                </div>
-                <div class="flex flex-col gap-1">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <p class="text-xs text-[#ccc] uppercase tracking-wider font-normal">{{ getRegionName(c.region) }}</p>
-                    <span v-if="c.holes" class="text-[10px] md:text-xs text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider whitespace-nowrap">{{ c.holes }}H</span>
-                    <span v-if="c.golfDay" :class="['inline-flex items-center gap-1 text-[10px] md:text-xs px-1.5 py-0.5 tracking-wider border whitespace-nowrap', c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#888] border-white/10']"><GolfFlag :size="12" />{{ c.golfDay }}</span>
-                  </div>
-                  <p v-if="c.phone" class="text-xs text-[#f4f4f4] flex items-center gap-2">
-                    <Phone class="w-3 h-3" />
-                    {{ c.phone }}
-                  </p>
-                </div>
-              </div>
-              <div class="text-right mt-1.5 flex flex-col items-end gap-2 flex-shrink-0 ml-3">
-                <span v-if="c.status === 'closed'" class="text-[10px] md:text-xs px-2 py-1 leading-none tracking-wider bg-red-500/80 text-white whitespace-nowrap font-medium">{{ t.closed }}</span>
-                <div v-if="c.updateDate && c.status !== 'closed'" class="text-[10px] md:text-xs text-[#FFF] tracking-[0.1em] uppercase flex flex-col items-end font-light">
-                  <span>{{ t.update }}</span>
-                  <span class="text-[#eee]">{{ c.updateDate }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-y-6 gap-x-4 mb-6">
-              <div>
-                <p class="text-xs text-emerald-400 uppercase tracking-wider mb-1">{{ t.guest }}</p>
-                <p class="text-sm font-mono font-medium"><span class="text-[#f4f4f4]">{{ formatPrice(c.guestWeekday) }}</span><span class="text-[#555] text-xs px-1">/</span><span class="text-[#f4f4f4]">{{ formatPrice(c.guestHoliday) }}</span></p>
-              </div>
-              <div>
-                <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.member }}</p>
-                <p class="text-base text-white tracking-wide font-mono">{{ formatPrice(c.member) }}</p>
-              </div>
-              <div>
-                <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.mGuest }}</p>
-                <p class="text-sm text-[#eee] font-mono">{{ formatPrice(c.memberGuestWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.memberGuestHoliday) }}</p>
-              </div>
-              <div>
-                <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.team }}</p>
-                <p class="text-sm text-[#eee] font-mono">{{ formatPrice(c.teamWeekday) }} <span class="text-[#666] text-xs px-1">/</span> {{ formatPrice(c.teamHoliday) }}</p>
-              </div>
-              <div class="col-span-2 flex items-center justify-between">
-                <div>
-                  <p class="text-xs text-[#888] uppercase tracking-wider mb-1">{{ t.amenities }}</p>
-                  <div class="flex gap-3 mt-1 flex-wrap">
-                    <span v-if="c.hasRestaurant" class="flex items-center gap-1 text-[#aaa]">
-                      <Utensils class="w-3.5 h-3.5" :aria-label="t.amenityRestaurant" role="img" />
-                      <span class="text-xs tracking-wide">{{ t.amenityRestaurant }}</span>
-                    </span>
-                    <span v-if="c.hasWater" class="flex items-center gap-1 text-[#aaa]">
-                      <Droplets class="w-3.5 h-3.5" :aria-label="t.amenityWater" role="img" />
-                      <span class="text-xs tracking-wide">{{ t.amenityWater }}</span>
-                    </span>
-                    <span v-if="c.hasCard" class="flex items-center gap-1 text-[#aaa]">
-                      <CreditCard class="w-3.5 h-3.5" :aria-label="t.amenityCard" role="img" />
-                      <span class="text-xs tracking-wide">{{ t.amenityCard }}</span>
-                    </span>
-                    <span v-if="!c.hasRestaurant && !c.hasWater && !c.hasCard" class="text-xs text-[#444] tracking-wide">{{ t.noData }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div v-if="c.parsedRemarks.length" class="pt-4 border-t border-white/[0.12]">
-              <div class="flex items-center justify-between mb-3">
-                <p class="text-xs text-[#888] uppercase tracking-wider">{{ t.remarks }}</p>
-                <button v-if="clampedRemarks.has(c.name) || expandedRemarks.has(c.name)"
-                        @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
-                        class="px-3 py-1.5 text-xs border border-white/20 bg-white/5 text-[#aaa] hover:border-emerald-400/60 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all tracking-wide rounded">
-                  {{ expandedRemarks.has(c.name) ? t.collapse : t.expand }}
-                </button>
-              </div>
-              <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'"
-                   :ref="el => checkOverflow(el, c.name)">
-                <ul class="list-disc pl-3 space-y-2 text-sm text-[#f4f4f4] leading-relaxed marker:text-[#444]">
-                  <li v-for="(rm, idx) in c.parsedRemarks" :key="idx" v-html="highlightMoney(rm)"></li>
-                </ul>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        <!-- Card View -->
+        <div id="golffee-cards" :class="viewMode === 'card' ? 'block' : 'hidden'">
+          <CourseCards
+            :courses="filteredCourses"
+            :priceField="priceField"
+            :favorites="favorites"
+            :todayWeekday="todayWeekday"
+            :t="t"
+            :locale="locale"
+            @toggleFavorite="toggleFavorite"
+          />
         </div>
 
       </div>
