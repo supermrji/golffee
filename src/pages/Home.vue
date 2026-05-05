@@ -9,6 +9,7 @@ import AboutModal from '../components/AboutModal.vue'
 import CourseTable from '../components/CourseTable.vue'
 import CourseCards from '../components/CourseCards.vue'
 import InstallGuideModal from '../components/InstallGuideModal.vue'
+import FilterBar from '../components/FilterBar.vue'
 import { ALL_REGION, DEFAULT_PAGE_TITLE, SITE_URL, REGION_SLUGS, REGION_TO_SLUG, REGION_PAGE_TITLES, REGION_NAV_LABELS } from '../constants/regions.js'
 import { features, changelog } from '../data/about.js'
 
@@ -418,7 +419,6 @@ const selectedDay = ref('weekday')     // 'weekday' | 'holiday'
 const maxBudget = ref(Infinity)
 const viewMode = ref(localStorage.getItem('golffee_view') || 'table')
 const showMobileFilter = ref(false)
-const sortBy = ref('default') // temporary shim — will be removed in Task 6
 
 watch(viewMode, (v) => localStorage.setItem('golffee_view', v))
 
@@ -783,156 +783,40 @@ onUnmounted(() => {
     <div id="content-layer" class="relative z-20 flex flex-col flex-1 -mt-24 pt-0 bg-[#050505] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
       <div class="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 flex-1 min-h-dvh" style="padding-bottom: calc(5rem + env(safe-area-inset-bottom))">
 
-        <!-- Filter Controls (Sticky) -->
-        <div id="filter-bar" :class="['sticky z-40 bg-[#050505]/95 backdrop-blur-md border-b border-white/10 px-6 -mx-6 lg:px-12 lg:-mx-12 pt-4 lg:pt-8 pb-3 lg:pb-6 shadow-sm transition-transform duration-300', !filterVisible ? '-translate-y-full lg:translate-y-0' : '']" style="top: env(safe-area-inset-top)">
-
-          <div class="flex flex-col gap-3 md:gap-5 lg:gap-8 lg:flex-row">
-
-            <!-- Row 1: Region + Favorites (Mobile) / Region (Desktop) -->
-            <div class="flex items-center gap-3 w-full lg:w-auto lg:flex-1 lg:max-w-xs">
-              <div class="flex flex-col gap-1.5 lg:gap-3 flex-1">
-                <label class="text-[10px] md:text-xs lg:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.region }}</label>
-                <div class="relative group">
-                  <select v-model="selectedRegion" @change="onRegionChange" class="w-full appearance-none bg-transparent border-none pb-1.5 lg:pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
-                    <option v-for="r in regions" :key="r" :value="r" class="bg-[#1a1a1a] text-white text-base py-2">
-                      {{ getRegionName(r) }} ({{ regionCounts[r] }})
-                    </option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Mobile only: Favorites -->
-              <div class="flex items-end lg:hidden">
-                <button @click="showFavoritesOnly = !showFavoritesOnly"
-                        :class="['flex items-center gap-1.5 px-3 rounded-full border transition-all duration-200 active:scale-95 h-[38px]',
-                                 showFavoritesOnly ? 'bg-emerald-400/20 border-emerald-400/60 text-emerald-100 shadow-[0_0_15px_rgba(52,211,153,0.2)]' : 'bg-emerald-400/5 border-emerald-400/40 text-emerald-400']">
-                  <Heart :class="['w-4 h-4 transition-transform duration-300', showFavoritesOnly ? 'fill-emerald-400 scale-110' : '']" />
-                  <span class="text-[10px] tracking-[0.2em] uppercase font-bold">{{ t.favorites }}</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Row 2 (Mobile): Search + 篩選 button / Desktop: Search -->
-            <div class="flex items-end gap-3 lg:gap-0 flex-1 lg:max-w-xs lg:border-l border-white/10 lg:pl-8">
-              <div class="flex flex-col gap-1.5 lg:gap-3 flex-1">
-                <label class="text-[10px] md:text-xs lg:text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.search }}</label>
-                <div class="relative group flex items-center h-[38px] overflow-hidden">
-                  <Search class="w-5 h-5 text-[#888] mr-4 flex-shrink-0 transition-colors group-hover:text-emerald-400" />
-                  <input type="text" v-model="searchQuery" :placeholder="t.searchPlaceholder"
-                         class="w-full bg-transparent border-none p-0 text-xl lg:text-2xl font-light focus:outline-none focus:ring-0 text-[#f4f4f4] rounded-none placeholder:text-[#666] leading-[38px] flex-1" />
-                  <span class="absolute bottom-0 left-0 w-full h-[1px] bg-white/10 group-hover:bg-emerald-500/50 transition-all"></span>
-                </div>
-              </div>
-
-              <!-- Mobile only: 篩選 button -->
-              <div class="flex items-end lg:hidden pb-1.5">
-                <button @click="showMobileFilter = !showMobileFilter"
-                        :class="['relative flex items-center gap-1.5 px-3 h-[38px] border text-[11px] tracking-widest uppercase transition-all duration-200',
-                                 showMobileFilter || activeFilterCount > 0 ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/20 text-[#888]']">
-                  <span>{{ t.filter }}</span>
-                  <span v-if="activeFilterCount > 0" class="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-400 text-black text-[10px] font-bold leading-none">{{ activeFilterCount }}</span>
-                  <ChevronDown :class="['w-3 h-3 transition-transform duration-200', showMobileFilter ? 'rotate-180' : '']" />
-                </button>
-              </div>
-            </div>
-
-            <!-- Mobile only: 篩選 Panel -->
-            <div v-if="showMobileFilter" class="lg:hidden flex flex-col gap-4 pt-1 pb-2 border-t border-white/10">
-              <!-- Golf Day Chips -->
-              <div>
-                <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none block mb-2">{{ t.golfDay }}</label>
-                <div class="flex flex-wrap gap-2">
-                  <button @click="selectedGolfDay = ALL_GOLF_DAY"
-                          :class="['px-3 py-1.5 text-xs border tracking-wider transition-all duration-150', selectedGolfDay === ALL_GOLF_DAY ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium' : 'border-white/10 text-[#888]']">
-                    {{ t.golfDayAll }}
-                  </button>
-                  <button v-for="d in weekdays.slice(1).concat([weekdays[0]])" :key="d"
-                          @click="selectedGolfDay = selectedGolfDay === d ? ALL_GOLF_DAY : d"
-                          :class="['px-3 py-1.5 text-xs border tracking-wider transition-all duration-150',
-                                   selectedGolfDay === d ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium' :
-                                   d === todayWeekday ? 'border-emerald-400/25 text-[#888] bg-emerald-400/5' : 'border-white/10 text-[#888]']">
-                    {{ d }}{{ d === todayWeekday ? ' ★' : '' }}
-                  </button>
-                </div>
-              </div>
-              <!-- Sort Chips -->
-              <div>
-                <label class="text-[10px] tracking-[0.1em] text-[#888] uppercase select-none block mb-2">{{ t.sort }}</label>
-                <div class="flex flex-wrap gap-2">
-                  <button v-for="(label, val) in { default: t.sortDefault, guestWk: t.sortGuestWk, guestHol: t.sortGuestHol, member: t.sortMember }" :key="val"
-                          @click="sortBy = sortBy === val && val !== 'default' ? 'default' : val"
-                          :class="['px-3 py-1.5 text-xs border tracking-wider transition-all duration-150', sortBy === val ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium' : 'border-white/10 text-[#888]']">
-                    {{ label }}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Desktop only: Golf Day -->
-            <div class="hidden lg:flex flex-col gap-3 w-auto max-w-[120px] border-l border-white/10 pl-8">
-              <label class="text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.golfDay }}</label>
-              <div class="relative group">
-                <select v-model="selectedGolfDay" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
-                  <option :value="ALL_GOLF_DAY" class="bg-[#1a1a1a] text-white text-base">{{ t.golfDayAll }}</option>
-                  <option v-for="d in weekdays.slice(1).concat([weekdays[0]])" :key="d" :value="d" class="bg-[#1a1a1a] text-white text-base">
-                    {{ d }}{{ d === todayWeekday ? ' ★' : '' }}
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Desktop only: Sort -->
-            <div class="hidden lg:flex flex-col gap-3 w-auto max-w-[140px] border-l border-white/10 pl-8">
-              <label class="text-sm tracking-[0.1em] text-[#888] uppercase select-none">{{ t.sort }}</label>
-              <div class="relative group">
-                <select v-model="sortBy" class="w-full appearance-none bg-transparent border-none pb-2 text-lg focus:outline-none focus:ring-0 text-[#f4f4f4] cursor-pointer rounded-none border-b border-transparent hover:border-white/20 transition-all font-light">
-                  <option value="default" class="bg-[#1a1a1a] text-white text-base">{{ t.sortDefault }}</option>
-                  <option value="guestWk" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestWk }}</option>
-                  <option value="guestHol" class="bg-[#1a1a1a] text-white text-base">{{ t.sortGuestHol }}</option>
-                  <option value="member" class="bg-[#1a1a1a] text-white text-base">{{ t.sortMember }}</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Desktop only: Favorites Toggle -->
-            <div class="hidden lg:flex items-end lg:pb-1">
-              <button @click="showFavoritesOnly = !showFavoritesOnly"
-                      :class="['flex items-center gap-2.5 px-6 py-2.5 rounded-full border transition-all duration-200 active:scale-95 h-[40px]',
-                               showFavoritesOnly ? 'bg-emerald-400/20 border-emerald-400/60 text-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.2)]' : 'bg-emerald-400/5 border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/10 hover:border-emerald-400/60']">
-                <Heart :class="['w-4 h-4 transition-transform duration-300', showFavoritesOnly ? 'fill-emerald-400 scale-110' : '']" />
-                <span class="text-xs tracking-[0.2em] uppercase font-bold">{{ t.favorites }}</span>
-              </button>
-            </div>
-
-            <!-- 字級 & 語系狀態 chips（捲過 Hero 後才顯示，僅桌面） -->
-            <Transition name="state-chip">
-              <div v-if="!topControlsVisible"
-                   class="hidden lg:flex items-end gap-2 ml-auto pb-1">
-                <!-- 語系 chip：內嵌 select 下拉 -->
-                <div class="flex items-center gap-1.5 h-[40px] px-2.5 border border-white/15 hover:border-white/30 transition-all cursor-pointer">
-                  <Globe class="w-3 h-3 text-[#666] flex-shrink-0 pointer-events-none" />
-                  <select v-model="locale" @change="markHintSeen"
-                          class="appearance-none bg-transparent text-[#888] hover:text-white/80 focus:outline-none cursor-pointer text-[11px] tracking-widest uppercase transition-colors">
-                    <option value="zh-TW" class="bg-[#1a1a1a] text-white text-sm normal-case tracking-normal">繁中</option>
-                    <option value="en"    class="bg-[#1a1a1a] text-white text-sm normal-case tracking-normal">EN</option>
-                    <option value="ja"    class="bg-[#1a1a1a] text-white text-sm normal-case tracking-normal">JA</option>
-                    <option value="ko"    class="bg-[#1a1a1a] text-white text-sm normal-case tracking-normal">KO</option>
-                  </select>
-                </div>
-                <!-- 字級 chip：toggle，顯示目前狀態 -->
-                <button @click="toggleFontSize"
-                        :title="fontSize === 'large' ? '恢復預設字級' : '放大文字'"
-                        :class="['flex items-center gap-0.5 h-[40px] px-2.5 border transition-all',
-                                 fontSize === 'large'
-                                   ? 'border-emerald-400/50 text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20'
-                                   : 'border-white/15 text-[#555] hover:border-white/30 hover:text-[#888]']">
-                  <span style="font-size:10px" class="leading-none">A</span>
-                  <span style="font-size:14px" class="leading-none">A</span>
-                </button>
-              </div>
-            </Transition>
-          </div>
-        </div>
+        <FilterBar
+          :regionOptions="regionOptions"
+          :selectedRegion="selectedRegion"
+          :searchQuery="searchQuery"
+          :selectedIdentity="selectedIdentity"
+          :selectedDay="selectedDay"
+          :maxBudget="maxBudget"
+          :budgetMax="budgetMax"
+          :viewMode="viewMode"
+          :showFavoritesOnly="showFavoritesOnly"
+          :selectedGolfDay="selectedGolfDay"
+          :weekdays="weekdays"
+          :todayWeekday="todayWeekday"
+          :t="t"
+          :locale="locale"
+          :filterVisible="filterVisible"
+          :activeFilterCount="activeFilterCount"
+          :topControlsVisible="topControlsVisible"
+          :fontSize="fontSize"
+          :hintSeen="hintSeen"
+          :ALL_GOLF_DAY="ALL_GOLF_DAY"
+          v-model:showMobileFilter="showMobileFilter"
+          @update:searchQuery="searchQuery = $event"
+          @update:selectedIdentity="selectedIdentity = $event"
+          @update:selectedDay="selectedDay = $event"
+          @update:maxBudget="maxBudget = $event"
+          @update:viewMode="viewMode = $event"
+          @update:showFavoritesOnly="showFavoritesOnly = $event"
+          @update:selectedGolfDay="selectedGolfDay = $event"
+          @update:locale="locale = $event"
+          @regionChange="onRegionChange"
+          @toggleFontSize="toggleFontSize"
+          @markHintSeen="markHintSeen"
+        />
 
         <!-- Table View -->
         <div id="golffee-table" :class="['pt-6', viewMode === 'table' ? 'block' : 'hidden']">
@@ -974,35 +858,6 @@ onUnmounted(() => {
           </RouterLink>
         </div>
       </nav>
-
-      <!-- 手機版：字級 & 語系狀態 fixed 小按鈕（捲過 Hero 後才顯示，不影響 filter bar） -->
-      <Transition name="state-chip">
-        <div v-if="!topControlsVisible"
-             class="lg:hidden fixed bottom-[calc(2.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex flex-col gap-1.5 items-end">
-          <!-- 語系 chip：固定寬度，select 覆蓋整個區塊 -->
-          <div class="relative flex items-center justify-center w-[44px] h-[28px] border border-white/15 bg-[#050505]/90 backdrop-blur-md hover:border-white/30 transition-all cursor-pointer">
-            <span class="text-[10px] tracking-widest text-[#666] uppercase pointer-events-none select-none">
-              {{ locale === 'zh-TW' ? '繁' : locale.toUpperCase() }}
-            </span>
-            <select v-model="locale" @change="markHintSeen"
-                    class="absolute inset-0 opacity-0 cursor-pointer w-full">
-              <option value="zh-TW">繁體中文</option>
-              <option value="en">English</option>
-              <option value="ja">日本語</option>
-              <option value="ko">한국어</option>
-            </select>
-          </div>
-          <!-- 字級 chip：同寬同高 -->
-          <button @click="toggleFontSize"
-                  :class="['flex items-center justify-center gap-[2px] w-[44px] h-[28px] border bg-[#050505]/90 backdrop-blur-md transition-all',
-                           fontSize === 'large'
-                             ? 'border-emerald-400/50 text-emerald-400 bg-emerald-400/10'
-                             : 'border-white/15 text-[#555]']">
-            <span style="font-size:10px" class="leading-none">A</span>
-            <span style="font-size:13px" class="leading-none">A</span>
-          </button>
-        </div>
-      </Transition>
 
       <!-- Update Banner -->
       <Transition name="update-banner">
