@@ -1,17 +1,16 @@
 <script setup>
-import { ref, reactive, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useHead } from '@unhead/vue'
 import { useRoute, useRouter } from 'vue-router'
 import golfDataJson from '../data/golf_courses.json'
-import { Utensils, Droplets, CreditCard, ChevronDown, Globe, Search, Phone, ExternalLink, Heart, X, Bell } from 'lucide-vue-next'
-import GolfFlag from '../GolfFlag.vue'
+import { ChevronDown, Globe, X, Bell } from 'lucide-vue-next'
 import AboutModal from '../components/AboutModal.vue'
 import CourseTable from '../components/CourseTable.vue'
 import CourseCards from '../components/CourseCards.vue'
 import InstallGuideModal from '../components/InstallGuideModal.vue'
 import FilterBar from '../components/FilterBar.vue'
-import { ALL_REGION, DEFAULT_PAGE_TITLE, SITE_URL, REGION_SLUGS, REGION_TO_SLUG, REGION_PAGE_TITLES, REGION_NAV_LABELS } from '../constants/regions.js'
-import { features, changelog } from '../data/about.js'
+import { ALL_REGION, DEFAULT_PAGE_TITLE, SITE_URL, REGION_SLUGS, REGION_TO_SLUG, REGION_PAGE_TITLES } from '../constants/regions.js'
+import { dict, regionMap, NAV_LABELS_MAP } from '../i18n/dict.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -96,277 +95,7 @@ useHead(computed(() => ({
 
 const locale = ref('zh-TW')
 
-const dict = {
-  'zh-TW': {
-    title: '全台高爾夫球場收費查詢',
-    subtitle: 'Taiwan Green Fees & Facilities',
-    explore: '探索',
-    region: '縣市',
-    all: '全部',
-    course: '球場名稱',
-    guest: '來賓',
-    member: '會員',
-    mGuest: '同組',
-    team: '團體',
-    amenities: '設施',
-    weekday: '平日',
-    holiday: '假日',
-    remarks: '備註',
-    search: '搜尋球場',
-    searchPlaceholder: '球場名稱',
-    update: '更新',
-    noData: '無資料',
-    favorites: '我的最愛',
-    favOnly: '僅顯示最愛',
-    holes: '洞數',
-    sort: '排序',
-    sortDefault: '預設',
-    sortGuestWk: '來賓平日 低→高',
-    sortGuestHol: '來賓假日 低→高',
-    sortMember: '會員 低→高',
-    golfDay: '球場日',
-    golfDayAll: '全部',
-    golfDayToday: '今天',
-    noGolfDay: '無固定',
-    closed: '已停業',
-    noResult: '找不到符合條件的球場',
-    noResultSub: '試試調整篩選條件',
-    expand: '▼ 展開',
-    collapse: '▲ 收起',
-    about: '關於',
-    regionNav: '地區專頁',
-    filter: '篩選',
-    updateMsg: '有新版本，點右側按鈕更新',
-    aboutTitle: '關於 Golffee',
-    featuresTab: '功能介紹',
-    changelogTab: '更新紀錄',
-    amenityRestaurant: '餐廳',
-    amenityWater: '飲水',
-    amenityCard: '刷卡',
-    identity: '看身分',
-    identityGuest: '來賓',
-    identityMember: '會員',
-    identityMGuest: '同組',
-    identityTeam: '團體',
-    day: '看日期',
-    dayWeekday: '平日',
-    dayHoliday: '假日',
-    budget: '預算上限',
-    viewTable: '表格',
-    viewCard: '卡片',
-    filterBtn: '篩選',
-    resetFilter: '重置',
-  },
-  'en': {
-    title: 'Golf Fees.',
-    subtitle: 'Taiwan Green Fees & Facilities',
-    explore: 'Explore',
-    region: 'Region',
-    all: 'All',
-    course: 'Course',
-    guest: 'Guest',
-    member: 'Member',
-    mGuest: 'M-Guest',
-    team: 'Team',
-    amenities: 'Amenities',
-    weekday: 'Wk',
-    holiday: 'Hol',
-    remarks: 'Remarks',
-    search: 'Search Course',
-    searchPlaceholder: 'Course name',
-    update: 'Updated',
-    noData: '-',
-    favorites: 'Favorites',
-    favOnly: 'Fav Only',
-    holes: 'Holes',
-    sort: 'Sort',
-    sortDefault: 'Default',
-    sortGuestWk: 'Guest Wk ↓',
-    sortGuestHol: 'Guest Hol ↓',
-    sortMember: 'Member ↓',
-    golfDay: 'Golf Day',
-    golfDayAll: 'All',
-    golfDayToday: 'Today',
-    noGolfDay: 'Varies',
-    closed: 'Closed',
-    noResult: 'No courses found',
-    noResultSub: 'Try adjusting your filters',
-    expand: '▼ More',
-    collapse: '▲ Less',
-    about: 'About',
-    regionNav: 'Regional Pages',
-    filter: 'Filter',
-    updateMsg: 'New version available',
-    aboutTitle: 'About Golffee',
-    featuresTab: 'Features',
-    changelogTab: 'Changelog',
-    amenityRestaurant: 'Restaurant',
-    amenityWater: 'Beverages',
-    amenityCard: 'Card OK',
-    identity: 'Identity',
-    identityGuest: 'Guest',
-    identityMember: 'Member',
-    identityMGuest: 'M-Guest',
-    identityTeam: 'Team',
-    day: 'Day',
-    dayWeekday: 'Weekday',
-    dayHoliday: 'Holiday',
-    budget: 'Budget',
-    viewTable: 'Table',
-    viewCard: 'Card',
-    filterBtn: 'Filter',
-    resetFilter: 'Reset',
-  },
-  'ja': {
-    title: 'ゴルフ料金ガイド',
-    subtitle: 'Taiwan Green Fees & Facilities',
-    explore: '探す',
-    region: '地域',
-    all: 'すべて',
-    course: 'コース名',
-    guest: 'ビジター',
-    member: '会員',
-    mGuest: '同伴',
-    team: 'グループ',
-    amenities: '設備',
-    weekday: '平日',
-    holiday: '休日',
-    remarks: '備考',
-    search: 'コースを検索',
-    searchPlaceholder: 'コース名',
-    update: '更新',
-    noData: '-',
-    favorites: 'お気に入り',
-    favOnly: 'お気に入りのみ',
-    holes: 'ホール',
-    sort: '並び替え',
-    sortDefault: 'デフォルト',
-    sortGuestWk: 'ビジター平日 安い順',
-    sortGuestHol: 'ビジター休日 安い順',
-    sortMember: '会員 安い順',
-    golfDay: 'ゴルフ曜日',
-    golfDayAll: 'すべて',
-    golfDayToday: '今日',
-    noGolfDay: '不定',
-    closed: '閉業',
-    noResult: '条件に合うコースが見つかりません',
-    noResultSub: '絞り込み条件を変えてみてください',
-    expand: '▼ 展開',
-    collapse: '▲ 閉じる',
-    about: 'について',
-    regionNav: '地域ページ',
-    filter: '絞り込む',
-    updateMsg: '新しいバージョンがあります',
-    aboutTitle: 'Golffee について',
-    featuresTab: '機能紹介',
-    changelogTab: '更新履歴',
-    amenityRestaurant: 'レストラン',
-    amenityWater: 'ドリンク',
-    amenityCard: 'カード可',
-    identity: '区分',
-    identityGuest: 'ビジター',
-    identityMember: '会員',
-    identityMGuest: '同伴',
-    identityTeam: 'グループ',
-    day: '日程',
-    dayWeekday: '平日',
-    dayHoliday: '休日',
-    budget: '予算',
-    viewTable: 'テーブル',
-    viewCard: 'カード',
-    filterBtn: '絞込み',
-    resetFilter: 'リセット',
-  },
-  'ko': {
-    title: '골프 요금 가이드',
-    subtitle: 'Taiwan Green Fees & Facilities',
-    explore: '탐색',
-    region: '지역',
-    all: '전체',
-    course: '골프장 이름',
-    guest: '비회원',
-    member: '회원',
-    mGuest: '동반',
-    team: '단체',
-    amenities: '시설',
-    weekday: '평일',
-    holiday: '휴일',
-    remarks: '비고',
-    search: '골프장 검색',
-    searchPlaceholder: '골프장 이름',
-    update: '업데이트',
-    noData: '-',
-    favorites: '즐겨찾기',
-    favOnly: '즐겨찾기만',
-    holes: '홀수',
-    sort: '정렬',
-    sortDefault: '기본',
-    sortGuestWk: '비회원 평일 낮은순',
-    sortGuestHol: '비회원 휴일 낮은순',
-    sortMember: '회원 낮은순',
-    golfDay: '골프 요일',
-    golfDayAll: '전체',
-    golfDayToday: '오늘',
-    noGolfDay: '미정',
-    closed: '폐업',
-    noResult: '조건에 맞는 골프장이 없습니다',
-    noResultSub: '필터 조건을 변경해 보세요',
-    expand: '▼ 더보기',
-    collapse: '▲ 접기',
-    about: '정보',
-    regionNav: '지역 페이지',
-    filter: '필터',
-    updateMsg: '새 버전이 있습니다',
-    aboutTitle: 'Golffee 정보',
-    featuresTab: '기능 소개',
-    changelogTab: '업데이트 내역',
-    amenityRestaurant: '레스토랑',
-    amenityWater: '음료',
-    amenityCard: '카드 가능',
-    identity: '구분',
-    identityGuest: '비회원',
-    identityMember: '회원',
-    identityMGuest: '동반',
-    identityTeam: '단체',
-    day: '요일',
-    dayWeekday: '평일',
-    dayHoliday: '휴일',
-    budget: '예산',
-    viewTable: '테이블',
-    viewCard: '카드',
-    filterBtn: '필터',
-    resetFilter: '초기화',
-  }
-}
-
 const t = computed(() => dict[locale.value])
-
-const regionMap = {
-  en: {
-    '台北市、新北市': 'Taipei / New Taipei',
-    '桃園地區': 'Taoyuan',
-    '新竹、苗栗': 'Hsinchu / Miaoli',
-    '台中、彰化、南投': 'Taichung / Changhua / Nantou',
-    '嘉義、台南、高雄、屏東': 'South Taiwan',
-    '花東地區': 'East Taiwan'
-  },
-  ja: {
-    '台北市、新北市': '台北・新北',
-    '桃園地區': '桃園',
-    '新竹、苗栗': '新竹・苗栗',
-    '台中、彰化、南投': '台中・彰化・南投',
-    '嘉義、台南、高雄、屏東': '南台湾',
-    '花東地區': '東部'
-  },
-  ko: {
-    '台北市、新北市': '타이베이・신베이',
-    '桃園地區': '타오위안',
-    '新竹、苗栗': '신주・먀오리',
-    '台中、彰化、南投': '타이중・장화・난터우',
-    '嘉義、台南、高雄、屏東': '남대만',
-    '花東地區': '동부'
-  }
-}
 
 const getRegionName = (r) => {
   if (r === ALL_REGION) return t.value.all
@@ -381,19 +110,7 @@ const getCourseName = (c) => {
   return c.name
 }
 
-const NAV_LABELS_MAP = {
-  'zh-TW': { taipei: '台北、新北', taoyuan: '桃園', hsinchu: '新竹、苗栗', taichung: '台中、彰化、南投', tainan: '南台灣',      hualien: '花東'         },
-  en:      { taipei: 'Taipei / New Taipei', taoyuan: 'Taoyuan', hsinchu: 'Hsinchu / Miaoli', taichung: 'Taichung Area', tainan: 'South Taiwan', hualien: 'East Taiwan'  },
-  ja:      { taipei: '台北・新北',          taoyuan: '桃園',     hsinchu: '新竹・苗栗',        taichung: '台中エリア',    tainan: '南台湾',        hualien: '東部'          },
-  ko:      { taipei: '타이베이・신베이',     taoyuan: '타오위안', hsinchu: '신주・먀오리',       taichung: '타이중 지역',   tainan: '남대만',        hualien: '동부'          },
-}
 const localizedNavLabels = computed(() => NAV_LABELS_MAP[locale.value] ?? NAV_LABELS_MAP['zh-TW'])
-
-// Replace dash or empty with localized empty
-const formatPrice = (p) => {
-  if (!p || p === '-') return t.value.noData
-  return p
-}
 
 const parseRemarks = (text) => {
   if (!text || text === '-') return []
@@ -401,12 +118,6 @@ const parseRemarks = (text) => {
     .split('。')
     .map(s => s.trim())
     .filter(Boolean)
-}
-
-const highlightMoney = (text) => {
-  if (!text) return ''
-  const regex = /(^|[^0-9/:\-~])(\d{3,})(?=[^0-9/:\-~人位組桌球年月日]|$)/g
-  return text.replace(regex, '$1<span class="text-amber-400 font-medium tracking-wide mx-[1px]">$2</span>')
 }
 
 const regions = computed(() => [ALL_REGION, ...new Set(golfDataJson.map(c => c.region))])
@@ -657,9 +368,6 @@ const activeFilterCount = computed(() => {
   if (showFavoritesOnly.value) count++
   return count
 })
-
-const mapSuffix = { 'zh-TW': ' 高爾夫', en: ' golf', ja: ' ゴルフ', ko: ' 골프' }
-const getMapUrl = (name) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + (mapSuffix[locale.value] ?? ' 高爾夫'))}`
 
 const scrollToContent = () => {
   document.getElementById('content-layer')?.scrollIntoView({ behavior: 'smooth' })
@@ -940,36 +648,6 @@ a, select {
   .safe-top {
     top: calc(1.5rem + env(safe-area-inset-top));
   }
-}
-.guide-enter-active,
-.guide-leave-active {
-  transition: opacity 0.25s ease;
-}
-.guide-enter-active .guide-panel,
-.guide-leave-active .guide-panel {
-  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-}
-.guide-enter-from,
-.guide-leave-to {
-  opacity: 0;
-}
-.guide-enter-from .guide-panel,
-.guide-leave-to .guide-panel {
-  transform: translateY(100%);
-}
-@media (min-width: 1024px) {
-  .guide-enter-from .guide-panel,
-  .guide-leave-to .guide-panel {
-    transform: translateY(12px) scale(0.97);
-    opacity: 0;
-  }
-}
-.state-chip-enter-active, .state-chip-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-.state-chip-enter-from, .state-chip-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
 }
 .hint-pulse {
   animation: hint-ring 1.5s ease-in-out 3;
