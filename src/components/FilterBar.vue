@@ -79,7 +79,7 @@ const resetFilters = () => {
         <input type="text"
                :value="searchQuery"
                @input="$emit('update:searchQuery', $event.target.value)"
-               placeholder="搜尋球場名稱或地區，例如：林口、海景、Nicklaus"
+               :placeholder="locale === 'zh-TW' ? '球場名稱、地區，例如：林口、Nicklaus' : t.searchPlaceholder"
                class="flex-1 bg-transparent text-sm text-[#f4f4f4] placeholder:text-[#555] focus:outline-none min-w-0" />
         <button v-if="searchQuery" @click="$emit('update:searchQuery', '')" class="text-[#555] hover:text-white/60 flex-shrink-0">
           <X class="w-3.5 h-3.5" />
@@ -106,12 +106,12 @@ const resetFilters = () => {
       </button>
 
       <button @click="showMobileFilter = !showMobileFilter"
-              :class="['lg:hidden relative flex items-center gap-1.5 px-3 h-10 flex-shrink-0 border text-xs tracking-widest uppercase transition-all',
+              :class="['lg:hidden relative flex items-center gap-2 px-3 h-10 flex-shrink-0 border text-sm transition-all',
                        showMobileFilter || activeFilterCount > 0 ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/10 text-[#888]']">
         <SlidersHorizontal class="w-4 h-4" />
         <span>{{ t.filterBtn }}</span>
         <span v-if="activeFilterCount > 0"
-              class="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-400 text-black text-[10px] font-bold leading-none">
+              class="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-400 text-black text-xs font-bold leading-none">
           {{ activeFilterCount }}
         </span>
       </button>

@@ -526,8 +526,8 @@ onUnmounted(() => {
           @markHintSeen="markHintSeen"
         />
 
-        <!-- Table View -->
-        <div id="golffee-table" :class="['pt-6', viewMode === 'table' ? 'block' : 'hidden']">
+        <!-- Table View (desktop only; mobile always falls back to cards) -->
+        <div id="golffee-table" :class="['pt-6', viewMode === 'table' ? 'hidden lg:block' : 'hidden']">
           <CourseTable
             :courses="filteredCourses"
             :priceField="priceField"
@@ -539,8 +539,8 @@ onUnmounted(() => {
           />
         </div>
 
-        <!-- Card View -->
-        <div id="golffee-cards" :class="viewMode === 'card' ? 'block' : 'hidden'">
+        <!-- Card View (always on mobile when table mode, always when card mode) -->
+        <div id="golffee-cards" :class="viewMode === 'card' ? 'block' : 'block lg:hidden'">
           <CourseCards
             :courses="filteredCourses"
             :priceField="priceField"
