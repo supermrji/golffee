@@ -1,5 +1,5 @@
 <script setup>
-import { watch, onUnmounted } from 'vue'
+import { watch, onUnmounted, nextTick } from 'vue'
 import { Search, Heart, Globe, LayoutList, LayoutGrid, X, SlidersHorizontal } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -69,6 +69,12 @@ const resetFilters = () => {
   emit('update:maxBudget', Infinity)
   emit('update:showFavoritesOnly', false)
   emit('update:selectedGolfDay', props.ALL_GOLF_DAY)
+}
+
+const confirmFilter = () => {
+  document.body.style.overflow = ''
+  showMobileFilter.value = false
+  nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
 }
 </script>
 
@@ -212,20 +218,20 @@ const resetFilters = () => {
   <Transition name="slide-up">
     <div v-if="showMobileFilter"
          class="lg:hidden fixed inset-0 z-50 flex items-end bg-black/60 backdrop-blur-sm"
-         @click.self="showMobileFilter = false">
+         @click.self="confirmFilter()">
       <div class="w-full bg-[#0d0d0d] border-t border-white/15 rounded-t-2xl px-5 pt-5 pb-10 flex flex-col gap-5 overflow-y-auto"
            style="max-height: 85vh">
         <div class="flex items-center justify-between">
           <span class="text-white text-sm font-medium tracking-wide">{{ t.filterBtn }}</span>
           <div class="flex items-center gap-4">
             <button @click="resetFilters" class="text-sm text-[#888] tracking-wide hover:text-white/60 transition-colors">{{ t.resetFilter }}</button>
-            <button @click="showMobileFilter = false" class="text-white/40 hover:text-white transition-colors"><X class="w-5 h-5" /></button>
+            <button @click="confirmFilter()" class="text-white/40 hover:text-white transition-colors"><X class="w-5 h-5" /></button>
           </div>
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-xs tracking-wide text-[#555] uppercase">{{ t.region }}</label>
           <select :value="selectedRegion"
-                  @change="$emit('regionChange', $event.target.value); showMobileFilter = false"
+                  @change="$emit('regionChange', $event.target.value)"
                   class="w-full bg-[#1a1a1a] border border-white/10 text-[#f4f4f4] text-sm px-3 py-2.5 focus:outline-none focus:border-emerald-400/50 rounded">
             <option v-for="opt in regionOptions" :key="opt.value" :value="opt.value">{{ opt.label }} ({{ opt.count }})</option>
           </select>
@@ -267,6 +273,12 @@ const resetFilters = () => {
                          showFavoritesOnly ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/10 text-[#888]']">
           <Heart :class="['w-4 h-4', showFavoritesOnly ? 'fill-emerald-400' : '']" />
           {{ t.favOnly }}
+        </button>
+
+        <!-- 確認按鈕 -->
+        <button @click="confirmFilter()"
+                class="w-full py-3.5 bg-emerald-400 text-black text-sm font-bold tracking-widest transition-all active:bg-emerald-300 rounded">
+          {{ t.applyFilter }}
         </button>
       </div>
     </div>

@@ -58,6 +58,7 @@ export const dict = {
     viewCard: '卡片',
     filterBtn: '篩選',
     resetFilter: '重置',
+    applyFilter: '套用篩選',
   },
   'en': {
     title: 'Golf Fees.',
@@ -118,6 +119,7 @@ export const dict = {
     viewCard: 'Card',
     filterBtn: 'Filter',
     resetFilter: 'Reset',
+    applyFilter: 'Apply',
   },
   'ja': {
     title: 'ゴルフ料金ガイド',
@@ -178,6 +180,7 @@ export const dict = {
     viewCard: 'カード',
     filterBtn: '絞込み',
     resetFilter: 'リセット',
+    applyFilter: '適用',
   },
   'ko': {
     title: '골프 요금 가이드',
@@ -238,6 +241,7 @@ export const dict = {
     viewCard: '카드',
     filterBtn: '필터',
     resetFilter: '초기화',
+    applyFilter: '적용',
   }
 }
 
