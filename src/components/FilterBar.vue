@@ -1,4 +1,5 @@
 <script setup>
+import { watch, onUnmounted } from 'vue'
 import { Search, Heart, Globe, LayoutList, LayoutGrid, X, SlidersHorizontal } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -39,6 +40,11 @@ const emit = defineEmits([
 ])
 
 const showMobileFilter = defineModel('showMobileFilter', { default: false })
+
+watch(showMobileFilter, (val) => {
+  document.body.style.overflow = val ? 'hidden' : ''
+})
+onUnmounted(() => { document.body.style.overflow = '' })
 
 const identityOptions = [
   { value: 'guest',  labelKey: 'identityGuest' },
