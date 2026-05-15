@@ -91,7 +91,7 @@ const confirmFilter = () => {
         <input type="text"
                :value="searchQuery"
                @input="$emit('update:searchQuery', $event.target.value)"
-               :placeholder="locale === 'zh-TW' ? '球場名稱、地區，例如：林口、Nicklaus' : t.searchPlaceholder"
+               :placeholder="locale === 'zh-TW' ? '球場名稱、地區，例如：台豐、美麗華' : t.searchPlaceholder"
                class="flex-1 bg-transparent text-sm text-[#f4f4f4] placeholder:text-[#555] focus:outline-none min-w-0" />
         <button v-if="searchQuery" @click="$emit('update:searchQuery', '')" class="text-[#555] hover:text-white/60 flex-shrink-0">
           <X class="w-3.5 h-3.5" />
