@@ -13,7 +13,7 @@ const props = defineProps({
 })
 defineEmits(['toggleFavorite'])
 
-const expandedRemarks = reactive(new Set())
+const expandedRemarks = reactive({})
 
 const formatPrice = (p) => (!p || p === '-') ? props.t.noData : p
 
@@ -89,7 +89,7 @@ const isCellActive = (field) => field === props.priceField
                 </a>
                 <span v-if="c.golfDay"
                       :class="['inline-flex items-center gap-1 flex-shrink-0 text-xs px-1.5 py-0.5 tracking-wider border whitespace-nowrap',
-                               c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#666] border-white/10']">
+                               c.golfDay.split(',').map(d => d.trim()).includes(todayWeekday) ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#666] border-white/10']">
                   <GolfFlag :size="12" />{{ c.golfDay }}
                 </span>
               </div>
@@ -147,15 +147,15 @@ const isCellActive = (field) => field === props.priceField
         </td>
         <td class="py-5 px-4 align-top text-[#f4f4f4] whitespace-normal leading-relaxed text-sm">
           <template v-if="c.parsedRemarks.length">
-            <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'">
+            <div :class="expandedRemarks[c.name] ? '' : 'line-clamp-5'">
               <ul class="list-disc pl-3 space-y-1.5 marker:text-[#444]">
                 <li v-for="(rm, idx) in c.parsedRemarks" :key="idx" v-html="highlightMoney(rm)"></li>
               </ul>
             </div>
             <button v-if="c.parsedRemarks.length > 2"
-                    @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
+                    @click="expandedRemarks[c.name] = !expandedRemarks[c.name]"
                     class="mt-3 px-3 py-1.5 text-xs border border-white/20 bg-white/5 text-[#aaa] hover:border-emerald-400/60 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all tracking-wide rounded">
-              {{ expandedRemarks.has(c.name) ? t.collapse : t.expand }}
+              {{ expandedRemarks[c.name] ? t.collapse : t.expand }}
             </button>
           </template>
           <span v-else>{{ t.noData }}</span>

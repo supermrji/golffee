@@ -291,10 +291,13 @@ const filteredCourses = computed(() => {
   const budget = maxBudget.value
   const field = priceField.value
 
-  const list = regionCourses.value.filter(c => {
+  // 有搜尋關鍵字時跨全台搜尋，無搜尋時限定目前地區
+  const pool = search ? golfDataJson : regionCourses.value
+
+  const list = pool.filter(c => {
     if (search && !c.name.toLowerCase().includes(search) && !getCourseName(c).toLowerCase().includes(search)) return false
     if (showFavoritesOnly.value && !isFavorite(c.name)) return false
-    if (selectedGolfDay.value !== ALL_GOLF_DAY && c.golfDay !== selectedGolfDay.value) return false
+    if (selectedGolfDay.value !== ALL_GOLF_DAY && !c.golfDay?.split(',').map(d => d.trim()).includes(selectedGolfDay.value)) return false
     const price = parseInt(c[field])
     if (!isNaN(price) && price > budget) return false
     return true

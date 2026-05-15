@@ -13,15 +13,7 @@ const props = defineProps({
 })
 defineEmits(['toggleFavorite'])
 
-const expandedRemarks = reactive(new Set())
-const clampedRemarks = reactive(new Set())
-
-function checkOverflow(el, name) {
-  if (!el) return
-  el.scrollHeight > el.clientHeight + 2
-    ? clampedRemarks.add(name)
-    : clampedRemarks.delete(name)
-}
+const expandedRemarks = reactive({})
 
 const formatPrice = (p) => (!p || p === '-') ? props.t.noData : p
 
@@ -78,10 +70,10 @@ const isGroupActive = (...fields) => fields.includes(props.priceField)
             <div class="flex flex-col gap-1">
               <div class="flex items-center gap-2 flex-wrap">
                 <p class="text-xs text-[#ccc] uppercase tracking-wider font-normal">{{ c.region }}</p>
-                <span v-if="c.holes" class="text-[10px] md:text-xs text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider whitespace-nowrap">{{ c.holes }}H</span>
+                <span v-if="c.holes" class="text-xs text-[#888] border border-white/10 px-1.5 py-0.5 leading-none tracking-wider whitespace-nowrap">{{ c.holes }}H</span>
                 <span v-if="c.golfDay"
-                      :class="['inline-flex items-center gap-1 text-[10px] md:text-xs px-1.5 py-0.5 tracking-wider border whitespace-nowrap',
-                               c.golfDay === todayWeekday ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#888] border-white/10']">
+                      :class="['inline-flex items-center gap-1 text-xs px-1.5 py-0.5 tracking-wider border whitespace-nowrap',
+                               c.golfDay.split(',').map(d => d.trim()).includes(todayWeekday) ? 'text-emerald-400 border-emerald-400/50 bg-emerald-400/10' : 'text-[#888] border-white/10']">
                   <GolfFlag :size="12" />{{ c.golfDay }}
                 </span>
               </div>
@@ -91,8 +83,8 @@ const isGroupActive = (...fields) => fields.includes(props.priceField)
             </div>
           </div>
           <div class="text-right mt-1.5 flex flex-col items-end gap-2 flex-shrink-0 ml-3">
-            <span v-if="c.status === 'closed'" class="text-[10px] md:text-xs px-2 py-1 leading-none tracking-wider bg-red-500/80 text-white whitespace-nowrap font-medium">{{ t.closed }}</span>
-            <div v-if="c.updateDate && c.status !== 'closed'" class="text-[10px] md:text-xs text-[#FFF] tracking-[0.1em] uppercase flex flex-col items-end font-light">
+            <span v-if="c.status === 'closed'" class="text-xs px-2 py-1 leading-none tracking-wider bg-red-500/80 text-white whitespace-nowrap font-medium">{{ t.closed }}</span>
+            <div v-if="c.updateDate && c.status !== 'closed'" class="text-xs text-[#FFF] tracking-[0.1em] uppercase flex flex-col items-end font-light">
               <span>{{ t.update }}</span><span class="text-[#eee]">{{ c.updateDate }}</span>
             </div>
           </div>
@@ -147,14 +139,13 @@ const isGroupActive = (...fields) => fields.includes(props.priceField)
         <div v-if="c.parsedRemarks.length" class="pt-4 border-t border-white/[0.12]">
           <div class="flex items-center justify-between mb-3">
             <p class="text-xs text-[#888] uppercase tracking-wider">{{ t.remarks }}</p>
-            <button v-if="clampedRemarks.has(c.name) || expandedRemarks.has(c.name)"
-                    @click="expandedRemarks.has(c.name) ? expandedRemarks.delete(c.name) : expandedRemarks.add(c.name)"
+            <button v-if="c.parsedRemarks.length > 3"
+                    @click="expandedRemarks[c.name] = !expandedRemarks[c.name]"
                     class="px-3 py-1.5 text-xs border border-white/20 bg-white/5 text-[#aaa] hover:border-emerald-400/60 hover:text-emerald-400 hover:bg-emerald-400/10 transition-all tracking-wide rounded">
-              {{ expandedRemarks.has(c.name) ? t.collapse : t.expand }}
+              {{ expandedRemarks[c.name] ? t.collapse : t.expand }}
             </button>
           </div>
-          <div :class="expandedRemarks.has(c.name) ? '' : 'line-clamp-[5]'"
-               :ref="el => checkOverflow(el, c.name)">
+          <div :class="expandedRemarks[c.name] ? '' : 'line-clamp-5'">
             <ul class="list-disc pl-3 space-y-2 text-sm text-[#f4f4f4] leading-relaxed marker:text-[#444]">
               <li v-for="(rm, idx) in c.parsedRemarks" :key="idx" v-html="highlightMoney(rm)"></li>
             </ul>
