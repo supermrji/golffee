@@ -74,7 +74,7 @@ const resetFilters = () => {
 
     <!-- Row 1: Search + View Toggle + mobile Filter button -->
     <div class="flex items-center gap-2">
-      <div class="relative flex items-center flex-1 h-10 border border-white/10 hover:border-white/25 transition-colors px-3 gap-2">
+      <div class="relative flex items-center flex-1 h-10 border border-white/10 bg-white/[0.025] hover:border-white/[0.18] transition-all duration-150 px-3 gap-2">
         <Search class="w-4 h-4 text-[#888] flex-shrink-0" />
         <input type="text"
                :value="searchQuery"
@@ -87,15 +87,15 @@ const resetFilters = () => {
       </div>
 
       <button @click="$emit('update:showFavoritesOnly', !showFavoritesOnly)"
-              :class="['hidden lg:flex items-center gap-1.5 h-10 px-4 border text-xs tracking-wider transition-all flex-shrink-0',
+              :class="['hidden lg:flex items-center gap-1.5 h-10 px-4 border text-xs tracking-wider transition-all duration-150 flex-shrink-0',
                        showFavoritesOnly
                          ? 'bg-emerald-400 text-black font-bold border-emerald-400'
-                         : 'border-white/10 text-[#888] hover:border-white/25']">
+                         : 'border-white/10 text-[#888] font-medium hover:border-white/25 hover:text-white/60']">
         <Heart :class="['w-3.5 h-3.5', showFavoritesOnly ? 'fill-black' : '']" />
         {{ t.favorites }}
       </button>
 
-      <div class="hidden lg:flex items-center border border-white/10 h-10 flex-shrink-0">
+      <div class="hidden lg:flex items-center border border-white/10 h-10 bg-white/[0.02] flex-shrink-0">
         <button @click="$emit('update:viewMode', 'table')"
                 :class="['flex items-center gap-1.5 px-3 h-full text-xs tracking-widest border-r border-white/10 transition-all',
                          viewMode === 'table' ? 'text-white bg-white/5' : 'text-[#888] hover:text-white/60']">
