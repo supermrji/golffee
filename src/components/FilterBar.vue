@@ -108,6 +108,12 @@ const resetFilters = () => {
         </button>
       </div>
 
+      <button @click="$emit('update:viewMode', viewMode === 'table' ? 'card' : 'table')"
+              class="lg:hidden flex items-center justify-center w-10 h-10 flex-shrink-0 border border-white/10 text-[#888] hover:text-white/60 transition-colors">
+        <LayoutGrid v-if="viewMode === 'table'" class="w-4 h-4" />
+        <LayoutList v-else class="w-4 h-4" />
+      </button>
+
       <button @click="showMobileFilter = !showMobileFilter"
               :class="['lg:hidden relative flex items-center gap-2 px-3 h-10 flex-shrink-0 border text-sm transition-all',
                        showMobileFilter || activeFilterCount > 0 ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/10 text-[#888]']">
@@ -125,7 +131,7 @@ const resetFilters = () => {
             <Globe class="w-3 h-3 text-[#666] pointer-events-none flex-shrink-0" />
             <select :value="locale"
                     @change="$emit('update:locale', $event.target.value); $emit('markHintSeen')"
-                    class="appearance-none bg-transparent text-[#888] hover:text-white/80 focus:outline-none cursor-pointer text-xs tracking-wide uppercase">
+                    class="appearance-none bg-transparent text-[#888] hover:text-white/80 focus:outline-none cursor-pointer text-[11px] tracking-widest uppercase">
               <option value="zh-TW" class="bg-[#1a1a1a] text-white text-sm normal-case">繁中</option>
               <option value="en"    class="bg-[#1a1a1a] text-white text-sm">EN</option>
               <option value="ja"    class="bg-[#1a1a1a] text-white text-sm">JA</option>
@@ -151,12 +157,12 @@ const resetFilters = () => {
                          selectedRegion === opt.value
                            ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium'
                            : 'border-white/10 text-[#888] hover:border-white/25']">
-          {{ opt.label }}<span class="text-xs opacity-50 ml-1">{{ opt.count }}</span>
+          {{ opt.label }}<span class="text-[10px] opacity-50 ml-1">{{ opt.count }}</span>
         </button>
       </div>
       <div class="w-px h-4 bg-white/10 flex-shrink-0"></div>
       <div class="flex items-center gap-1.5 flex-shrink-0">
-        <span class="text-xs text-[#555] tracking-wide uppercase whitespace-nowrap">{{ t.identity }}</span>
+        <span class="text-[10px] text-[#555] tracking-widest uppercase whitespace-nowrap">{{ t.identity }}</span>
         <button v-for="opt in identityOptions" :key="opt.value"
                 @click="$emit('update:selectedIdentity', opt.value)"
                 :class="['px-2.5 py-1 text-xs border tracking-wider transition-all whitespace-nowrap',
@@ -168,7 +174,7 @@ const resetFilters = () => {
       </div>
       <div class="w-px h-4 bg-white/10 flex-shrink-0"></div>
       <div class="flex items-center gap-1.5 flex-shrink-0">
-        <span class="text-xs text-[#555] tracking-wide uppercase whitespace-nowrap">{{ t.day }}</span>
+        <span class="text-[10px] text-[#555] tracking-widest uppercase whitespace-nowrap">{{ t.day }}</span>
         <button v-for="opt in dayOptions" :key="opt.value"
                 @click="$emit('update:selectedDay', opt.value)"
                 :class="['px-2.5 py-1 text-xs border tracking-wider transition-all whitespace-nowrap',
@@ -180,7 +186,7 @@ const resetFilters = () => {
       </div>
       <div class="w-px h-4 bg-white/10 flex-shrink-0"></div>
       <div class="flex items-center gap-2 flex-shrink-0">
-        <span class="text-xs text-[#555] tracking-wide uppercase whitespace-nowrap">{{ t.budget }}</span>
+        <span class="text-[10px] text-[#555] tracking-widest uppercase whitespace-nowrap">{{ t.budget }}</span>
         <input type="range" min="0" :max="budgetMax" step="100"
                :value="maxBudget === Infinity ? budgetMax : maxBudget"
                @input="$emit('update:maxBudget', Number($event.target.value) >= budgetMax ? Infinity : Number($event.target.value))"
@@ -206,12 +212,12 @@ const resetFilters = () => {
         <div class="flex items-center justify-between">
           <span class="text-white text-sm font-medium tracking-wide">{{ t.filterBtn }}</span>
           <div class="flex items-center gap-4">
-            <button @click="resetFilters" class="text-sm text-[#888] tracking-wide hover:text-white/60 transition-colors">{{ t.resetFilter }}</button>
+            <button @click="resetFilters" class="text-[11px] text-[#888] tracking-widest uppercase hover:text-white/60 transition-colors">{{ t.resetFilter }}</button>
             <button @click="showMobileFilter = false" class="text-white/40 hover:text-white transition-colors"><X class="w-5 h-5" /></button>
           </div>
         </div>
         <div class="flex flex-col gap-2">
-          <label class="text-xs tracking-wide text-[#555] uppercase">{{ t.region }}</label>
+          <label class="text-[10px] tracking-[0.15em] text-[#555] uppercase">{{ t.region }}</label>
           <select :value="selectedRegion"
                   @change="$emit('regionChange', $event.target.value); showMobileFilter = false"
                   class="w-full bg-[#1a1a1a] border border-white/10 text-[#f4f4f4] text-sm px-3 py-2.5 focus:outline-none focus:border-emerald-400/50 rounded">
@@ -219,21 +225,21 @@ const resetFilters = () => {
           </select>
         </div>
         <div class="flex flex-col gap-2">
-          <label class="text-xs tracking-wide text-[#555] uppercase">{{ t.identity }}</label>
+          <label class="text-[10px] tracking-[0.15em] text-[#555] uppercase">{{ t.identity }}</label>
           <select :value="selectedIdentity" @change="$emit('update:selectedIdentity', $event.target.value)"
                   class="w-full bg-[#1a1a1a] border border-white/10 text-[#f4f4f4] text-sm px-3 py-2.5 focus:outline-none focus:border-emerald-400/50 rounded">
             <option v-for="opt in identityOptions" :key="opt.value" :value="opt.value">{{ t[opt.labelKey] }}</option>
           </select>
         </div>
         <div class="flex flex-col gap-2">
-          <label class="text-xs tracking-wide text-[#555] uppercase">{{ t.day }}</label>
+          <label class="text-[10px] tracking-[0.15em] text-[#555] uppercase">{{ t.day }}</label>
           <select :value="selectedDay" @change="$emit('update:selectedDay', $event.target.value)"
                   class="w-full bg-[#1a1a1a] border border-white/10 text-[#f4f4f4] text-sm px-3 py-2.5 focus:outline-none focus:border-emerald-400/50 rounded">
             <option v-for="opt in dayOptions" :key="opt.value" :value="opt.value">{{ t[opt.labelKey] }}</option>
           </select>
         </div>
         <div class="flex flex-col gap-2">
-          <label class="text-xs tracking-wide text-[#555] uppercase">{{ t.golfDay }}</label>
+          <label class="text-[10px] tracking-[0.15em] text-[#555] uppercase">{{ t.golfDay }}</label>
           <select :value="selectedGolfDay" @change="$emit('update:selectedGolfDay', $event.target.value)"
                   class="w-full bg-[#1a1a1a] border border-white/10 text-[#f4f4f4] text-sm px-3 py-2.5 focus:outline-none focus:border-emerald-400/50 rounded">
             <option :value="ALL_GOLF_DAY">{{ t.golfDayAll }}</option>
@@ -242,7 +248,7 @@ const resetFilters = () => {
         </div>
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
-            <label class="text-xs tracking-wide text-[#555] uppercase">{{ t.budget }}</label>
+            <label class="text-[10px] tracking-[0.15em] text-[#555] uppercase">{{ t.budget }}</label>
             <span class="text-xs text-[#f4f4f4] tabular-nums">{{ budgetDisplay(maxBudget) }}</span>
           </div>
           <input type="range" min="0" :max="budgetMax" step="100"
