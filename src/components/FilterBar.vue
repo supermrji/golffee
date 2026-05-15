@@ -173,7 +173,7 @@ const resetFilters = () => {
 
         <!-- 身分 -->
         <div class="flex items-center gap-[6px]">
-          <span class="text-[9px] text-[#3a3a3a] tracking-[0.18em] uppercase font-semibold whitespace-nowrap">{{ t.identity }}</span>
+          <span class="text-[9px] text-[#555] tracking-[0.18em] uppercase font-semibold whitespace-nowrap">{{ t.identity }}</span>
           <button v-for="opt in identityOptions" :key="opt.value"
                   @click="$emit('update:selectedIdentity', opt.value)"
                   :class="['px-2.5 py-[4px] text-xs border tracking-wider transition-all duration-150 whitespace-nowrap',
@@ -186,7 +186,7 @@ const resetFilters = () => {
 
         <!-- 平假日 + 預算 -->
         <div class="flex items-center gap-[6px]">
-          <span class="text-[9px] text-[#3a3a3a] tracking-[0.18em] uppercase font-semibold whitespace-nowrap">{{ t.day }}</span>
+          <span class="text-[9px] text-[#555] tracking-[0.18em] uppercase font-semibold whitespace-nowrap">{{ t.day }}</span>
           <button v-for="opt in dayOptions" :key="opt.value"
                   @click="$emit('update:selectedDay', opt.value)"
                   :class="['px-2.5 py-[4px] text-xs border tracking-wider transition-all duration-150 whitespace-nowrap',
@@ -196,7 +196,7 @@ const resetFilters = () => {
             {{ t[opt.labelKey] }}
           </button>
           <div class="w-px h-3 bg-white/[0.07] flex-shrink-0 mx-1"></div>
-          <span class="text-[9px] text-[#3a3a3a] tracking-[0.18em] uppercase font-semibold whitespace-nowrap">{{ t.budget }}</span>
+          <span class="text-[9px] text-[#555] tracking-[0.18em] uppercase font-semibold whitespace-nowrap">{{ t.budget }}</span>
           <input type="range" min="0" :max="budgetMax" step="100"
                  :value="maxBudget === Infinity ? budgetMax : maxBudget"
                  @input="$emit('update:maxBudget', Number($event.target.value) >= budgetMax ? Infinity : Number($event.target.value))"
