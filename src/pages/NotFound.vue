@@ -32,7 +32,7 @@ useHead({
     </div>
 
     <footer class="absolute bottom-0 left-0 right-0 text-center py-3" style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
-      <p class="text-white text-[10px] tracking-[0.25em] font-light opacity-20">©2026 KingsleyZheng · Golffee</p>
+      <p class="text-white text-xs tracking-[0.2em] font-light opacity-20">©2026 KingsleyZheng · Golffee</p>
     </footer>
   </div>
 </template>
