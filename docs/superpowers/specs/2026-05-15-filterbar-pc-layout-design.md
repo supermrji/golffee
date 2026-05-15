@@ -13,9 +13,9 @@ PC 版篩選列（Row 2）使用 `flex-wrap`，在中大尺寸螢幕會隨機斷
 
 **Row 1（既有，加入最愛）**
 ```
-[ 搜尋框 (flex-1) ]  [ ☰ 表格 | ⊞ 卡片 ]  [ ♡ 我的最愛 ]
+[ 搜尋框 (flex-1) ]  [ ♡ 我的最愛 ]  [ ☰ 表格 | ⊞ 卡片 ]
 ```
-- 最愛按鈕緊貼 view toggle 右邊，高度 `h-10` 齊平
+- 最愛按鈕在 view toggle **左邊**，高度 `h-10` 齊平
 - 未啟用：`border border-white/10 text-[#888]`
 - 已啟用：`bg-emerald-400 text-black font-bold border-emerald-400`（底色填滿，最顯眼）
 
@@ -63,9 +63,9 @@ Mobile filter sheet 完全維持現有設計，不受影響。
 </div>
 ```
 
-3. Row 1 — 搜尋列末端加入最愛按鈕
+3. Row 1 — 搜尋列加入最愛按鈕（view toggle **左邊**）
 ```html
-<!-- 在現有 Row 1 的 </div> 前插入，緊接 view-toggle 之後 -->
+<!-- 插入在 view-toggle 之前 -->
 <button @click="$emit('update:showFavoritesOnly', !showFavoritesOnly)"
         :class="['hidden lg:flex items-center gap-1.5 h-10 px-4 border text-xs tracking-wider transition-all flex-shrink-0',
                  showFavoritesOnly
