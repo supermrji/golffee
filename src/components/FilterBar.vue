@@ -142,51 +142,62 @@ const resetFilters = () => {
       </Transition>
     </div>
 
-    <!-- Row 2 (PC only): 地區 chips -->
-    <div class="hidden lg:flex items-center gap-1.5 mt-3">
-      <button v-for="opt in regionOptions" :key="opt.value"
-              @click="$emit('regionChange', opt.value)"
-              :class="['px-2.5 py-1 text-xs border tracking-wider transition-all whitespace-nowrap',
-                       selectedRegion === opt.value
-                         ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium'
-                         : 'border-white/10 text-[#888] hover:border-white/25']">
-        {{ opt.label }}<span class="text-[10px] opacity-50 ml-1">{{ opt.count }}</span>
-      </button>
-    </div>
+    <!-- Row 2 (PC only): 左欄地區 / 右欄篩選 -->
+    <div class="hidden lg:flex items-stretch mt-3">
 
-    <!-- Row 3 (PC only): 身分 + 平假日 + 預算 -->
-    <div class="hidden lg:flex items-center gap-x-4 mt-2">
-      <div class="flex items-center gap-1.5 flex-shrink-0">
-        <span class="text-[10px] text-[#555] tracking-widest uppercase whitespace-nowrap">{{ t.identity }}</span>
-        <button v-for="opt in identityOptions" :key="opt.value"
-                @click="$emit('update:selectedIdentity', opt.value)"
-                :class="['px-2.5 py-1 text-xs border tracking-wider transition-all whitespace-nowrap',
-                         selectedIdentity === opt.value
-                           ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium'
-                           : 'border-white/10 text-[#888] hover:border-white/25']">
-          {{ t[opt.labelKey] }}
+      <!-- 左欄：地區 chips，max-width 50%，允許換行 -->
+      <div class="flex flex-wrap items-start gap-[5px] max-w-[50%] flex-shrink-0">
+        <button v-for="opt in regionOptions" :key="opt.value"
+                @click="$emit('regionChange', opt.value)"
+                :class="['px-2.5 py-[4px] text-xs border tracking-wider transition-all duration-150 whitespace-nowrap',
+                         selectedRegion === opt.value
+                           ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/[0.08] font-medium'
+                           : 'border-white/[0.09] text-[#666] hover:border-white/20 hover:text-[#999]']">
+          {{ opt.label }}<span class="text-[9px] opacity-35 ml-1">{{ opt.count }}</span>
         </button>
       </div>
-      <div class="w-px h-4 bg-white/10 flex-shrink-0"></div>
-      <div class="flex items-center gap-1.5 flex-shrink-0">
-        <span class="text-[10px] text-[#555] tracking-widest uppercase whitespace-nowrap">{{ t.day }}</span>
-        <button v-for="opt in dayOptions" :key="opt.value"
-                @click="$emit('update:selectedDay', opt.value)"
-                :class="['px-2.5 py-1 text-xs border tracking-wider transition-all whitespace-nowrap',
-                         selectedDay === opt.value
-                           ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium'
-                           : 'border-white/10 text-[#888] hover:border-white/25']">
-          {{ t[opt.labelKey] }}
-        </button>
+
+      <!-- 漸層垂直分隔線 -->
+      <div class="w-px flex-shrink-0 mx-[18px] self-stretch"
+           style="background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.12) 20%, rgba(255,255,255,0.12) 80%, transparent)">
       </div>
-      <div class="w-px h-4 bg-white/10 flex-shrink-0"></div>
-      <div class="flex items-center gap-2 flex-shrink-0">
-        <span class="text-[10px] text-[#555] tracking-widest uppercase whitespace-nowrap">{{ t.budget }}</span>
-        <input type="range" min="0" :max="budgetMax" step="100"
-               :value="maxBudget === Infinity ? budgetMax : maxBudget"
-               @input="$emit('update:maxBudget', Number($event.target.value) >= budgetMax ? Infinity : Number($event.target.value))"
-               class="w-28 accent-emerald-400 cursor-pointer" />
-        <span class="text-xs text-[#f4f4f4] w-14 text-right tabular-nums">{{ budgetDisplay(maxBudget) }}</span>
+
+      <!-- 右欄：身分（上排）/ 平假日 + 預算（下排） -->
+      <div class="flex flex-col justify-center gap-2 flex-shrink-0">
+
+        <!-- 身分 -->
+        <div class="flex items-center gap-[6px]">
+          <span class="text-[9px] text-[#3a3a3a] tracking-[0.18em] uppercase font-semibold whitespace-nowrap">{{ t.identity }}</span>
+          <button v-for="opt in identityOptions" :key="opt.value"
+                  @click="$emit('update:selectedIdentity', opt.value)"
+                  :class="['px-2.5 py-[4px] text-xs border tracking-wider transition-all duration-150 whitespace-nowrap',
+                           selectedIdentity === opt.value
+                             ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/[0.08] font-medium'
+                             : 'border-white/[0.09] text-[#666] hover:border-white/20 hover:text-[#999]']">
+            {{ t[opt.labelKey] }}
+          </button>
+        </div>
+
+        <!-- 平假日 + 預算 -->
+        <div class="flex items-center gap-[6px]">
+          <span class="text-[9px] text-[#3a3a3a] tracking-[0.18em] uppercase font-semibold whitespace-nowrap">{{ t.day }}</span>
+          <button v-for="opt in dayOptions" :key="opt.value"
+                  @click="$emit('update:selectedDay', opt.value)"
+                  :class="['px-2.5 py-[4px] text-xs border tracking-wider transition-all duration-150 whitespace-nowrap',
+                           selectedDay === opt.value
+                             ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/[0.08] font-medium'
+                             : 'border-white/[0.09] text-[#666] hover:border-white/20 hover:text-[#999]']">
+            {{ t[opt.labelKey] }}
+          </button>
+          <div class="w-px h-3 bg-white/[0.07] flex-shrink-0 mx-1"></div>
+          <span class="text-[9px] text-[#3a3a3a] tracking-[0.18em] uppercase font-semibold whitespace-nowrap">{{ t.budget }}</span>
+          <input type="range" min="0" :max="budgetMax" step="100"
+                 :value="maxBudget === Infinity ? budgetMax : maxBudget"
+                 @input="$emit('update:maxBudget', Number($event.target.value) >= budgetMax ? Infinity : Number($event.target.value))"
+                 class="w-28 accent-emerald-400 cursor-pointer" />
+          <span class="text-xs text-[#c8c8c8] w-14 text-right tabular-nums font-medium">{{ budgetDisplay(maxBudget) }}</span>
+        </div>
+
       </div>
     </div>
   </div>
