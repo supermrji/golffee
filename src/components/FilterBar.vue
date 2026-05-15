@@ -223,10 +223,7 @@ const confirmFilter = () => {
            style="max-height: 85vh">
         <div class="flex items-center justify-between">
           <span class="text-white text-sm font-medium tracking-wide">{{ t.filterBtn }}</span>
-          <div class="flex items-center gap-4">
-            <button @click="resetFilters" class="text-sm text-[#888] tracking-wide hover:text-white/60 transition-colors">{{ t.resetFilter }}</button>
-            <button @click="confirmFilter()" class="text-white/40 hover:text-white transition-colors"><X class="w-5 h-5" /></button>
-          </div>
+          <button @click="confirmFilter()" class="text-white/40 hover:text-white transition-colors"><X class="w-5 h-5" /></button>
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-xs tracking-wide text-[#555] uppercase">{{ t.region }}</label>
@@ -275,11 +272,17 @@ const confirmFilter = () => {
           {{ t.favOnly }}
         </button>
 
-        <!-- 確認按鈕 -->
-        <button @click="confirmFilter()"
-                class="w-full py-3.5 bg-emerald-400 text-black text-sm font-bold tracking-widest transition-all active:bg-emerald-300 rounded">
-          {{ t.applyFilter }}
-        </button>
+        <!-- 底部操作列：重置 + 套用 -->
+        <div class="flex gap-3 pt-1">
+          <button @click="resetFilters"
+                  class="flex-1 py-3.5 border border-white/15 text-[#888] text-sm tracking-wider transition-all active:bg-white/5 rounded">
+            {{ t.resetFilter }}
+          </button>
+          <button @click="confirmFilter()"
+                  class="flex-[2] py-3.5 bg-emerald-400 text-black text-sm font-bold tracking-widest transition-all active:bg-emerald-300 rounded">
+            {{ t.applyFilter }}
+          </button>
+        </div>
       </div>
     </div>
   </Transition>
