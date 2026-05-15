@@ -148,19 +148,20 @@ const resetFilters = () => {
       </Transition>
     </div>
 
-    <!-- Row 2 (PC only) -->
-    <div class="hidden lg:flex items-center gap-x-4 mt-3 flex-wrap gap-y-2">
-      <div class="flex items-center gap-1.5 flex-wrap">
-        <button v-for="opt in regionOptions" :key="opt.value"
-                @click="$emit('regionChange', opt.value)"
-                :class="['px-2.5 py-1 text-xs border tracking-wider transition-all whitespace-nowrap',
-                         selectedRegion === opt.value
-                           ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium'
-                           : 'border-white/10 text-[#888] hover:border-white/25']">
-          {{ opt.label }}<span class="text-[10px] opacity-50 ml-1">{{ opt.count }}</span>
-        </button>
-      </div>
-      <div class="w-px h-4 bg-white/10 flex-shrink-0"></div>
+    <!-- Row 2 (PC only): 地區 chips -->
+    <div class="hidden lg:flex items-center gap-1.5 mt-3">
+      <button v-for="opt in regionOptions" :key="opt.value"
+              @click="$emit('regionChange', opt.value)"
+              :class="['px-2.5 py-1 text-xs border tracking-wider transition-all whitespace-nowrap',
+                       selectedRegion === opt.value
+                         ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10 font-medium'
+                         : 'border-white/10 text-[#888] hover:border-white/25']">
+        {{ opt.label }}<span class="text-[10px] opacity-50 ml-1">{{ opt.count }}</span>
+      </button>
+    </div>
+
+    <!-- Row 3 (PC only): 身分 + 平假日 + 預算 -->
+    <div class="hidden lg:flex items-center gap-x-4 mt-2">
       <div class="flex items-center gap-1.5 flex-shrink-0">
         <span class="text-[10px] text-[#555] tracking-widest uppercase whitespace-nowrap">{{ t.identity }}</span>
         <button v-for="opt in identityOptions" :key="opt.value"
@@ -193,12 +194,6 @@ const resetFilters = () => {
                class="w-28 accent-emerald-400 cursor-pointer" />
         <span class="text-xs text-[#f4f4f4] w-14 text-right tabular-nums">{{ budgetDisplay(maxBudget) }}</span>
       </div>
-      <button @click="$emit('update:showFavoritesOnly', !showFavoritesOnly)"
-              :class="['flex items-center gap-1.5 px-3 py-1 border text-xs tracking-wider transition-all ml-auto flex-shrink-0',
-                       showFavoritesOnly ? 'border-emerald-400/60 text-emerald-400 bg-emerald-400/10' : 'border-white/10 text-[#888] hover:border-white/25']">
-        <Heart :class="['w-3.5 h-3.5', showFavoritesOnly ? 'fill-emerald-400' : '']" />
-        {{ t.favorites }}
-      </button>
     </div>
   </div>
 
