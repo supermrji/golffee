@@ -556,7 +556,7 @@ onUnmounted(() => {
 
       <!-- Region Links -->
       <nav class="px-6 lg:px-12 py-12 lg:py-16 border-t border-white/10 mt-12 lg:mt-16" aria-label="地區專頁">
-        <p class="text-[11px] tracking-[0.25em] text-[#555] uppercase mb-6">{{ t.regionNav }}</p>
+        <p class="text-xs tracking-[0.2em] text-[#555] uppercase mb-6">{{ t.regionNav }}</p>
         <div class="flex flex-wrap gap-3">
           <RouterLink v-for="(label, slug) in localizedNavLabels"
              :key="slug"
@@ -589,13 +589,13 @@ onUnmounted(() => {
 
       <!-- Persistent Footer -->
       <footer class="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-[#050505]/90 backdrop-blur-md flex items-center justify-center" style="padding-top: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));">
-        <p class="text-white text-[10px] tracking-[0.25em] font-light opacity-40">
+        <p class="text-white text-xs tracking-[0.2em] font-light opacity-40">
           ©2026 KingsleyZheng · {{ buildDate }}
         </p>
         <!-- 回到頂端 -->
         <button @click="scrollToTop"
                 aria-label="回到頂端"
-                class="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 px-2 py-1 text-white/25 hover:text-white/60 transition-colors text-sm leading-none select-none">
+                class="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 border border-white/20 text-white/50 hover:border-white/50 hover:text-white/90 hover:bg-white/5 active:bg-white/10 transition-all duration-150 text-sm leading-none select-none">
           ↑
         </button>
       </footer>
